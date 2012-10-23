@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+Normally we'd collect information about your projects using an online form,
+but the CS web-site is being retired and SAFE isn't up to the task yet.  As 
+an interim solution the idea is that
+
+- you complete this XML file, replacing the template content but retaining
+  the structure, and submit it via SAFE,
+  then
+- later, and hopefully (semi-)automatically, we'll import it into SAFE for 
+  you in order to drive the assessment process.
+
+If in doubt about the content of the longer sections, make sure you read the
+unit handbook at
+
+https://www.cs.bris.ac.uk/Teaching/Resources/COMSM0111/handbook.pdf
+
+especially Section 2.1.2.  Remember that the specification is not assessed,
+and there are no rules wrt. length of text for example: the point of the
+exercise is simply to make sure you have a clear understanding of what you
+will do, so you can start doing it.
+-->
+
+ <project>
+
+<!-- 
+In this section, we want
+
+1. your CS user name (e.g., jl8971),
+2. your preliminary project title (even if you change this later),
+   and
+3. the full name of your project supervisor within CS (e.g., Dan Page).
+-->
+
+   <details>
+       <username> lm9131 </username>
+          <title> Shadow P2P Networks </title>
+     <supervisor> Simon Hollis </supervisor>
+  </details>
+
+<!-- 
+In this section we want some text outlining the motivation (or context) for
+your project.  Example content might include a description what the central 
+problem is, and what previous work has been done to solve it.
+-->
+
+  <motivation>
+  ... fill this in ...
+ </motivation>
+
+<!-- 
+In this section we want some text outlining what you will to do within the
+project; the best way to structure this is as a concise, focused set of 
+bullet points outlining a) the high-level objective(s), and b) concrete, 
+step-by-step aims that will move you towards this.
+-->
+
+  <objectives>
+  ... fill this in ...
+ </objectives>
+
+<!-- 
+In this section we want a plan for execution of your aims and objectives:
+this can include time scales, but also aspects of resource and contingency
+planning.
+-->
+
+  <plan>
+  ... fill this in ...
+ </plan>
+
+</project>
