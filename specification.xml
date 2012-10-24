@@ -22,7 +22,7 @@ exercise is simply to make sure you have a clear understanding of what you
 will do, so you can start doing it.
 -->
 
- <project>
+<project>
 
 <!-- 
 In this section, we want
@@ -33,11 +33,11 @@ In this section, we want
 3. the full name of your project supervisor within CS (e.g., Dan Page).
 -->
 
-   <details>
-       <username> lm9131 </username>
-          <title> Shadow P2P Networks </title>
-     <supervisor> Simon Hollis </supervisor>
-  </details>
+<details>
+    <username> lm9131 </username>
+    <title> Shadow P2P Networks </title>
+    <supervisor> Simon Hollis </supervisor>
+</details>
 
 <!-- 
 In this section we want some text outlining the motivation (or context) for
@@ -45,9 +45,13 @@ your project.  Example content might include a description what the central
 problem is, and what previous work has been done to solve it.
 -->
 
-  <motivation>
-  ... fill this in ...
- </motivation>
+<motivation>
+    Traditional Peer-to-Peer Netoworks involve a number of equipotent participants who form connections with one another to create a connected set of nodes. The issue with this is that every peer is given the 'identity' of other participants, usually in the form of an IP address which may pinpoint the individual that is taking part in the network. This presents a problem in the case where a user wishes to take part anonymously.
+    The potential market for such a solution would be anyone who wished to act anonymously. A good example would be persons who wished to speak out against their government without fear of persecution by that government, especially in countries where such opinions are met with force and / or criminal charges (E.g. Syria, China). Other examples include file sharers who wish to evade copyright infringement charges / fines.
+    Usually anonymity can be gained through the use of proxies or VPNs (e.g. Tor), however, the use of these systems in traditional P2P networks still shows some involvement in the network. Furthermore, these it is possible to trace the original user through monetary transaction records. True anonymity is very difficult for skilled users to achieve and is out of the reach of most internet users who might desire anonymity. Thus the solution may serve to prevent any effort to track down the users in the network and thus protect their identity (and in some cases, save their lives)
+    <solutions_possible>
+    <direction_taken_within_possible_options>
+</motivation>
 
 <!-- 
 In this section we want some text outlining what you will to do within the
@@ -56,9 +60,31 @@ bullet points outlining a) the high-level objective(s), and b) concrete,
 step-by-step aims that will move you towards this.
 -->
 
-  <objectives>
-  ... fill this in ...
- </objectives>
+<objectives>
+    <!--
+    * Investigate current methods of anonymity in use on the internet.
+        * For each such method:
+            * What level of anonymity can it provide?
+            * What is the cost (financial or otherwise) of using it.
+            * How hard is it to use?
+    * Investigate existing P2P networks
+        * Specifically bittorrent
+        * Other networks with specific anonymity features
+    * Create network
+        * Theoretically
+            * Under ideal conditions
+        * Practically
+            * Create network on a LAN
+            * Attempt the same over the Internet or other WAN
+    -->
+    
+    * Create a theoretical system for connecting peers with the greatest possible level of anonymity.
+    * Implement this system over a LAN.
+    * Attempt implementation over the internet (or other WAN)
+    * Analyse effectiveness of solution (i.e. level of anonymity practically achieved).
+        
+        
+</objectives>
 
 <!-- 
 In this section we want a plan for execution of your aims and objectives:
@@ -66,8 +92,8 @@ this can include time scales, but also aspects of resource and contingency
 planning.
 -->
 
-  <plan>
-  ... fill this in ...
- </plan>
+<plan>
+    
+</plan>
 
 </project>
