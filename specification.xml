@@ -33,11 +33,11 @@ In this section, we want
 3. the full name of your project supervisor within CS (e.g., Dan Page).
 -->
 
-   <details>
-       <username> lm9131 </username>
-          <title> Shadow P2P Networks </title>
-     <supervisor> Simon Hollis </supervisor>
-  </details>
+<details>
+    <username> lm9131 </username>
+    <title> Shadow P2P Networks </title>
+    <supervisor> Simon Hollis </supervisor>
+</details>
 
 <!-- 
 In this section we want some text outlining the motivation (or context) for
@@ -45,9 +45,13 @@ your project.  Example content might include a description what the central
 problem is, and what previous work has been done to solve it.
 -->
 
-  <motivation>
-  ... fill this in ...
- </motivation>
+<motivation>
+Traditional Peer-to-Peer networks are used for a multitude of applications including file-sharing, computer games and distributed computing. In the particular case of bittorrent, users often share content that infringes copyright. 
+
+Citations:
+http://www.wired.com/threatlevel/2011/05/biggest-bittorrent-case/
+http://torrentfreak.com/200000-bittorrent-users-sued-in-the-united-states-110808/
+</motivation>
 
 <!-- 
 In this section we want some text outlining what you will to do within the
