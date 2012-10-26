@@ -131,7 +131,7 @@ planning.
     12. Create basic file sharing application over the network.
     13. Determine the achievements of the network through comparison with others. This will look at the metrics used in steps 2 and 3 as well as the more generic metrics used for measuring connection quality (e.g. bandwidth, latency)
     
-    
+    In terms of resources, the only thing that may need to be acquired is a proxy server. These are widely available for hire and relatively cheap. Hiring one for the purposes of this research will not be a hurdle.
 </plan>
 
 </project>
