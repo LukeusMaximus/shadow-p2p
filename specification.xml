@@ -74,8 +74,6 @@ step-by-step aims that will move you towards this.
                 - This is primarily to establish the minimum level of anonymity that this project should aim for as I am attempting to surpass any previous level of anonymity granted. This also serves to inform me about the methods that exist to protect / obscure one's identity online; it may be possible to draw from these and integrate them into the final product.
             * What is the cost (financial or otherwise) of using it.
                 - The rental of a proxy service usually entails some cost. Costly methods are unattractive to most internet users and they are unlikely to be used where free alternatives exist. I aim to create a piece of software (not hardware) that is available for free, therefore anything that entails a cost is not an option (parts of the solution may still be of use).
-            * How hard is it to use?
-                - Solutions that are hard to setup / use are unlikely to be taken up by users due to the barrier to entry.
     * Investigate existing P2P networks
         * Specifically bittorrent
             - Bittorrent is the prime example of a P2P network. Given its huge success, it is worth looking at how it performs communication between peers.
@@ -100,13 +98,16 @@ step-by-step aims that will move you towards this.
         * Investigate required resources (e.g. VPS)
             - IP spoofing is planned to be an integral part of the design. Many ISPs forbid this activity in their terms of service and it is hard to implement with a home router. It is therefore in everyone's best interest if I find "a corner of the internet" where I can experiment with IP spoofing, legally and "in peace and quiet".
         * Further develop software for Internet / WAN
-            
+            - There may be differences between the way the network works on LAN and on the internet / WAN. This is simply adjusting the implementation to fit.
         * Implement file transfer / sharing application
+            - This is the second application to use the network. This is to see if the network can be of any practical use. This application will be somewhat similar to bittorrent (send file parts from multiple users) but will probably be completely different (it probably won't use the bittorrent protocol) given the way the network works.
     * Compare network to others with the same functionality
         * Anonymity provided
+            - Have I achieved the goal of greatest yet level of anonymity?
         * File transfer speed
+            - Is it practically useful compared to other methods?
         * Cost involved
-        * Ease of use
+            - Have I achieved not having any cost at all?
 </objectives>
 
 <!-- 
