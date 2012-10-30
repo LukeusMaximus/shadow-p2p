@@ -131,7 +131,24 @@ planning.
     12. Create basic file sharing application over the network.
     13. Determine the achievements of the network through comparison with others. This will look at the metrics used in steps 2 and 3 as well as the more generic metrics used for measuring connection quality (e.g. bandwidth, latency)
     
+    Time scale: Broadly, by the start of term 2, I should have completed step 8 or 9.
+    More specificly (total 15 weeks):
+        Step(s) | Weeks
+        ________|___________________________________________
+        1       | 1 
+        2, 3, 4 | 2 (the research will most likely overlap)
+        5, 6, 7 | 1 - 2
+        8       | 2 - 3
+        9       | 1
+        10      | 0
+        11      | 1
+        12      | 2
+        13      | 3
+            
     In terms of resources, the only thing that may need to be acquired is a proxy server. These are widely available for hire and relatively cheap. Hiring one for the purposes of this research will not be a hurdle.
+    
+    In terms of contingencies, the entirety of the project is entirely feasible using widely known techniques so there should be no reason to abandon any given task. What is perhaps the only forseeable problem is not having the time to complete the tasks. In this case, the project can be shortened to forgo the use of WAN / internet systems in favour of demonstrating practical uses (e.g. file sharing). 
+    
 </plan>
 
 </project>

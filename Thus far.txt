@@ -1,0 +1,9 @@
+### 1 ###
+30/10/12
+
+It turns out that scapy requires a change to it's socketry in order to talk to local applications due to the loopback link lay being entirely virtual i.e. packets are held in memory and passed to application that way.
+This results in scapy requiring a different L3 socket to pass IP packets to the right place. Namely:
+
+    conf.L3socket = L3RawSocket
+    
+and then IP packets get routed correctly. Isn't that nice?
