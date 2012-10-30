@@ -1,6 +1,7 @@
 from time import sleep
 import os 
 import socket
+import sys
 
 if __name__ == "__main__":
     outsock =  socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -12,5 +13,5 @@ if __name__ == "__main__":
         msg = "FOO_Master @ " + str(socket.gethostname()) + " " + str(i)
         port = 1337
         outsock.sendto(msg, ('192.168.1.137', port))
-        sleep(10)
+        sleep(int(sys.argv[1]))
         i += 1
