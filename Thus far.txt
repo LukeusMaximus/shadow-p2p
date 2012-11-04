@@ -7,3 +7,12 @@ This results in scapy requiring a different L3 socket to pass IP packets to the 
     conf.L3socket = L3RawSocket
     
 and then IP packets get routed correctly. Isn't that nice?
+
+
+
+### 2 ###
+04/11/12
+
+and this one for in scripts
+
+scapy.config.conf.L3socket = scapy.supersocket.L3RawSocket
