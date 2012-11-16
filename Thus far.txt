@@ -25,3 +25,16 @@ This approach is more efficient bandwidth wise and probably saves time sending p
 Perhaps using the Google Drive API we can use google as a mediator to transmit data.
 A mediator is usable if it doesn't reveal any info on the users' identity.
 
+### 4 ###
+16/11/12
+
+Decided neutral mediators makes things too easy and uninteresting.
+
+Tor:
+Provides anonymity by having clients connect to the wider internet through a relay chain of their peers.
+There are different encryption keys for each hop so no node knows where the message came from.
+The end point of the client's communication on the open internet will appear to have come from a different IP.
+The client can change routes through Tor and usually does so every few minutes.
+This prevents future activities being linked to past ones.
+
+
