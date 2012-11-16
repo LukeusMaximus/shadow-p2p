@@ -16,3 +16,12 @@ and then IP packets get routed correctly. Isn't that nice?
 and this one for in scripts
 
 scapy.config.conf.L3socket = scapy.supersocket.L3RawSocket
+
+### 3 ###
+11/11/12
+
+It is a better idea to find some neutral mediator rather than attempting shotgun packet transmission.
+This approach is more efficient bandwidth wise and probably saves time sending packets too.
+Perhaps using the Google Drive API we can use google as a mediator to transmit data.
+A mediator is usable if it doesn't reveal any info on the users' identity.
+
