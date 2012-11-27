@@ -66,6 +66,7 @@ Clients connect to the VPN and from there connect to the wider internet.
 Customers are offered various desirable features like anonymity and network speed.
 These are paid for services and are paid via the usual means (credit card / paypal) but some can be paid for through Bitcoin.
 A number of services claim that tracing a connecton back to the user who made it is usually impossible / infeasible on their systems due to a lack of logs.
+There are loads of VPNs (so one may assume that business is booming).
 
 If I have gotten this right, proxy servers are the single-hop bread and butter of anonymity whilst VPNs and P2P networks build on this single-hop anonymity principle.
 VPNs use a commercial agglomeration of servers to form a network through which traffic can be forwarded.
@@ -74,7 +75,29 @@ Anonymity is all about trust in these systems.
     - With proxy servers and VPNs you trust the entity that sets up the service.
     - With P2P networks trust is mutual but have the added advantage that there is no central part that can be targetted by governments or other malicious entities.
 
+### 6 ###
+27/11/12
 
+Routing:
+It is clear that a distance vector routing protocol will have to be used.
+Routing algorithms are generally suited towards finding the shortest or most direct route between nodes.
+However, low latency is not the goal with Shadow P2P, anonymity is.
+
+http://nrlweb.cs.ucla.edu/publication/download/589/83-A_distributed_routing_algorithm_for_unidirectional_networks.pdf
+The paper describes a form of routing where links are unidirectional (instead of bi-directional).
+Nodes receive a tree representing their upstream nodes that allows the node to find route to every node on the network.
+
+N-dimensional routing:
+Form an n-dimensional hypercube of nodes. Link it up into a hypertoroid with uni-directional links.
+Route packets using headers containing the distance from the current node to the destination in each dimension.
+Fault tolerance by introducing wormholes.
+Constant adaption through shrinking and expanding; achieved by adding and removing hyperplanes of wormholes.
+Maintain a number of virtual points, V, where V > N such that V < 2N.
+
+http://pdf.aminer.org/000/360/047/fault_tolerant_wormhole_routing_in_tori.pdf
+The paper describes routing in toroids where links can fail.
+Involves routing around the fault analogous to water flowing through a river (non-faulty links) around an island (faulty links)
+Inappropriate as it assumes two way links.
 
 
 
