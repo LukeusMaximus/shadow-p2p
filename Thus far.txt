@@ -37,4 +37,44 @@ The end point of the client's communication on the open internet will appear to 
 The client can change routes through Tor and usually does so every few minutes.
 This prevents future activities being linked to past ones.
 
+### 5 ###
+18/11/12
+
+I2P:
+Uses inbound tunnels and outbound tunnels.
+Connects the endpoints of tunnels together in order to connect to another node.
+Introduces the concept of "cover traffic" which is basically other traffic passing through that node that will help mask the traffic of a given user.
+
+Freenet:
+Peers connect to other nodes that they trust.
+Nodes they connect to are more able to attack them.
+Users can create and publish "freesites" which are webpages only availbale through Freenet
+
+OFF System:
+Unique concept involving the use of XORed data blocks to anonymise data.
+Blocks are provably random and reusable, they are used to represent multiple data sources.
+Turns copyright claims into logical contradictions.
+Interesting but nothing towards peer anonymity
+
+GNUnet:
+Mainly for file sharing.
+Features link encryption, deniability, anonymous / non-anonymous modes, economic resource distribution.
+
+VPNs:
+Generally, a VPN offers to hide your identity behind their company's IPs.
+Clients connect to the VPN and from there connect to the wider internet.
+Customers are offered various desirable features like anonymity and network speed.
+These are paid for services and are paid via the usual means (credit card / paypal) but some can be paid for through Bitcoin.
+A number of services claim that tracing a connecton back to the user who made it is usually impossible / infeasible on their systems due to a lack of logs.
+
+If I have gotten this right, proxy servers are the single-hop bread and butter of anonymity whilst VPNs and P2P networks build on this single-hop anonymity principle.
+VPNs use a commercial agglomeration of servers to form a network through which traffic can be forwarded.
+P2P networks create anonymity through the use of participating machines as hops.
+Anonymity is all about trust in these systems.
+    - With proxy servers and VPNs you trust the entity that sets up the service.
+    - With P2P networks trust is mutual but have the added advantage that there is no central part that can be targetted by governments or other malicious entities.
+
+
+
+
 
