@@ -9,3 +9,93 @@ This results in scapy requiring a different L3 socket to pass IP packets to the 
 and then IP packets get routed correctly. Isn't that nice?
 
 It also appears that python lacks the capability to derive source IP from UDP packets received, at least at that layer; lower level sockets may be able to read the UDP headers.
+
+### 2 ###
+04/11/12
+
+and this one for in scripts
+
+scapy.config.conf.L3socket = scapy.supersocket.L3RawSocket
+
+### 3 ###
+11/11/12
+
+It is a better idea to find some neutral mediator rather than attempting shotgun packet transmission.
+This approach is more efficient bandwidth wise and probably saves time sending packets too.
+Perhaps using the Google Drive API we can use google as a mediator to transmit data.
+A mediator is usable if it doesn't reveal any info on the users' identity.
+
+### 4 ###
+16/11/12
+
+Decided neutral mediators makes things too easy and uninteresting.
+
+Tor:
+Provides anonymity by having clients connect to the wider internet through a relay chain of their peers.
+There are different encryption keys for each hop so no node knows where the message came from.
+The end point of the client's communication on the open internet will appear to have come from a different IP.
+The client can change routes through Tor and usually does so every few minutes.
+This prevents future activities being linked to past ones.
+
+### 5 ###
+18/11/12
+
+I2P:
+Uses inbound tunnels and outbound tunnels.
+Connects the endpoints of tunnels together in order to connect to another node.
+Introduces the concept of "cover traffic" which is basically other traffic passing through that node that will help mask the traffic of a given user.
+
+Freenet:
+Peers connect to other nodes that they trust.
+Nodes they connect to are more able to attack them.
+Users can create and publish "freesites" which are webpages only availbale through Freenet
+
+OFF System:
+Unique concept involving the use of XORed data blocks to anonymise data.
+Blocks are provably random and reusable, they are used to represent multiple data sources.
+Turns copyright claims into logical contradictions.
+Interesting but nothing towards peer anonymity
+
+GNUnet:
+Mainly for file sharing.
+Features link encryption, deniability, anonymous / non-anonymous modes, economic resource distribution.
+
+VPNs:
+Generally, a VPN offers to hide your identity behind their company's IPs.
+Clients connect to the VPN and from there connect to the wider internet.
+Customers are offered various desirable features like anonymity and network speed.
+These are paid for services and are paid via the usual means (credit card / paypal) but some can be paid for through Bitcoin.
+A number of services claim that tracing a connecton back to the user who made it is usually impossible / infeasible on their systems due to a lack of logs.
+There are loads of VPNs (so one may assume that business is booming).
+
+If I have gotten this right, proxy servers are the single-hop bread and butter of anonymity whilst VPNs and P2P networks build on this single-hop anonymity principle.
+VPNs use a commercial agglomeration of servers to form a network through which traffic can be forwarded.
+P2P networks create anonymity through the use of participating machines as hops.
+Anonymity is all about trust in these systems.
+    - With proxy servers and VPNs you trust the entity that sets up the service.
+    - With P2P networks trust is mutual but have the added advantage that there is no central part that can be targetted by governments or other malicious entities.
+
+### 6 ###
+27/11/12
+
+Routing:
+It is clear that a distance vector routing protocol will have to be used.
+Routing algorithms are generally suited towards finding the shortest or most direct route between nodes.
+However, low latency is not the goal with Shadow P2P, anonymity is.
+
+http://nrlweb.cs.ucla.edu/publication/download/589/83-A_distributed_routing_algorithm_for_unidirectional_networks.pdf
+The paper describes a form of routing where links are unidirectional (instead of bi-directional).
+Nodes receive a tree representing their upstream nodes that allows the node to find route to every node on the network.
+
+N-dimensional routing:
+Form an n-dimensional hypercube of nodes. Link it up into a hypertoroid with uni-directional links.
+Route packets using headers containing the distance from the current node to the destination in each dimension.
+Fault tolerance by introducing wormholes.
+Constant adaption through shrinking and expanding; achieved by adding and removing hyperplanes of wormholes.
+Maintain a number of virtual points, V, where V > N such that V < 2N.
+
+http://pdf.aminer.org/000/360/047/fault_tolerant_wormhole_routing_in_tori.pdf
+The paper describes routing in toroids where links can fail.
+Involves routing around the fault analogous to water flowing through a river (non-faulty links) around an island (faulty links)
+Inappropriate as it assumes two way links.
+
