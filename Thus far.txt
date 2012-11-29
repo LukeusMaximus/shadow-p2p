@@ -7,3 +7,5 @@ This results in scapy requiring a different L3 socket to pass IP packets to the 
     conf.L3socket = L3RawSocket
     
 and then IP packets get routed correctly. Isn't that nice?
+
+It also appears that python lacks the capability to derive source IP from UDP packets received, at least at that layer; lower level sockets may be able to read the UDP headers.

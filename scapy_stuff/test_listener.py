@@ -17,10 +17,10 @@ def run_listener(ip):
     port = 1337
     s.bind((ip, port)) ## You also specify a specific intf, like '255.255.255.255' for Bcast or '127.0.0.1' for localhost...
     s.setblocking(0)
-
+    
     while True:
         result = select.select([s],[],[])
-        msg = result[0][0].recv(1024) 
+        msg = result[0][0].recv(1024)
         print msg
 
 if __name__ == "__main__":
