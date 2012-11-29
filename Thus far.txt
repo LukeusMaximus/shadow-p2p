@@ -99,3 +99,12 @@ The paper describes routing in toroids where links can fail.
 Involves routing around the fault analogous to water flowing through a river (non-faulty links) around an island (faulty links)
 Inappropriate as it assumes two way links.
 
+### 7 ###
+29/11/12
+
+SVN checkout:
+"svn checkout svn://svn.code.sf.net/p/lansim/code/trunk lansim-code"
+
+Compile using:
+"javac -d bin -cp .:lib/liquidlnf.jar src/buffer/*.java src/framework/*.java src/module/Pc/*.java src/module/*.java src/module/Router/*.java src/module/Node/*.java src/module/Hub/*.java src/module/SnWwA/*.java src/fio/*.java src/ui/*.java src/ui/main/*.java src/util/*.java"
+
