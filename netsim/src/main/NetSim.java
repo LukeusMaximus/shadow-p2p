@@ -1,6 +1,10 @@
 package main;
 
+import java.awt.Graphics;
+
 import javax.swing.JFrame;
+
+import components.ComponentManager;
 
 import ui.DrawArea;
 
@@ -11,6 +15,7 @@ public class NetSim {
     
     private JFrame frame;
     private DrawArea drawArea;
+    private ComponentManager componentManager;
     
     public NetSim() {
         
@@ -19,13 +24,18 @@ public class NetSim {
     public void start() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //this.setResizable(false);
         frame.setSize(initWidth, initHeight);
         frame.setTitle("NetSim");
+        
         drawArea = new DrawArea(initWidth, initHeight);
+        componentManager = new ComponentManager();
+        drawArea.setComponentManager(componentManager);
+        componentManager.setDrawArea(drawArea);
+        
         frame.setContentPane(drawArea);
         frame.setVisible(true);
-        drawArea.drawCalibrationSquares();
+        
+        componentManager.makeAFewNodes();
     }
     
     /**
@@ -35,6 +45,11 @@ public class NetSim {
         // TODO Auto-generated method stub
         NetSim sim = new NetSim();
         sim.start();
+    }
+
+    public void drawComponents(Graphics g) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

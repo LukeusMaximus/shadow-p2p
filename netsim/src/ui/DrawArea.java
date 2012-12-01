@@ -3,38 +3,48 @@ package ui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import components.ComponentManager;
+
+
+import main.NetSim;
+
 public class DrawArea extends JPanel {
 
+    private ComponentManager componentManager = null;
     private BufferedImage buffer;
     
     public DrawArea(int width, int height) {
         this.setBounds(0, 0, width, height);
         this.setBackground(new Color(64, 0, 64));
-        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        resizeBuffer(this.getBounds());
+        
         this.addHierarchyBoundsListener(new HierarchyBoundsListener(){
 
             @Override
             public void ancestorMoved(HierarchyEvent arg0) {
                 System.out.println("Moved");
-                
             }
 
             @Override
             public void ancestorResized(HierarchyEvent arg0) {
-                System.out.println("Resized");
-                Rectangle bounds = arg0.getChanged().getBounds();
-                buffer = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_RGB);
+                System.out.println("Resized: " + arg0.getChanged().getBounds());
+                resizeBuffer(arg0.getChanged().getBounds());
             }
             
         });
     }
     
+    public Graphics getGraphics() {
+        return buffer.getGraphics();
+    }
+
     public void drawCalibrationSquares() {
         System.out.println("bounds = " + this.getBounds().toString());
         int w = this.getBounds().width;
@@ -59,13 +69,24 @@ public class DrawArea extends JPanel {
         repaint(this.getVisibleRect());
     }
 
+    public void setComponentManager(ComponentManager componentManager) {
+        this.componentManager = componentManager;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawCalibrationSquares();
+        if(this.componentManager != null) {
+            System.out.println("Rendering components");
+            this.componentManager.renderComponents(getGraphics(), this.getBounds());
+        }
         g.drawImage(buffer, 0, 0, null);
     }
     
-    
+    private void resizeBuffer(Rectangle bounds) {
+        buffer = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_RGB);
+        buffer.getGraphics().setClip(bounds);
+    }
     
 }
