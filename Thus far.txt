@@ -112,3 +112,8 @@ Run using:
 "java -cp .:../lib/liquidlnf.jar ui.main.ApplicationManager"
 in the bin folder
 
+### 8 ###
+06/12/12
+
+Make lists of theoretical and practical componenets required for the network.
+Look into https://wikis.bris.ac.uk/display/~cssjh/Luke+Murray
