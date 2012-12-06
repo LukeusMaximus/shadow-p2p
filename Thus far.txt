@@ -108,3 +108,7 @@ SVN checkout:
 Compile using:
 "javac -d bin -cp .:lib/liquidlnf.jar src/buffer/*.java src/framework/*.java src/module/Pc/*.java src/module/*.java src/module/Router/*.java src/module/Node/*.java src/module/Hub/*.java src/module/SnWwA/*.java src/fio/*.java src/ui/*.java src/ui/main/*.java src/util/*.java"
 
+Run using:
+"java -cp .:../lib/liquidlnf.jar ui.main.ApplicationManager"
+in the bin folder
+

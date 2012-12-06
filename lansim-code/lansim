@@ -1,0 +1,4 @@
+cd bin/
+java -cp .:../lib/liquidlnf.jar ui.main.ApplicationManager
+cd ../
+
