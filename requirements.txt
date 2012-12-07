@@ -1,12 +1,12 @@
 This outlines the theoretical and practical requirements for designing and implementing the network. The network is henceforth reffered to as "Shadow P2P".
 
-The aim of the project is to provide a network design that will allow peers to communicate without revealing their identity. The "identity" of a peer is equivalent of the peer's IP address (as the IP address can easily be translated to a person who is legally resonsible for that address).
-
 ------------------------
 Theoretical Requirements
 ------------------------
 
-Participants in the network will require methods for performing the following procedure:
+Shadow P2P;s aim is to provide a network design that will allow peers to communicate without revealing their identity. The "identity" of a peer is equivalent of the peer's IP address (as the IP address can easily be translated to a person who is legally resonsible for that address). We assume that any node may be hostile (in that it aims to discover the identity of other nodes). Furthermore, we assume that links between peers might be monitored by an external entity (perhaps an ISP or government body) and that these monitoring entities may be correlating the transmissions over multiple links in the network.
+
+Participants in the network will require methods for performing (and assisting in) the following procedures:
 
 1. Communication between peers.
 2. Joining the network.
@@ -19,7 +19,14 @@ Communication between peers:
 This is the method by which one node can communicate with another node. At this stage the network may only consist of a single node with another node attempting to join so this procedure will not depend on any routing. It should be as hard as possible (or impossible) for a the source node to discern the identity of the destination node and vice-versa.
 
 Joining the network:
-This process allows a peer that is not part of the network to become part of the network. The previous procedure is used to allow one node to ask a peer to let it join the network. 
+This process allows a peer that is not part of the network to become part of the network. The previous procedure is used to allow one node to ask a peer to let it join the network. The joining node will provide the required information including some form of anonymous identity. Joining the network will allow other peers in the network to communicate with the new peer, this will involve some form of announcement to the network that a peer with a given anonymous identity has joined and how it is to be contacted. Obviously such an announcement will not contain the identity of the new peer in question. Once a node has joined, it should have the required information to participate in communication and routing as any other peer might.
+
+Routing between peers in the network (having joined):
+The peers will need to facilitate the transmission of data between peers. Modes of routing will need to be investigated but in the interest of anonymity peers that are not the source or destination of the communication should be unable to discern which 2 peers are communicating. If a node can do this, they may be able to build a picture of which peers are involved with one another, even if anonymous addresses are used. It should be possible for peers to communicate without the possibility that such a pattern of activity might be created.
+
+Leaving the network:
+This is the preferred method of having a peer leave the network. It should undo those steps it took to join the network. It should announce that it is leaving which cues the other peers to remove any routing information to that node; in effect, the network should forget the node existed.
+
 
 ----------------------
 Practical Requirements
