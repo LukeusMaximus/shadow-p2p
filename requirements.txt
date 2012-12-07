@@ -1,0 +1,28 @@
+This outlines the theoretical and practical requirements for designing and implementing the network. The network is henceforth reffered to as "Shadow P2P".
+
+The aim of the project is to provide a network design that will allow peers to communicate without revealing their identity. The "identity" of a peer is equivalent of the peer's IP address (as the IP address can easily be translated to a person who is legally resonsible for that address).
+
+------------------------
+Theoretical Requirements
+------------------------
+
+Participants in the network will require methods for performing the following procedure:
+
+1. Communication between peers.
+2. Joining the network.
+3. Routing between peers in the network (having joined).
+4. Leaving the network.
+
+The primary requirement of these actions is anonymity. Any considerations towards efficiency or other metrics are secondary. These actions are now broken down into more detail:
+
+Communication between peers:
+This is the method by which one node can communicate with another node. At this stage the network may only consist of a single node with another node attempting to join so this procedure will not depend on any routing. It should be as hard as possible (or impossible) for a the source node to discern the identity of the destination node and vice-versa.
+
+Joining the network:
+This process allows a peer that is not part of the network to become part of the network. The previous procedure is used to allow one node to ask a peer to let it join the network. 
+
+----------------------
+Practical Requirements
+----------------------
+
+Once designed, Shadow P2P will be implemented in software; specifically, a network simulator. The simulator will allow the functions of the network to be tested through a proof of concept and to compare the functionality of the network to existing P2P applications / networks.
