@@ -25,8 +25,7 @@ Routing between peers in the network (having joined):
 The peers will need to facilitate the transmission of data between peers. Modes of routing will need to be investigated but in the interest of anonymity peers that are not the source or destination of the communication should be unable to discern which 2 peers are communicating. If a node can do this, they may be able to build a picture of which peers are involved with one another, even if anonymous addresses are used. It should be possible for peers to communicate without the possibility that such a pattern of activity might be created.
 
 Leaving the network:
-This is the preferred method of having a peer leave the network. It should undo those steps it took to join the network. It should announce that it is leaving which cues the other peers to remove any routing information to that node; in effect, the network should forget the node existed.
-
+This is the preferred method of having a peer leave the network. It should undo those steps it took to join the network. It should announce that it is leaving which cues the other peers to remove any routing information to that node; in effect, the network should forget the node existed. However, a peer may involuntarily become disconnected from the network due to disruptions to lines of communication or other technical fault. In this case there must also be a method through which peers can detect disconnected (aka. 'dead') peers that will perform the necessary actions for disconnection. It must also be ensured that hostile nodes cannot simply report a node as 'dead' to disconnect it from the network.
 
 ----------------------
 Practical Requirements
