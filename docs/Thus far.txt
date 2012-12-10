@@ -117,3 +117,8 @@ in the bin folder
 
 Make lists of theoretical and practical componenets required for the network.
 https://wikis.bris.ac.uk/display/~cssjh/Luke+Murray
+
+### 9 ###
+10/12/12
+
+Direction Order Routing investigated. Basically, packets go down one dimension of the toroid until in the correct postion in that dimension and then proceed down the other dimensions in a similar fashion. Assumes bi-directional communication. Toroidal broadcasting looked at briefly. Diagonal zig zagging used to broadcast out from centre of the grid. Not really cohesive to n-dimensional uni-directional hypertoroids. It would appear that even if these algorithms were applicable, they have no real application toward anonymity.

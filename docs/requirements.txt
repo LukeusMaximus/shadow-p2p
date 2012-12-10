@@ -13,22 +13,32 @@ Participants in the network will require methods for performing (and assisting i
 3. Routing between peers in the network (having joined).
 4. Leaving the network.
 
-The primary requirement of these actions is anonymity. Any considerations towards efficiency or other metrics are secondary. These actions are now broken down into more detail:
+The primary requirement of these actions is anonymity and security. Any considerations towards efficiency or other metrics are secondary. These actions are now broken down into more detail:
 
 Communication between peers:
-This is the method by which one node can communicate with another node. At this stage the network may only consist of a single node with another node attempting to join so this procedure will not depend on any routing. It should be as hard as possible (or impossible) for a the source node to discern the identity of the destination node and vice-versa.
+    This is the method by which one node can communicate with another node. At this stage the network may only consist of a single node with another node attempting to join so this procedure will not depend on any routing. It should be as hard as possible (or impossible) for a the source node to discern the identity of the destination node and vice-versa.
 
 Joining the network:
-This process allows a peer that is not part of the network to become part of the network. The previous procedure is used to allow one node to ask a peer to let it join the network. The joining node will provide the required information including some form of anonymous identity. Joining the network will allow other peers in the network to communicate with the new peer, this will involve some form of announcement to the network that a peer with a given anonymous identity has joined and how it is to be contacted. Obviously such an announcement will not contain the identity of the new peer in question. Once a node has joined, it should have the required information to participate in communication and routing as any other peer might.
+    This process allows a peer that is not part of the network to become part of the network. The previous procedure is used to allow one node to ask a peer to let it join the network. The joining node will provide the required information including some form of anonymous identity. Joining the network will allow other peers in the network to communicate with the new peer, this will involve some form of announcement to the network that a peer with a given anonymous identity has joined and how it is to be contacted. Obviously such an announcement will not contain the identity of the new peer in question. Once a node has joined, it should have the required information to participate in communication and routing as any other peer might.
 
 Routing between peers in the network (having joined):
-The peers will need to facilitate the transmission of data between peers. Modes of routing will need to be investigated but in the interest of anonymity peers that are not the source or destination of the communication should be unable to discern which 2 peers are communicating. If a node can do this, they may be able to build a picture of which peers are involved with one another, even if anonymous addresses are used. It should be possible for peers to communicate without the possibility that such a pattern of activity might be created.
+    The peers will need to facilitate the transmission of data between peers. Modes of routing will need to be investigated but in the interest of anonymity peers that are not the source or destination of the communication should be unable to discern which 2 peers are communicating. If a node can do this, they may be able to build a picture of which peers are involved with one another, even if anonymous addresses are used. It should be possible for peers to communicate without the possibility that such a pattern of activity might be created. Can peers perform lookups for other peers without revealing that they are doing so?
 
 Leaving the network:
-This is the preferred method of having a peer leave the network. It should undo those steps it took to join the network. It should announce that it is leaving which cues the other peers to remove any routing information to that node; in effect, the network should forget the node existed. However, a peer may involuntarily become disconnected from the network due to disruptions to lines of communication or other technical fault. In this case there must also be a method through which peers can detect disconnected (aka. 'dead') peers that will perform the necessary actions for disconnection. It must also be ensured that hostile nodes cannot simply report a node as 'dead' to disconnect it from the network.
+    This is the preferred method of having a peer leave the network. It should undo those steps it took to join the network. It should announce that it is leaving which cues the other peers to remove any routing information to that node; in effect, the network should forget the node existed. However, a peer may involuntarily become disconnected from the network due to disruptions to lines of communication or other technical fault. In this case there must also be a method through which peers can detect disconnected (aka. 'dead') peers that will perform the necessary actions for disconnection. It must also be ensured that hostile nodes cannot simply report a node as 'dead' to disconnect it from the network.
+
+We may assume that attacks on the network will attempt to exploit any of the functions that the network provides. These may either disrupt the activity or structure of the network so that data flow is severly limited or they may attempt to break the anonymity granted by the network. It is my aim to provide the best possible solution in terms of anonymity and therefore the functions of the network are to be designed to this end. Whilst bandwidth / latency concerns are secondary, attacks designed to lower bandwidth / raise latency must be prevented to prevent network resource exhaustion. Notably, DOS attacks, including those from nodes in the network, will need countermeasures.
 
 ----------------------
 Practical Requirements
 ----------------------
 
 Once designed, Shadow P2P will be implemented in software; specifically, a network simulator. The simulator will allow the functions of the network to be tested through a proof of concept and to compare the functionality of the network to existing P2P applications / networks.
+
+It is clear that every aspect of the theory to be implemented will be subjected to some form of testing. In some cases there will be a situations that occurs in similar technologies that may also occur in Shadow P2P; in these cases the handling of the situation can be compared to the existing solution. It is also possible to test (or at least reason about) performance metrics such as latency and bandwidth. Whilst these are not the primary concern of the project, we can see just how different these are from the existing applications.
+
+Joining the network:
+    Tests here will include floods of new peers. Can the network cope when faced with a large number of new peers in a short time span?
+    
+Routing between peers:
+    Does the chosen method of routing scale well (in terms of time and space)? 
