@@ -35,10 +35,19 @@ Practical Requirements
 
 Once designed, Shadow P2P will be implemented in software; specifically, a network simulator. The simulator will allow the functions of the network to be tested through a proof of concept and to compare the functionality of the network to existing P2P applications / networks.
 
-It is clear that every aspect of the theory to be implemented will be subjected to some form of testing. In some cases there will be a situations that occurs in similar technologies that may also occur in Shadow P2P; in these cases the handling of the situation can be compared to the existing solution. It is also possible to test (or at least reason about) performance metrics such as latency and bandwidth. Whilst these are not the primary concern of the project, we can see just how different these are from the existing applications.
+Whilst the primary concerns of the project (anonymtiy and security) will be have their effectiveness demonstrated through theory, metrics such as latency and bandwidth will be analysed through simulation. Additionally, it is clear that every aspect of the theory to be implemented will be subjected to some form of testing. In some cases there will be a situations that occurs in similar technologies that may also occur in Shadow P2P; in these cases the handling of the situation can be compared to the existing solution. 
 
 Joining the network:
-    Tests here will include floods of new peers. Can the network cope when faced with a large number of new peers in a short time span?
+    Can the network cope when faced with a large number of new peers in a short time span?
     
 Routing between peers:
-    Does the chosen method of routing scale well (in terms of time and space)? 
+    Is the Does the chosen method of routing scale well (in terms of time and space)?
+    
+Leaving the network:
+    Do announced and unnannounced disconnections function as intended? When a large number of peers disconnect simultaneously, does the network become fragmented?
+    
+All together:
+    Can the network survive a high churn rate (large numbers of leavers and joiners)? If so:
+        How high a churn rate can be survived?
+        Do we still have good / complete routing information?
+        

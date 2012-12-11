@@ -122,3 +122,10 @@ https://wikis.bris.ac.uk/display/~cssjh/Luke+Murray
 10/12/12
 
 Direction Order Routing investigated. Basically, packets go down one dimension of the toroid until in the correct postion in that dimension and then proceed down the other dimensions in a similar fashion. Assumes bi-directional communication. Toroidal broadcasting looked at briefly. Diagonal zig zagging used to broadcast out from centre of the grid. Not really cohesive to n-dimensional uni-directional hypertoroids. It would appear that even if these algorithms were applicable, they have no real application toward anonymity.
+
+### 10 ###
+11/12/12
+
+It occurs to me that it becomes much harder to work out which node is shouting (i.e. is the source of some message / packet) when the node separated by being in another jurisdiction / on another ISP. In addition, it is hard to work out which of the shout's addresses is the true address when the destinations are similarly separated. Internet monitoring within a jurisdiction / an ISP will only be able to garner which node is participating if monitoring occurs down at the node level. This is prohibitively costly and thus spoofing may only be detected at a managed node (at, say, city level) and then there are a large number of possibilities for the source.
+
+SHARC is apparently a faster alternative to dikjstras.
