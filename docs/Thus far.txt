@@ -129,3 +129,11 @@ Direction Order Routing investigated. Basically, packets go down one dimension o
 It occurs to me that it becomes much harder to work out which node is shouting (i.e. is the source of some message / packet) when the node separated by being in another jurisdiction / on another ISP. In addition, it is hard to work out which of the shout's addresses is the true address when the destinations are similarly separated. Internet monitoring within a jurisdiction / an ISP will only be able to garner which node is participating if monitoring occurs down at the node level. This is prohibitively costly and thus spoofing may only be detected at a managed node (at, say, city level) and then there are a large number of possibilities for the source.
 
 SHARC is apparently a faster alternative to dikjstras.
+
+### 11 ###
+14/12/12
+
+An n-dimensional toroidal network can dynamically resize itself by doubling the network size in every dimension, resulting in N nodes becoming N * 2^n nodes. This leaves the network largely untouched by resizes; perhaps nodes could detect that it has happened upon seeing an address outside the current network size. We require that new nodes swap out with nodes publishing shouts, the node doing the publishing will need to hold at least 2 virtual locations on the toroid. Downstream neighbors need not be informed of the swap out but the new node will require shouts for these nodes. The old node should tell its old upstream neighbors of their new downstream neighbor because we want to verify that the old neighbor is leaving this position. If another node were to tell the upstream neighbors to stop sending to their downstream neighbor, malicious nodes could break apart the network quite easily. We can use the same swap-out procedure for nodes leaving the network; the leaving node replaces itself in all of its virtual locations by other volunteer nodes.
+
+For fountain code transmission, have it such that the source will send the data as long as it receives a repeating signal from the destination. Nodes that drop mid transmission can then be detected.
+
