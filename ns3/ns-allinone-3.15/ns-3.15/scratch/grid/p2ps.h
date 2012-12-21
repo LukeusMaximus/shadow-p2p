@@ -135,6 +135,8 @@ private:
 
   void HandleRead (Ptr<Socket> socket);
 
+    uint16_t m_selfPort;
+
   uint32_t m_count;
   Time m_interval;
   uint32_t m_size;

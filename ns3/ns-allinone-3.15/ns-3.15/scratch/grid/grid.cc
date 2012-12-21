@@ -41,13 +41,13 @@ int main (int argc, char *argv[]) {
     serverApps.Start(Seconds(1.0));
     serverApps.Stop(Seconds(10.0));
 
-    //uint16_t peerPort = 9;
+    uint16_t peerPort = 9;
 
-    ShadowHelper shadowClient(gridHelper.GetIpv4Address(0,0), 9);
+    ShadowHelper shadowClient(gridHelper.GetIpv4Address(0,0), peerPort);
     shadowClient.SetAttribute("MaxPackets", UintegerValue(1));
     shadowClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
     shadowClient.SetAttribute("PacketSize", UintegerValue(1024));
-    //shadowClient.SetAttribute("OwnPort", UintegerValue(peerPort));
+    shadowClient.SetAttribute("SelfPort", UintegerValue(peerPort));
     
     ApplicationContainer clientApps = shadowClient.Install(gridHelper.GetNode(9,9));    
     clientApps.Start(Seconds(2.0));

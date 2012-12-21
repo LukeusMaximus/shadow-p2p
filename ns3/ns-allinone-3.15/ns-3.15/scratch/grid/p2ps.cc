@@ -50,6 +50,11 @@ ShadowClient::GetTypeId (void)
                    TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&ShadowClient::m_interval),
                    MakeTimeChecker ())
+    .AddAttribute ("SelfPort", 
+                   "The destination port of the outbound packets",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&ShadowClient::m_selfPort),
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("RemoteAddress", 
                    "The destination Address of the outbound packets",
                    AddressValue (),
@@ -130,13 +135,11 @@ ShadowClient::StartApplication (void)
       m_socket = Socket::CreateSocket (GetNode (), tid);
       if (Ipv4Address::IsMatchingType(m_peerAddress) == true)
         {
-          m_socket->Bind();
-          m_socket->Connect (InetSocketAddress (Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
+          m_socket->Bind(Inet6SocketAddress (m_selfPort));
         }
       else if (Ipv6Address::IsMatchingType(m_peerAddress) == true)
         {
-          m_socket->Bind6();
-          m_socket->Connect (Inet6SocketAddress (Ipv6Address::ConvertFrom(m_peerAddress), m_peerPort));
+          m_socket->Bind(Inet6SocketAddress (m_selfPort));
         }
     }
 
