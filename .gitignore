@@ -3,3 +3,8 @@
 samthesis/
 lansim-code/
 LANSim.ppt
+*.pcap
+*.tr
+ns3/
+netsim/
+lansim/
