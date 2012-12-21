@@ -135,7 +135,7 @@ ShadowClient::StartApplication (void)
       m_socket = Socket::CreateSocket (GetNode (), tid);
       if (Ipv4Address::IsMatchingType(m_peerAddress) == true)
         {
-          m_socket->Bind(Inet6SocketAddress (m_selfPort));
+          m_socket->Bind(InetSocketAddress (m_selfPort));
         }
       else if (Ipv6Address::IsMatchingType(m_peerAddress) == true)
         {

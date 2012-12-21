@@ -34,12 +34,13 @@ int main (int argc, char *argv[]) {
     gridHelper.InstallStack(stack);
     gridHelper.AssignIpv4Addresses(addressRow, addressCol);
     
-    
+    /*
     UdpEchoServerHelper echoServer(9);
 
     ApplicationContainer serverApps = echoServer.Install (gridHelper.GetNode(0,0));
     serverApps.Start(Seconds(1.0));
     serverApps.Stop(Seconds(10.0));
+    */
 
     uint16_t peerPort = 9;
 
@@ -53,16 +54,16 @@ int main (int argc, char *argv[]) {
     clientApps.Start(Seconds(2.0));
     clientApps.Stop(Seconds(10.0));
     
-    /*
+    
     ShadowHelper shadowClient2(gridHelper.GetIpv4Address(9,9), peerPort);
     shadowClient2.SetAttribute("MaxPackets", UintegerValue(1));
     shadowClient2.SetAttribute("Interval", TimeValue(Seconds(1.0)));
     shadowClient2.SetAttribute("PacketSize", UintegerValue(1024));
-    shadowClient2.SetAttribute("OwnPort", UintegerValue(peerPort));
+    shadowClient2.SetAttribute("SelfPort", UintegerValue(peerPort));
 
     ApplicationContainer clientApps2 = shadowClient2.Install(gridHelper.GetNode(0,0));    
     clientApps2.Start(Seconds(2.0));
-    clientApps2.Stop(Seconds(10.0));*/
+    clientApps2.Stop(Seconds(10.0));
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
     
