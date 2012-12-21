@@ -302,7 +302,7 @@ ShadowClient::Send (void)
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
   m_txTrace (p);
-  m_socket->Send (p);
+  m_socket->SendTo (p, 0, InetSocketAddress (Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
 
   ++m_sent;
 
