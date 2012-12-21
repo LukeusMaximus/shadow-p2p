@@ -4,8 +4,8 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/point-to-point-grid.h"
 #include "ns3/applications-module.h"
-#include "sp2p-helper.h"
-#include "sp2p.h"
+#include "p2ps-helper.h"
+#include "p2ps.h"
 
 #define POINT() std::cout<<__FILE__<<":"<<__LINE__<<std::endl
 
@@ -33,28 +33,27 @@ int main (int argc, char *argv[]) {
     PointToPointGridHelper gridHelper(10, 10, pointToPoint);
     gridHelper.InstallStack(stack);
     gridHelper.AssignIpv4Addresses(addressRow, addressCol);
-
-    /*
+    
+    
     UdpEchoServerHelper echoServer(9);
 
     ApplicationContainer serverApps = echoServer.Install (gridHelper.GetNode(0,0));
     serverApps.Start(Seconds(1.0));
     serverApps.Stop(Seconds(10.0));
-    */
 
-    uint16_t peerPort = 9;
+    //uint16_t peerPort = 9;
 
-    ShadowHelper shadowClient(gridHelper.GetIpv4Address(0,0), peerPort);
+    ShadowHelper shadowClient(gridHelper.GetIpv4Address(0,0), 9);
     shadowClient.SetAttribute("MaxPackets", UintegerValue(1));
     shadowClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
     shadowClient.SetAttribute("PacketSize", UintegerValue(1024));
-    shadowClient.SetAttribute("OwnPort", UintegerValue(peerPort));
+    //shadowClient.SetAttribute("OwnPort", UintegerValue(peerPort));
     
     ApplicationContainer clientApps = shadowClient.Install(gridHelper.GetNode(9,9));    
     clientApps.Start(Seconds(2.0));
     clientApps.Stop(Seconds(10.0));
     
-    
+    /*
     ShadowHelper shadowClient2(gridHelper.GetIpv4Address(9,9), peerPort);
     shadowClient2.SetAttribute("MaxPackets", UintegerValue(1));
     shadowClient2.SetAttribute("Interval", TimeValue(Seconds(1.0)));
@@ -63,7 +62,7 @@ int main (int argc, char *argv[]) {
 
     ApplicationContainer clientApps2 = shadowClient2.Install(gridHelper.GetNode(0,0));    
     clientApps2.Start(Seconds(2.0));
-    clientApps2.Stop(Seconds(10.0));
+    clientApps2.Stop(Seconds(10.0));*/
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
     
