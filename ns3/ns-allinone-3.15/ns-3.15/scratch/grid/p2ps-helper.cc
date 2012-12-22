@@ -26,18 +26,6 @@ void ShadowHelper::SetAttribute (std::string name, const AttributeValue &value) 
     m_factory.Set (name, value);
 }
 
-void ShadowHelper::SetFill (Ptr<Application> app, std::string fill) {
-    app->GetObject<ShadowClient>()->SetFill (fill);
-}
-
-void ShadowHelper::SetFill (Ptr<Application> app, uint8_t fill, uint32_t dataLength) {
-    app->GetObject<ShadowClient>()->SetFill (fill, dataLength);
-}
-
-void ShadowHelper::SetFill (Ptr<Application> app, uint8_t *fill, uint32_t fillLength, uint32_t dataLength) {
-    app->GetObject<ShadowClient>()->SetFill (fill, fillLength, dataLength);
-}
-
 ApplicationContainer ShadowHelper::Install (Ptr<Node> node) const {
     return ApplicationContainer (InstallPriv (node));
 }

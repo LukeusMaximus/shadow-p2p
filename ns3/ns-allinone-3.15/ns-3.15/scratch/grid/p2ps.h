@@ -31,10 +31,7 @@ class Socket;
 class Packet;
 
 /**
- * \ingroup udpecho
- * \brief A Udp Echo client
- *
- * Every packet sent should be returned by the server and received here.
+ * A Shadow P2P client
  */
 class ShadowClient : public Application {
 public:
@@ -46,9 +43,6 @@ public:
     void SetRemote (Ipv6Address ip, uint16_t port);
     void SetDataSize (uint32_t dataSize);
     uint32_t GetDataSize (void) const;
-    void SetFill (std::string fill);
-    void SetFill (uint8_t fill, uint32_t dataSize);
-    void SetFill (uint8_t *fill, uint32_t fillSize, uint32_t dataSize);
 
 protected:
     virtual void DoDispose (void);
