@@ -47,7 +47,6 @@ ApplicationContainer ShadowHelper::Install (NodeContainer c) const {
 Ptr<Application> ShadowHelper::InstallPriv (Ptr<Node> node) const {
     Ptr<Application> app = m_factory.Create<ShadowClient> ();
     node->AddApplication (app);
-
     return app;
 }
 

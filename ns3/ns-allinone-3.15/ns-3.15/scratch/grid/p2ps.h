@@ -24,6 +24,7 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/traced-callback.h"
+#include "down_stream_client.h"
 
 namespace ns3 {
 
@@ -43,6 +44,9 @@ public:
     void SetRemote (Ipv6Address ip, uint16_t port);
     void SetDataSize (uint32_t dataSize);
     uint32_t GetDataSize (void) const;
+    
+    void setEastClient(DownStreamClient client);
+    void setNorthClient(DownStreamClient client);
 
 protected:
     virtual void DoDispose (void);
@@ -58,6 +62,9 @@ private:
     void HandleRead (Ptr<Socket> socket);
 
     uint16_t m_selfPort;
+    std::list<Address> selfShout;
+    DownStreamClient eastClient;
+    DownStreamClient northClient;
 
     uint32_t m_count;
     Time m_interval;

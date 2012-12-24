@@ -16,17 +16,17 @@ namespace ns3 {
 class DownStreamClient {
 public:
     DownStreamClient();
-    DownStreamClient(Ptr<Socket> sock, uint16_t port);
+    DownStreamClient(uint16_t pport);
     virtual ~DownStreamClient();
-    void send(Ptr<Packet> packet);
+    void send(Ptr<Socket> socket, Ptr<Packet> packet);
     void setLocation(uint32_t x, uint32_t y);
     void setLocation(VirtualLocation loc);
     VirtualLocation getLocation();
     void addAddress(Address address);
+    uint32_t nAddresses();
 private:
     std::list<Address> shout;
     VirtualLocation location;
-    Ptr<Socket> socket;
     uint16_t port;
 };
 

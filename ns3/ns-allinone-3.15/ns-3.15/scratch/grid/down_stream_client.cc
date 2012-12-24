@@ -3,19 +3,18 @@
 namespace ns3 {
 
 DownStreamClient::DownStreamClient() {
-
+    port = 0;
 }
 
-DownStreamClient::DownStreamClient(Ptr<Socket> sock, uint16_t port) {
-    socket = sock;
-    this->port = port;    
+DownStreamClient::DownStreamClient(uint16_t pport) {
+    port = pport;
 }
 
 DownStreamClient::~DownStreamClient() {
 
 }
 
-void DownStreamClient::send(Ptr<Packet> packet) {
+void DownStreamClient::send(Ptr<Socket> socket, Ptr<Packet> packet) {
     std::list<Address>::iterator iter;
     for(iter = shout.begin(); iter != shout.end(); iter++) {
         Address address = *iter;
@@ -47,6 +46,10 @@ VirtualLocation DownStreamClient::getLocation() {
 
 void DownStreamClient::addAddress(Address address) {
     shout.push_back(address);
+}
+
+uint32_t DownStreamClient::nAddresses() {
+    return shout.size();
 }
 
 }

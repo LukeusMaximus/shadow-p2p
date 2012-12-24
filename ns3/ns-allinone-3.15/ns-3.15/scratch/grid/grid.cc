@@ -8,6 +8,7 @@
 #include "p2ps.h"
 
 #define POINT() std::cout<<__FILE__<<":"<<__LINE__<<std::endl
+#define DEBUG(s) std::cout<<__FILE__<<":"<<__LINE__<<":"<<s<<std::endl
 
 using namespace ns3;
 
@@ -44,13 +45,27 @@ int main (int argc, char *argv[]) {
 
     uint16_t peerPort = 9;
 
+    DownStreamClient dsc1(peerPort);
+    dsc1.addAddress(gridHelper.GetIpv4Address(0,0));
+    DownStreamClient dsc2(peerPort);
+    dsc2.addAddress(gridHelper.GetIpv4Address(9,9));
+
     ShadowHelper shadowClient(gridHelper.GetIpv4Address(0,0), peerPort);
     shadowClient.SetAttribute("MaxPackets", UintegerValue(1));
     shadowClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
     shadowClient.SetAttribute("PacketSize", UintegerValue(1024));
     shadowClient.SetAttribute("SelfPort", UintegerValue(peerPort));
     
-    ApplicationContainer clientApps = shadowClient.Install(gridHelper.GetNode(9,9));    
+    
+    ApplicationContainer clientApps = shadowClient.Install(gridHelper.GetNode(9,9));
+    Ptr<Application> app = clientApps.Get(0);
+    std::cout << "app " << app << std::endl;
+    Application* appPtr = PeekPointer(app);
+    std::cout << "appPtr " << appPtr << std::endl;
+    ShadowClient* sc = (ShadowClient*)appPtr;
+    std::cout << "sc " << sc << std::endl;
+    sc->setEastClient(dsc1);
+    
     clientApps.Start(Seconds(2.0));
     clientApps.Stop(Seconds(10.0));
     
@@ -61,7 +76,7 @@ int main (int argc, char *argv[]) {
     shadowClient2.SetAttribute("PacketSize", UintegerValue(1024));
     shadowClient2.SetAttribute("SelfPort", UintegerValue(peerPort));
 
-    ApplicationContainer clientApps2 = shadowClient2.Install(gridHelper.GetNode(0,0));    
+    ApplicationContainer clientApps2 = shadowClient2.Install(gridHelper.GetNode(0,0));
     clientApps2.Start(Seconds(2.0));
     clientApps2.Stop(Seconds(10.0));
 

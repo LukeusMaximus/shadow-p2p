@@ -10,22 +10,24 @@
 
 namespace ns3 {
 
+class ShadowClient;
+
 /**
  * \brief create an application which sends a udp packet and waits for an echo of this packet
  */
 class ShadowHelper {
 public:
-  ShadowHelper (Address ip, uint16_t port);
-  ShadowHelper (Ipv4Address ip, uint16_t port);
-  ShadowHelper (Ipv6Address ip, uint16_t port);
-  void SetAttribute (std::string name, const AttributeValue &value);
-  ApplicationContainer Install (Ptr<Node> node) const;
-  ApplicationContainer Install (std::string nodeName) const;
-  ApplicationContainer Install (NodeContainer c) const;
+    ShadowHelper (Address ip, uint16_t port);
+    ShadowHelper (Ipv4Address ip, uint16_t port);
+    ShadowHelper (Ipv6Address ip, uint16_t port);
+    void SetAttribute (std::string name, const AttributeValue &value);
+    ApplicationContainer Install (Ptr<Node> node) const;
+    ApplicationContainer Install (std::string nodeName) const;
+    ApplicationContainer Install (NodeContainer c) const;
 
 private:
-  Ptr<Application> InstallPriv (Ptr<Node> node) const;
-  ObjectFactory m_factory;
+    Ptr<Application> InstallPriv (Ptr<Node> node) const;
+    ObjectFactory m_factory;
 };
 
 } // namespace ns3

@@ -106,6 +106,14 @@ void ShadowClient::SetRemote (Ipv6Address ip, uint16_t port) {
     m_peerPort = port;
 }
 
+void ShadowClient::setEastClient(DownStreamClient client) {
+    eastClient = client;
+}
+
+void ShadowClient::setNorthClient(DownStreamClient client) {
+    northClient = client;
+}
+
 void ShadowClient::DoDispose (void) {
     NS_LOG_FUNCTION_NOARGS ();
     Application::DoDispose ();
@@ -198,6 +206,7 @@ void ShadowClient::Send (void) {
 
     ++m_sent;
 
+    NS_LOG_INFO("East client shout size: " << eastClient.nAddresses());
     if (Ipv4Address::IsMatchingType (m_peerAddress)) {
         NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client sent " << m_size << " bytes to " <<
             Ipv4Address::ConvertFrom (m_peerAddress) << " port " << m_peerPort);
