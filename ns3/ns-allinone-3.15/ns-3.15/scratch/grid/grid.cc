@@ -8,7 +8,7 @@
 #include "p2ps.h"
 
 #define POINT() std::cout<<__FILE__<<":"<<__LINE__<<std::endl
-#define DEBUG(s) std::cout<<__FILE__<<":"<<__LINE__<<":"<<s<<std::endl
+#define DEBUG(s) std::cout<<"["<<__FILE__<<":"<<__LINE__<<"] "<<s<<std::endl
 
 using namespace ns3;
 
@@ -18,18 +18,17 @@ int main (int argc, char *argv[]) {
     CommandLine cmd;
     cmd.Parse(argc, argv);
 
-    LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
-    LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+    LogComponentEnable("ShadowClientApplication", LOG_LEVEL_INFO);
 
     PointToPointHelper pointToPoint;
     pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
     pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
-
+    
     InternetStackHelper stack;
     Ipv4AddressHelper addressRow;
-    addressRow.SetBase("10.1.0.0", "255.255.255.0");
+    addressRow.SetBase("10.0.0.0", "255.255.255.252", "0.0.0.1");
     Ipv4AddressHelper addressCol;
-    addressCol.SetBase("10.2.0.0", "255.255.255.0");
+    addressCol.SetBase("10.128.0.0", "255.255.255.252", "0.0.0.1");
 
     PointToPointGridHelper gridHelper(10, 10, pointToPoint);
     gridHelper.InstallStack(stack);
