@@ -30,7 +30,7 @@ int main (int argc, char *argv[]) {
     Ipv4AddressHelper addressCol;
     addressCol.SetBase("10.128.0.0", "255.255.255.252", "0.0.0.1");
 
-    PointToPointGridHelper gridHelper(10, 10, pointToPoint);
+    PointToPointGridHelper gridHelper(20, 20, pointToPoint);
     gridHelper.InstallStack(stack);
     gridHelper.AssignIpv4Addresses(addressRow, addressCol);
     
@@ -47,7 +47,7 @@ int main (int argc, char *argv[]) {
     DownStreamClient dsc1(peerPort);
     dsc1.addAddress(gridHelper.GetIpv4Address(0,0));
     DownStreamClient dsc2(peerPort);
-    dsc2.addAddress(gridHelper.GetIpv4Address(9,9));
+    dsc2.addAddress(gridHelper.GetIpv4Address(19,19));
 
     ShadowHelper shadowClient(gridHelper.GetIpv4Address(0,0), peerPort);
     shadowClient.SetAttribute("MaxPackets", UintegerValue(1));
@@ -56,14 +56,14 @@ int main (int argc, char *argv[]) {
     shadowClient.SetAttribute("SelfPort", UintegerValue(peerPort));
     
     
-    ApplicationContainer clientApps = shadowClient.Install(gridHelper.GetNode(9,9));
+    ApplicationContainer clientApps = shadowClient.Install(gridHelper.GetNode(19,19));
     ShadowClient* sc = (ShadowClient*)PeekPointer(clientApps.Get(0));
     sc->setEastClient(dsc1);
     clientApps.Start(Seconds(2.0));
     clientApps.Stop(Seconds(10.0));
     
     
-    ShadowHelper shadowClient2(gridHelper.GetIpv4Address(9,9), peerPort);
+    ShadowHelper shadowClient2(gridHelper.GetIpv4Address(19,19), peerPort);
     shadowClient2.SetAttribute("MaxPackets", UintegerValue(1));
     shadowClient2.SetAttribute("Interval", TimeValue(Seconds(1.0)));
     shadowClient2.SetAttribute("PacketSize", UintegerValue(1024));
@@ -77,7 +77,7 @@ int main (int argc, char *argv[]) {
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
     
-    pointToPoint.EnablePcapAll("grid");
+    //pointToPoint.EnablePcapAll("grid");
     AsciiTraceHelper ascii;
     pointToPoint.EnableAsciiAll(ascii.CreateFileStream("grid_trace.tr"));
 
