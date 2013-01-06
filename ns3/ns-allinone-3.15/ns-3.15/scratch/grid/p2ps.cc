@@ -202,11 +202,14 @@ void ShadowClient::Send (void) {
     // call to the trace sinks before the packet is actually sent,
     // so that tags added to the packet can be sent as well
     m_txTrace (p);
-    m_socket->SendTo (p, 0, InetSocketAddress (Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
-
+    //m_socket->SendTo (p, 0, InetSocketAddress (Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
+    eastClient.send(m_socket, p);
+    
     ++m_sent;
 
-    NS_LOG_INFO("East client shout size: " << eastClient.nAddresses());
+    //NS_LOG_INFO("East client shout size: " << eastClient.nAddresses());
+    
+    
     if (Ipv4Address::IsMatchingType (m_peerAddress)) {
         NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client sent " << m_size << " bytes to " <<
             Ipv4Address::ConvertFrom (m_peerAddress) << " port " << m_peerPort);

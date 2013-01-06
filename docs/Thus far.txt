@@ -137,3 +137,8 @@ An n-dimensional toroidal network can dynamically resize itself by doubling the 
 
 For fountain code transmission, have it such that the source will send the data as long as it receives a repeating signal from the destination. Nodes that drop mid transmission can then be detected.
 
+### 12 ###
+02/01/13
+
+If we split shouts by direction then there is one needle in the hay stack. If we binary search the haystack, the haystack disappears leaving the needle. If put the shouts together we now have multiple needles in the combined haystack. Any attempt at a binary search can be detected after the search has started and before the search ends. Detection could be by having downstream nodes coordinate and measure relative packets received, a cooperative node should send equal amounts of traffic to both (there is a probablistic factor due to packet drop). 
+

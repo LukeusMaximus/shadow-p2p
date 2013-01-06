@@ -58,14 +58,8 @@ int main (int argc, char *argv[]) {
     
     
     ApplicationContainer clientApps = shadowClient.Install(gridHelper.GetNode(9,9));
-    Ptr<Application> app = clientApps.Get(0);
-    std::cout << "app " << app << std::endl;
-    Application* appPtr = PeekPointer(app);
-    std::cout << "appPtr " << appPtr << std::endl;
-    ShadowClient* sc = (ShadowClient*)appPtr;
-    std::cout << "sc " << sc << std::endl;
+    ShadowClient* sc = (ShadowClient*)PeekPointer(clientApps.Get(0));
     sc->setEastClient(dsc1);
-    
     clientApps.Start(Seconds(2.0));
     clientApps.Stop(Seconds(10.0));
     
@@ -77,6 +71,8 @@ int main (int argc, char *argv[]) {
     shadowClient2.SetAttribute("SelfPort", UintegerValue(peerPort));
 
     ApplicationContainer clientApps2 = shadowClient2.Install(gridHelper.GetNode(0,0));
+    sc = (ShadowClient*)PeekPointer(clientApps2.Get(0));
+    sc->setEastClient(dsc2);
     clientApps2.Start(Seconds(2.0));
     clientApps2.Stop(Seconds(10.0));
 

@@ -19,6 +19,7 @@ void DownStreamClient::send(Ptr<Socket> socket, Ptr<Packet> packet) {
     for(iter = shout.begin(); iter != shout.end(); iter++) {
         Address address = *iter;
         socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address::ConvertFrom(address), port));
+        
         /*
         if (Ipv4Address::IsMatchingType (address)) {
             NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client sent " << m_size << " bytes to " <<
@@ -26,8 +27,8 @@ void DownStreamClient::send(Ptr<Socket> socket, Ptr<Packet> packet) {
         } else if (Ipv6Address::IsMatchingType (address)) {
             NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << "s client sent " << m_size << " bytes to " <<
                 Ipv6Address::ConvertFrom (address) << " port " << port);
-        }
-        */
+        }*/
+        
     }
 }
 
