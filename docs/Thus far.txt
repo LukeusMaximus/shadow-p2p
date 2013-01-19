@@ -160,5 +160,32 @@ Consider the hostile node. The node desires to learn the identity of one or more
 
 Each non-hostile node will want to prevent hostile nodes from obtaining their identity. If one of the nodes in the shout group sees that they are the only node that has not received the message the  current shout then it may be the case that their IP address id the first to be removed in a linear search. If they do not confirm the message (this is the correct inaction) then the attacker will flag their IP address as a participating node and their anonymity is broken. If they do confirm the message (i.e. they lie about having received it) then the attacker won't flag their IP address and their anonymity remains intact. Therefore a non-hostile node's best course of action is to lie. In our shout group model, if a single node's IP address is excluded from the shout, the first the node will hear of the message is the confirmations from all the other nodes. Once it receives the last confirmation and some further time has passed it may assume that it has been excluded from the shout and might then decide to lie. We can prevent nodes from being able to lie by requiring that confirmations contain a cryptohash of the confirming node's unique ID concatenated to some nonce from the message being confirmed. Without the original message, the node is unable to produce a valid confirmation and therefore is unable to lie. However, this doesn't solve the problem of the node being identified, it only gives the responding node a clear picture of the situation.
 
-The node that is the recipient of the communication and therefore responsible for responding has to consider the implications of it responding. If all but one of its peers in its shout group has received the message from the sender then, by not responding, the node may cause the non-receiving node to be identified. Conversely, if just one of the peers in its shout group confir
+### 15 ###
+19/01/13
+
+There are 4 possibilities: 
+1. The destination node receives the message and all other nodes in the shout group confirm.
+2. The destination node receives the message but not all other nodes in the shout group confirm.
+3. The destination node does not receive the message but all other nodes in the shout group confirm.
+4. The destination node does not receive the message and not all other nodes in the shout group confirm.
+In case 1, we can safely respond. In case 2, if there is a single non-receiving node, not responding will risk identifying the node. In case 3, the destination node risks identifying itself if it doesn't respond and in fact cannot respond as it doesn't have the request. In case 4 we can safely not respond.
+
+The hostile node can either gradually increase or decrease the set of IP addresses in the shout it uses; the set used comes from the original shout it is provided. When the first method is used the nodes in the shout group will see the number of nodes receiving the messages increase. When the second method is used the nodes see the number of receivers decrease. If the nodes act such that the destination node will respond if all other nodes confirm then when the first method is used, the IP addresses included in the shout will increase until they hit all nodes. When the nodes respond, they risk identifying the last node added to the shout (as there is no way to know if the hostile node has added more IP addresses to their shout since adding this one). Similarly, if the nodes act such that they will respond if one or more nodes receive the shout then this risks identifying the first node. Similar cases occur when the hostile node decreases.
+
+So we see that if hostile nodes can readily manipulate their shouts, they have a good chance of identifying nodes in the network. Can shouts be locked down in such a way that a hostile node cannot search through the list of IP addresses in the shout. Note that the search mechanism relies upon trying different sets of IP addresses when shouting and comparing the sets where responses were obtained to sets where responses were not obtained.
+
+Dynamic send / don't send sets
+    as the shout is used, addresses move between sets
+    receivers know in advance what sets the sender should be using
+    attacker can still change set membership of addresses and determine peerhood when it changes set membership of a valid IP
+    
+    
+Once joined, receive constant traffic
+    all items might be received with small probability
+        requesting things merely increases probability of receiving it
+        no way to tell if modification to shout IP address list caused response or not
+    
+    
+
+
 
