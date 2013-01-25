@@ -185,7 +185,31 @@ Once joined, receive constant traffic
         requesting things merely increases probability of receiving it
         no way to tell if modification to shout IP address list caused response or not
     
+### 16 ###
+25/01/13
+
+Following meeting with Simon:
+    Theoretical approach entirely valid.
+    Design components and prove they work individually.
+        Show that if they work as parts, they work as a whole.
+        Make really simple small emulations.
+    Create diagram of areas where time needs to be spent.
+    Idea is to convince reader of the design's functionality.
+    Show that there isn't any similar research out there.
+    Write about interesting ideas I have.
+        Proof of work tokens to make joining difficult thus making attacks difficult.
+            Ban naughty nodes by blacklisting their tokens.
+            Must do another proof of work to rejoin.
     
+    Parts:
+        The shout.
+        The network design.
+            Utilise existing designs.
+            Modify for shout based nature of network.
+        How applications can be mounted on top of the network.
+            New applications or modified existing ones?
+            
+
 
 
 
