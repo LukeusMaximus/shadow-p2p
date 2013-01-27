@@ -198,7 +198,7 @@ Following meeting with Simon:
     Show that there isn't any similar research out there.
     Write about interesting ideas I have.
         Proof of work tokens to make joining difficult thus making attacks difficult.
-            Ban naughty nodes by blacklisting their tokens.
+            Ban hostile nodes by blacklisting their tokens.
             Must do another proof of work to rejoin.
     
     Parts:
@@ -209,7 +209,35 @@ Following meeting with Simon:
         How applications can be mounted on top of the network.
             New applications or modified existing ones?
             
+### 17 ###
+27/01/13
 
+With shout groups, increasing send set attacks easily detectable and safe to ban hostile peer (as no message will be sent unless all nodes in shout group receive the message). Decreasing send set attacks can also be detected but it is harder to ban hostile node safely. Banning the hostile node immediately after one node stops receiving the shouts reveals that node as a participant. Banning the hostile node after a random number of shouts after detection doesn't help alleviate this situation as the hositle node can wait as long as they like before decreasing the send set further. Such a patient hostile node can simply wait until they are certain they haven't been caught before decreasing the send set by one again. The advantage we have over the hostile node is that, if we don't alter our behaviour once we detect their hostility, the hostile node doesn't know when, or if, it has been detected. We know that we must ban the hostile node before its shouts do not reach any node within the shout group; once this happens, the recipient in the shout group is unable to respond and therefore is forced into modifying its behaviour (i.e. it won't respond to a request it hasn't received because it cannot respond to the request). Whilst there is a possibility of banning hostile nodes when the shout group members believe the search will identify a random non-participating IP as the recipient, this solution is undesirable because there is no way to know for sure if the ban would identify a peer.
+
+Instead we can have shout groups that exist only temporarily. Once a certain number of shouts have been sent, the shout group ceases responding to requests to the shout group. The sender must use a different shout to reach the network. If we have the shout group mutually pre-determine a number of times the shout can be used and then proceed to offer a new shout (for a different shout group) after the shout expires then if the shouting node is hostile, it will have its search interrupted before it can be completed. We will ensure that the hostile node will not complete its search with high probability by showing the probability that the first x IP addresses in a randomly ordered list of n containing all s of the shout group's IP addresses is very low. The shout need only reach a single node for us to be able to send the request on and generate a response so we only need the shout to expire before all the valid IPs are placed in the no-send set. This covers the case where one IP address is removed at a time. What about when more are removed at once? When a large number of IP addresses are removed from the send set (which corresponds to several of the valid IP addresses being removed from the send-set) like we might see in a binary search, we can safely ban the sender as they still have a large list of IP addresses to search. However, if the shout has c uses then if the sender removes n/c IP addresses everytime the hostile node can complete the search and will have a block of n/c addresses containing one or more valid IP addresses which narrows its search considerably (unless 1/(n/c) <= 1/(n/v) --> c <= v where v is the number of valid IP addresses).
+
+
+
+exponentially increasing search certainty periods
+    responder waits for number of shouts before responding
+        increasing numbers of responses to same bad shout
+        normal behaviour causes similar behaviour
+        uses up shout lifetime
+    responder waits a time delay before responding
+        increasing as shout group members fail to receive the shout
+        normal behaviour generates delay as well
+proof of work per request
+    only really delays the inevitable
+sender must send request with sequence number
+    receivers also keep track
+    somehow use out-of-stepness to ban safely
+    can detect when the sender has been sending to only invalid IPs between sending to valid IPs
+
+
+Banning
+    Make sure people not banned by hostile nodes
+    Banning prevents someome being responded to by the shout group that banned them
+        Doesn't affect other shout groups
 
 
 
