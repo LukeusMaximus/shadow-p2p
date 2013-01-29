@@ -252,3 +252,9 @@ This is flawed as the hostile node within the group can simply send a request to
 
 What if the destination node is hostile? This requires a method of ensuring that the destination node will only be given a message that the shout has been received by other nodes if all the nodes have received it. 
 
+### 19 ###
+29/01/13
+
+We want to create a system whereby a number of parties reveal some information only if a certain number of other parties do the same. The only method of checking whether the other parties submit the information is through a public channel all the involved parties have access to. Can this be done through secret sharing?
+
+If we have secrets shared such that the receipt is only confirmed if some threshold of parties confirm it then we should be able to recreate all our previously mentioned behaviours (e.g. link up the threshhold of this to the threshhold used for bans). 
