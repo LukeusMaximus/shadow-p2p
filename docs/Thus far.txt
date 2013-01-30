@@ -267,5 +267,20 @@ Within the shout group:
     Only if a number of nodes above a threshold have received the message can the messages be decrypted
     Nodes that have received the message cannot simply generate more secrets using the information they have or lie in order to decrypt the other people's messages.
     
+### 20 ###
+30/01/13
+
+Commitment scheme
+
+Sender sends encrypted secret shares under secret sharing scheme. Each party decrypts its share and shouts it. Only once t shares are shouted does the message become acknowledged. Would be great if it weren't for the fact this doesn't cover the hostile sender (which can recognise shares that it dealt).
+
+Go around in a circle. Order the members somehow and pass around a message with some homomorphicly additive component. The message starts off with a hash of the message or other unique ID and the homomorphicly encrypted number set to 1 (because the starting node will have received the message). The message is then encrypted under the public key of the next person in the chain. They add 1 to the homorphic number if they have received the message and then proceed to pass the message on under the next person in chain's key. When the message reaches the party that started the message passing, they decrypt the homomorphic number and shout that the message has been received with that number of receipts.
+
+Use symmetric encryption on a randomised acknowledgement of receipt. The key is derived from the message deterministically. Encrypt a number of times >= v. Keep record of all intermediate results. Send this round in the circle. Each party who has received the message can derive the key. They should then apply the key to the message if they have received it. When the message comes back to the first node, they can compare the message to their list of intermediate encryption results and determine the number of receipts for the given message. They can then shout the information and proof of results for verification. If the process is repeated by all nodes then the results can be verified (the received message should be receipted the same number of times by each party so each party should broadcast the same number of receipts). If the receipting process fails to return receipts above the threshold then it can be discarded without further thought.
+
+Problem is that a hostile node in the shout group can decrypt the message multiple times to simulate more receipts. Instead we can adopt a multipart receipt approach where each party applies an encryption/decryption to just their part of a random bitstring, if they have received the message. Tampering like before is now no longer possible as tampering is easily detected by the first party. The first party knows what the parts of the bitstring should be in each of the nodes' cases. If the part of the bitstring is in neither it's original state or it's operation-applied state then it has been tampered with. In the event of tampering, the first party can simply leave the group. The operation applied can be a signature with the node's private key. When the first node in the chain receives the message back, they can check the parts of the message that are in their original state. For every other part, a verification with the respective public key is tried; if the verification matches the original message then that is counted as a reciept. Any other value that that part takes indicates tampering.
+
+How do we know which message we are receipting? If the bitstring somehow indicates the message it is receipting for, or if it can be verified that it is a receipt for a certain message, then a hostile node knows that at least one node has received the message which can reveal a node's IP address. 
+
         
            
