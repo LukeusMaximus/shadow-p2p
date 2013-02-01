@@ -287,5 +287,8 @@ How do we know which message we are receipting? If the bitstring somehow indicat
 
 System needs to be such that it will only reveal the number of receipts if a threshold has been passed. Each node can only receipt once (i.e. cannot forge more receipts) so cannot pass threshold artificially. Perhaps some system whereby a receipt lowers the computational requirement of decrypting the number of receipts; once the number of receipts passes a threshold, the decryption becomes computationally feasible.
 
-        
+### 22 ###
+01/02/13
+
+Secret sharing where shares cannot be determined to be parts of the secret, even with knowledge of the secret.
            
