@@ -291,4 +291,6 @@ System needs to be such that it will only reveal the number of receipts if a thr
 01/02/13
 
 Secret sharing where shares cannot be determined to be parts of the secret, even with knowledge of the secret.
+
+http://cs5824.userapi.com/u11728334/docs/e516fb1fedc1/Moti_Yung_Advances_in_Cryptology_CRYPTO_2002_22.pdf#page=496
            
