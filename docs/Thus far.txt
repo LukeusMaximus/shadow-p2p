@@ -318,5 +318,14 @@ To solve this, have a packet structure along the lines of (PK, hybrid headers, d
 
 If a packet with a given PK goes into the shout group and another packet then promptly exits on the other side, the packets are likely to be the same packet (i.e. they are transmitting the same data). Preventing this from being recognised is very hard. One solution would be to have the group send a message to every other node on rotation and when it comes to passing on a message to the desired public key, the processed message you have received is sent instead of some random filler traffic. Sending such traffic is going to reduce all meaningful data flow to a standstill so is a really bad method of covering up the actions of the node.
 
+### 25 ###
+07/02/13
+
+Met with Simon. Packet structure and associated crypto is apparently "neat".
+
+[A] -> [B] -> [C]
+
+Adversaries are nodes A and C, they work together (and network structure may dictate that they are in fact the same shout group). When A passes a packet to B, B must alter the packet in such a way that it cannot be recognised as being the same packet sent by A by C. Try altering the public key somehow on each pass through? It would have to be altered in a irreversible fashion and with some random nonce such that C cannot easily compute the inverse and cannot easily guess the random nonce and compute the forward function of the key before the transformation which matches the output of the key output by B.
+
 
 
