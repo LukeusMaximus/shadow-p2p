@@ -1,20 +1,9 @@
-TEXMFLOCAL="/home/crypto/texmf"
+TEXMFLOCAL="/usr/share/texmf"
 
-SOURCES=$(wildcard *.tex)
-TARGETS=$(patsubst %.tex, %.pdf, ${SOURCES})
-
-all : ${TARGETS}
-
-${TARGETS} : %.pdf : %.tex $(wildcard %.bib)
-	@TEXMFLOCAL="${TEXMFLOCAL}" pdflatex ${*}
-	@if grep -q "bibliography" ${*}.tex       ; then \
-	   TEXMFLOCAL="${TEXMFLOCAL}" bibtex ${*} ;      \
-         fi
-	@TEXMFLOCAL="${TEXMFLOCAL}" pdflatex ${*}
-	@if grep -q "bibliography" ${*}.tex       ; then \
-	   TEXMFLOCAL="${TEXMFLOCAL}" bibtex ${*} ;      \
-         fi
-	@TEXMFLOCAL="${TEXMFLOCAL}" pdflatex ${*}
+all :
+	@pdflatex thesis.tex
+	@bibtex thesis.aux
+	@pdflatex thesis.tex
 	make clean
 
 clean    :
