@@ -295,7 +295,15 @@ Censorship is just one of the reasons for using anonymity software. Take, for in
 
 % Work project builds on
 
-My project is heavily influenced by existing solutions to the problem. The systems I will describe here are already available and widely used. These systems are the Tor project \cite{Tor}
+My project is heavily influenced by existing solutions to the problem. The systems I will describe here are already available and widely used. These systems are The Tor Project\cite{Tor}, I2P\cite{I2P}, Freenet\cite{Freenet}, GNUnet\cite{GNUnet} and the Gnutella network\cite{Gnutella}. Virtual Private Networks (VPNs) will be discussed as an existing solution but these networks ultimately lend nothing to the new network design.
+
+\section{Virtual Private Networks}
+
+VPNs are not peer to peer constructs in most cases. They are collections of computers with many different connections to the Internet, all of which are owned by a single company. The company provides a service to its customers where they may connect through the company's computers to the internet for some subscription fee. When connecting through a VPN, the IP address of the customer is replaced by that of the VPN company which anonymises the user amongst the client base of the company. The connection between the VPN and the customer is securely encrypted which prevents any activity performed by the VPNs being traced back to an individual customer. The level of anonymity that VPNs grant is dependent entirely on the records that the company keeps of the activity of their customers. If the company kept a full record of all activity and another entity acquired the information then the anonymity of the customers is rendered void. If the company keeps no such record of activity, then the customers will remain anonymous. Sensible customers must first trust that the company doesn not keep logs before using their services. This requirement of trust in a third party is the common fatal flaw of all VPNs; the Peer-to-Peer (P2P) networks described next have no such requirement.
+
+\section{Tor}
+
+The Tor Project\cite{Tor} is a P2P network originally designed by the U.S. Navy to protect government communications. The software has since been released as open source software and is maintained by numerous volunteers. Once a user has connected to the network, the
 
 % -----------------------------------------------------------------------------
 
