@@ -15,7 +15,7 @@
                       year={2013} ]{thesis}
 
 \usepackage{parskip}
-\usepackage{natbib}
+\usepackage{comment}
 \begin{document}
 
 
@@ -270,11 +270,11 @@ More specifically, the concrete aims are:
 % Project topic
 The Internet is generally seen as a medium through which free speech can propagate faster and spread wider than was possible before with physical means (e.g. mail, newspaper). Now, more than ever, Internet users can commuinicate their views, beliefs and opinions unhindered. However, speaking one's mind is not without danger. In some cases, what one says may attract undesirable consequences. For instance, a person remarking that another person's appearance is an afront to mother nature may inspire that person to bestow injury upon the remarker. A trivial solution would be to simply not make such a remark. However, the Internet has made making such statements very easy and usually without consequence through the use of anonymity.
 
-The ability to de-couple the identity of an individual from their views is not unique to the Internet but it is much easier to achieve. If our aforementioned remarker were to send a letter by mail with their remarks written on it then the remarker can retain anonymity by not stating who the letter is from. On the Internet, the same effect can be achieved in a few key strokes. This abundance of anonymity has given rise to a number of websites, all dedicated to allowing one to express one's views anonymously. In some cases, this has given rise to antisocial behaviour, however, there are other cases where anonymity is literally a life saver (see TODO).
+The ability to de-couple the identity of an individual from their views is not unique to the Internet but it is much easier to achieve. If our aforementioned remarker were to send a letter by mail with their remarks written on it then the remarker can retain anonymity by not stating who the letter is from. On the Internet, the same effect can be achieved in a few key strokes. This abundance of anonymity has given rise to a number of websites, all dedicated to allowing one to express one's views anonymously. In some cases, this has given rise to antisocial behaviour, however, there are other cases where anonymity is literally a life saver.
 
 When forming connections between parties, the Internet itself does not provide any information about the person who is using that connection; such information must be provided by the user. Thus, by default, the connection is anonymous. What is provided, however, are the Internet Protocol (IP) addresses of the parties forming the connection. This address could be traced back to an institution, household or individual computer and from this it may be possible to find the identity of the user. For this reason, we define the identity of a user to be their IP address. 
 
-To prevent revealing a user's IP address, numerous solutions have been created that keep users anonymous online. Each of these has its own merits and flaws (see TODO) but they do all have something in common. This is that, in every solution, there is always another party that knows the identity of the user who is not the user themselves. Now, in these solutions, it is generally the case that the party that knows the user's identity doesn't have any knowledge of what information the user is sending or receiving (due to confidentiality methods used, mainly encryption). Thus the party that knows the identity of a user is unable to link a view, belief or opinion back to them. This is generally considered to be a sufficient level of anonymity.
+To prevent revealing a user's IP address, numerous solutions have been created that keep users anonymous online. Each of these has its own merits and flaws but they do all have something in common. This is that, in every solution, there is always another party that knows the identity of the user who is not the user themselves. Now, in these solutions, it is generally the case that the party that knows the user's identity doesn't have any knowledge of what information the user is sending or receiving (due to confidentiality methods used, mainly encryption). Thus the party that knows the identity of a user is unable to link a view, belief or opinion back to them. This is generally considered to be a sufficient level of anonymity.
 
 I argue that there is a use for a higher level of anonymity. On this basis, I have created an anonymity solution that keeps the user anonymous by ensuring that only the user themselves knows their identity and no one else. This way, an extra level of anonymity can be provided; in my network design, no party can discern whether or not an internet user is participating in the network. This feature is not provided by any other network.
 
@@ -295,7 +295,10 @@ Censorship is just one of the reasons for using anonymity software. Take, for in
 
 % Work project builds on
 
-My project is heavily influenced by existing solutions to the problem. The systems I will describe here are already available and widely used. These systems are The Tor Project\cite{Tor}, I2P\cite{I2P}, Freenet\cite{Freenet}, GNUnet\cite{GNUnet} and the Gnutella network\cite{Gnutella}. Virtual Private Networks (VPNs) will be discussed as an existing solution but these networks ultimately lend nothing to the new network design.
+My project is heavily influenced by existing solutions to the problem. The systems I will describe here are already available and widely used. These systems are The Tor Project\cite{Tor}, I2P\cite{I2P}, Freenet\cite{Freenet}, GNUnet\cite{GNUnet} and the Gnutella network\cite{Gnutella}. The Phantom Protocol\cite{Phantom} also provides some important contributions to the project but its implementation(s) have not been keenly uptaken. Virtual Private Networks (VPNs) will be discussed as an existing solution but these networks ultimately lend nothing to the new network design. 
+
+%TODO Crypto things
+Bitcoin, the P2P virtual currency also lends 
 
 \section{Virtual Private Networks}
 
@@ -303,9 +306,26 @@ VPNs are not peer to peer constructs in most cases. They are collections of comp
 
 \section{Tor}
 
-The Tor Project\cite{Tor} is a P2P network originally designed by the U.S. Navy to protect government communications. The software has since been released as open source software and is maintained by numerous volunteers. Users connect to the network by contacting a directory server and retrieving a list of nodes. A client can then establish a path through the Tor network by establishing encypted tunnels through mutliple nodes. The client may then ue this tunnel to connect to the Internet itself or to one of Tor's 'hidden services'.
+The Tor Project\cite{Tor} is a P2P network originally designed by the U.S. Navy to protect government communications. The software has since been released as open source software and is maintained by numerous volunteers. Users connect to the network by contacting a directory server and retrieving a list of nodes. A client can then establish a path through the Tor network (called a 'circuit') by establishing encypted tunnels through mutliple nodes. The client may then use this circuit to connect to the Internet itself or to one of Tor's 'hidden services'.
 
-The network operates such that no intermediate node that the client tunnels through knows what the client is sending / receiving or with what party the communication is occuring with. This is guaranteed through cryptographic methods. This eliminates the need for the user to trust any party in the network; unlike with VPNs, an entity cannot obtain a log and discern who communicated with whom. Even if the nodes did keep logs, the entity would not learn which users performed which actions. Only if all intermediate nodes in a connection are compromised can an adversary see what a given user has done. 
+The network operates such that no intermediate node that the client tunnels through knows what the client is sending / receiving or with what party the communication is occuring with. This is guaranteed through cryptographic methods. This eliminates the need for the user to trust any party in the network; unlike with VPNs, an entity cannot obtain a log and discern who communicated with whom. Even if the nodes did keep logs, the entity would not learn which users performed which actions. Only if all intermediate nodes in a circuit are compromised can an adversary learn what actions a given user has performed. As the client is the one who picks the nodes in the circuits it uses the client can avoid picking known hostile nodes and if it picks nodes at random and the vast majority of node are good then the chances of a client making a circuit entirely from a single adversary's nodes is very low.
+
+\section{I2P}
+
+I2P\cite{I2P} or the Invisible Internet Project is a low-level network that constructs secure tunnels between peers. The low-level that the network operates at allows all current internet applications to communicate over the network as if it were the Internet itself making it very versatile. The tunnels that it constructs are one-way in the sense that a tunnel either transfers packets away from the tunnel's owner (an outbound tunnel) or towards them (an inbound tunnel). In order to send messages between peers, a message is sent from a peer down one of its outbound tunnels. The tunnel exit sends the message to the entrance of one the other peer's inbound tunnels which then forwards the message to the recieving peer. The sending peer must first look up the 'lease' for the peer they wish to connect to in the network database and retrieve the address and key material for an inbound tunnel to that peer.
+
+I2P splits the information about a peer's anonymous identity and its real identity by having the peer add its lease information to the database via an outbound tunnel. Information about the services that the peer hosts or uses are then unassociated with the identity of that peer.
+
+\section{Freenet}
+
+
+
+\section{GNUnet}
+
+\section{Gnutella}
+
+\section{Phantom}
+
 
 % -----------------------------------------------------------------------------
 
