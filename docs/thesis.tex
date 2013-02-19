@@ -303,7 +303,9 @@ VPNs are not peer to peer constructs in most cases. They are collections of comp
 
 \section{Tor}
 
-The Tor Project\cite{Tor} is a P2P network originally designed by the U.S. Navy to protect government communications. The software has since been released as open source software and is maintained by numerous volunteers. Once a user has connected to the network, the
+The Tor Project\cite{Tor} is a P2P network originally designed by the U.S. Navy to protect government communications. The software has since been released as open source software and is maintained by numerous volunteers. Users connect to the network by contacting a directory server and retrieving a list of nodes. A client can then establish a path through the Tor network by establishing encypted tunnels through mutliple nodes. The client may then ue this tunnel to connect to the Internet itself or to one of Tor's 'hidden services'.
+
+The network operates such that no intermediate node that the client tunnels through knows what the client is sending / receiving or with what party the communication is occuring with. This is guaranteed through cryptographic methods. This eliminates the need for the user to trust any party in the network 
 
 % -----------------------------------------------------------------------------
 
