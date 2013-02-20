@@ -314,7 +314,7 @@ The network operates such that no intermediate node that the client tunnels thro
 
 I2P\cite{I2P} or the Invisible Internet Project is a low-level network that constructs secure tunnels between peers. The low-level that the network operates at allows all current internet applications to communicate over the network as if it were the Internet itself making it very versatile. The tunnels that it constructs are one-way in the sense that a tunnel either transfers packets away from the tunnel's owner (an outbound tunnel) or towards them (an inbound tunnel). In order to send messages between peers, a message is sent from a peer down one of its outbound tunnels. The tunnel exit sends the message to the entrance of one the other peer's inbound tunnels which then forwards the message to the recieving peer. The sending peer must first look up the 'lease' for the peer they wish to connect to in the network database and retrieve the address and key material for an inbound tunnel to that peer.
 
-I2P splits the information about a peer's anonymous identity and its real identity by having the peer add its lease information to the database via an outbound tunnel. Information about the services that the peer hosts or uses are then unassociated with the identity of that peer.
+I2P splits the information about a peer's anonymous identity and its real identity by having the peer add its lease information to the database via an outbound tunnel. Information about the services that the peer hosts or uses are then unassociated with the identity of that peer. In addition, the outbound traffic and inbound traffic are disassociated from one another; this will make attacks that use traffic analysis much harder to execute.
 
 \section{Freenet}
 
