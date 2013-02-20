@@ -224,6 +224,7 @@ and so on.
 \chapter{Contextual Background}
 \label{chap:context}
 
+\begin{comment}
 {\bf A compulsory chapter, of roughly $10$ pages}
 \vspace{1cm} 
 
@@ -266,6 +267,7 @@ More specifically, the concrete aims are:
       are worthwhile.
 \end{enumerate}
 \end{quote}
+\end{comment}
 
 % Project topic
 The Internet is generally seen as a medium through which free speech can propagate faster and spread wider than was possible before with physical means (e.g. mail, newspaper). Now, more than ever, Internet users can commuinicate their views, beliefs and opinions unhindered. However, speaking one's mind is not without danger. In some cases, what one says may attract undesirable consequences. For instance, a person remarking that another person's appearance is an afront to mother nature may inspire that person to bestow injury upon the remarker. A trivial solution would be to simply not make such a remark. However, the Internet has made making such statements very easy and usually without consequence through the use of anonymity.
@@ -294,38 +296,46 @@ China has a long history of media censorship and has a well known internet filte
 Censorship is just one of the reasons for using anonymity software. Take, for instance, apostasy; this is the act of giving up one's religion. There are 14 countries where apostasy is illegal and in 9 of these it is punishable by death. Thus, if a person were to become apostate in one of these countries and wanted to discuss it, they would have to do so anonymously or risk losing their life. It would be wise in such cases to take additional measures against having one's identity discovered, above and beyond that already provided.
 
 % Work project builds on
+\section{Work by others}
 
 My project is heavily influenced by existing solutions to the problem. The systems I will describe here are already available and widely used. These systems are The Tor Project\cite{Tor}, I2P\cite{I2P}, Freenet\cite{Freenet}, GNUnet\cite{GNUnet} and the Gnutella network\cite{Gnutella}. The Phantom Protocol\cite{Phantom} also provides some important contributions to the project but its implementation(s) have not been keenly uptaken. Virtual Private Networks (VPNs) will be discussed as an existing solution but these networks ultimately lend nothing to the new network design. 
 
 %TODO Crypto things
 Bitcoin, the P2P virtual currency also lends 
 
-\section{Virtual Private Networks}
+\subsection{Virtual Private Networks}
 
 VPNs are not peer to peer constructs in most cases. They are collections of computers with many different connections to the Internet, all of which are owned by a single company. The company provides a service to its customers where they may connect through the company's computers to the internet for some subscription fee. When connecting through a VPN, the IP address of the customer is replaced by that of the VPN company which anonymises the user amongst the client base of the company. The connection between the VPN and the customer is securely encrypted which prevents any activity performed by the VPNs being traced back to an individual customer. The level of anonymity that VPNs grant is dependent entirely on the records that the company keeps of the activity of their customers. If the company kept a full record of all activity and some entity, that is hostile to the network, acquired the information then the anonymity of the customers is rendered void. If the company keeps no such record of activity, then the customers will remain anonymous. Sensible customers must first trust that the company doesn not keep logs before using their services. This requirement of trust in a third party is the common fatal flaw of all VPNs; the Peer-to-Peer (P2P) networks described next have no such requirement.
 
-\section{Tor}
+\subsection{Tor}
 
 The Tor Project\cite{Tor} is a P2P network originally designed by the U.S. Navy to protect government communications. The software has since been released as open source software and is maintained by numerous volunteers. Users connect to the network by contacting a directory server and retrieving a list of nodes. A client can then establish a path through the Tor network (called a 'circuit') by establishing encypted tunnels through mutliple nodes. The client may then use this circuit to connect to the Internet itself or to one of Tor's 'hidden services'.
 
 The network operates such that no intermediate node that the client tunnels through knows what the client is sending / receiving or with what party the communication is occuring with. This is guaranteed through cryptographic methods. This eliminates the need for the user to trust any party in the network; unlike with VPNs, an entity cannot obtain a log and discern who communicated with whom. Even if the nodes did keep logs, the entity would not learn which users performed which actions. Only if all intermediate nodes in a circuit are compromised can an adversary learn what actions a given user has performed. As the client is the one who picks the nodes in the circuits it uses the client can avoid picking known hostile nodes and if it picks nodes at random and the vast majority of node are good then the chances of a client making a circuit entirely from a single adversary's nodes is very low.
 
-\section{I2P}
+\subsection{I2P}
 
 I2P\cite{I2P} or the Invisible Internet Project is a low-level network that constructs secure tunnels between peers. The low-level that the network operates at allows all current internet applications to communicate over the network as if it were the Internet itself making it very versatile. The tunnels that it constructs are one-way in the sense that a tunnel either transfers packets away from the tunnel's owner (an outbound tunnel) or towards them (an inbound tunnel). In order to send messages between peers, a message is sent from a peer down one of its outbound tunnels. The tunnel exit sends the message to the entrance of one the other peer's inbound tunnels which then forwards the message to the recieving peer. The sending peer must first look up the 'lease' for the peer they wish to connect to in the network database and retrieve the address and key material for an inbound tunnel to that peer.
 
 I2P splits the information about a peer's anonymous identity and its real identity by having the peer add its lease information to the database via an outbound tunnel. Information about the services that the peer hosts or uses are then unassociated with the identity of that peer. In addition, the outbound traffic and inbound traffic are disassociated from one another; this will make attacks that use traffic analysis much harder to execute.
 
-\section{Freenet}
+\subsection{Freenet}
 
+Freenet\cite{Freeenet} provides disributed data storage and the ability to publish 'Freesites' (websites only visible to the network peers). It is censorship resistant by design; one feature of freenet is that once some data has been published to the Freenet, the uploader can disconnect and the data is still available to the peers. Another interesting feature is that searching for a piece of data causes it to be spread more widely throughout the network; when a data store replies to a request for some data, all the nodes along the data response path store the data as well. Direct deletion of data is not possible, data can only be 'forgotten' over large periods of time if no peer requests it; note that checking that some data has been forgotten results in that data being remembered and the wait will start all over again.
 
+Important to this project is the way a request for data from the network will not give any information on which node has answered a given request. We will show an application that requests data via a broadcast and receives data responses from the network without knowing where in the network the responses have come from. 
 
-\section{GNUnet}
+\subsection{GNUnet}
+
+GNUnet\cite{GNUnet} is designed for censorship resistant file sharing. It may be used over a number of different methods of transportation between peers including (but not limited to) IP, HTTP and wireless LAN. Essentially, the network abstracts exactly how the data is transmitted away from the applications that use it. The network employs an economic model that aims to prevent free-loading and attacks on the network by having nodes rate other nodes. Over time the nodes build up a view of how much they trust a given node. When traffic load is high in the network, requests from less trusted nodes are dropped, preventing them from doing further harm.
+
+From this network we take the concept of 'cover traffic' upon which GNUnet seems to rely for the majority of its anonymity. A node may set some threshhold and then will only send packets if it is routing enough other traffic through itself in order to disguise its own traffic among the crowd. In my network the function of cover traffic is the same with the added provision of dummy packets so that cover traffic may be generated as required.
 
 \section{Gnutella}
 
 \section{Phantom}
 
+%TODO crypto things
 
 % -----------------------------------------------------------------------------
 
