@@ -331,11 +331,13 @@ GNUnet\cite{GNUnet} is designed for censorship resistant file sharing. It may be
 
 From this network we take the concept of 'cover traffic' upon which GNUnet seems to rely for the majority of its anonymity. A node may set some threshhold and then will only send packets if it is routing enough other traffic through itself in order to disguise its own traffic among the crowd. In my network the function of cover traffic is the same with the added provision of dummy packets so that cover traffic may be generated as required.
 
-\section{Gnutella}
+\subsection{Gnutella}
 
-Gnutella\cite{Gnutella} was originally designed to have all peers on an equal standing. When a request was sent to the network, it would be flood-broadcasted to all other peers in the network. Peers would then respond back along the route the request took with query results if that node had any. This method of query and response is clearly unsustainable for larger networks and due to Gnutella's  popularity it suffered greatly from this flaw. Nowadays, the Gnutella network is composed of leaf nodes and ultra-peers; Leaf nodes connect only to ultra-peers and ultra-peers connect to large numbers of other ultra-peers. This way the network doesn't suffer from 
+Gnutella\cite{Gnutella} was originally designed to have all peers on an equal standing. When a request was sent to the network, it would be flood-broadcasted to all other peers in the network. Peers would then respond back along the route the request took with query results if that node had any. This method of query and response is clearly unsustainable for larger networks and due to Gnutella's  popularity it suffered greatly from this flaw. Nowadays, the Gnutella network is composed of leaf nodes and ultra-peers; Leaf nodes connect only to ultra-peers and ultra-peers connect to large numbers of other ultra-peers. This way the network doesn't suffer from query packet saturation.
 
-\section{Phantom}
+\subsection{Phantom}
+
+
 
 %TODO crypto things
 
