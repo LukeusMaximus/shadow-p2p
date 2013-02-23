@@ -16,6 +16,7 @@
 
 \usepackage{parskip}
 \usepackage{comment}
+\usepackage[utf8]{inputenc}
 \begin{document}
 
 
@@ -276,9 +277,9 @@ The ability to de-couple the identity of an individual from their views is not u
 
 When forming connections between parties, the Internet itself does not provide any information about the person who is using that connection; such information must be provided by the user. Thus, by default, the connection is anonymous. What is provided, however, are the Internet Protocol (IP) addresses of the parties forming the connection. This address could be traced back to an institution, household or individual computer and from this it may be possible to find the identity of the user. For this reason, we define the identity of a user to be their IP address. 
 
-To prevent revealing a user's IP address, numerous solutions have been created that keep users anonymous online. Each of these has its own merits and flaws but they do all have something in common. This is that, in every solution, there is always another party that knows the identity of the user who is not the user themselves. Now, in these solutions, it is generally the case that the party that knows the user's identity doesn't have any knowledge of what information the user is sending or receiving (due to confidentiality methods used, mainly encryption). Thus the party that knows the identity of a user is unable to link a view, belief or opinion back to them. This is generally considered to be a sufficient level of anonymity.
+To prevent revealing a user's IP address, numerous solutions have been created that keep users anonymous online. Each of these has its own merits and flaws but they do all have something in common. This is that, in every solution, there is always another party that knows the identity of the user. In these solutions, it is generally the case that the party that knows the user's identity doesn't have any knowledge of what information the user is sending or receiving (due to confidentiality methods used, mainly encryption). Thus the party that knows the identity of a user is unable to link a view, belief or opinion back to them. This is generally considered to be a sufficient level of anonymity.
 
-I argue that there is a use for a higher level of anonymity. On this basis, I have created an anonymity solution that keeps the user anonymous by ensuring that only the user themselves knows their identity and no one else. This way, an extra level of anonymity can be provided; in my network design, no party can discern whether or not an internet user is participating in the network. This feature is not provided by any other network.
+I argue that there is a use for a higher level of anonymity. On this basis, I have created an anonymity solution that keeps the user anonymous by ensuring that only the user themselves knows their identity and no one else. This way, an extra level of anonymity can be provided; in my network design, it is only with great difficulty that a party can discern whether or not an internet user is participating in the network. This feature is not provided by any other network.
 
 % Why is topic important
 %   Why is there a need
@@ -288,6 +289,7 @@ I argue that there is a use for a higher level of anonymity. On this basis, I ha
 % Central challenges and why they are significant
 
 % Why is there a need / who will benefit
+\section{A need for anonymity}
 
 There is a need for anonymity solutions in Internet society. In some places, the rise of the Internet has allowed its users to circumvent censorship measures present in their country. Where before only the public media needed controlling to prevent the disemination of information, now any user is able to spread news far and wide that a pro-censorship government would otherwise be able to hush. Those users responsible for disseminating information that would otherwise be censored are usually subject to litigation. Obviously, those individuals would be keen to avoid the law.
 
@@ -295,13 +297,23 @@ China has a long history of media censorship and has a well known internet filte
 
 Censorship is just one of the reasons for using anonymity software. Take, for instance, apostasy; this is the act of giving up one's religion. There are 14 countries where apostasy is illegal and in 9 of these it is punishable by death. Thus, if a person were to become apostate in one of these countries and wanted to discuss it, they would have to do so anonymously or risk losing their life. It would be wise in such cases to take additional measures against having one's identity discovered, above and beyond that already provided.
 
+There are a whole host of other situtations where anonymity is desirable.
+\begin{itemize}
+\item Corporate and government whistleblowers who don't want to lose their job or face litigation.
+\item A bank may wish to scout out new investments without their competitors knowing what they're interested in.
+\item Some online market places have been known to engage in price discrimination. By disguising their identity, a customer can secure the same product at a lower price.
+\item Law enforcers visiting illicit websites and services in order to collect evidence on them. Without anonymity software, the law enforcer may be shown a different version of the site without illegal content.
+\item Secret agents obviously do not wish to be discovered in the field. Directly connecting to a military computer in their home country is a dead giveaway, even if the content is encrypted.
+\item Anonymous tips cannot be delivered through a simple website as the web server will record the IP address of anyone visiting. Tippers will need anonymity software to cover up their IP address.
+\item Individuals may wish to prevent a search engine correlating all their searches. Anonymised records of a user's search terms can lead back to individuals\cite{Aol}.
+\end{itemize}
+
 % Work project builds on
 \section{Work by others}
 
 My project is heavily influenced by existing solutions to the problem. The systems I will describe here are already available and widely used. These systems are The Tor Project\cite{Tor}, I2P\cite{I2P}, Freenet\cite{Freenet}, GNUnet\cite{GNUnet} and the Gnutella network\cite{Gnutella}. The Phantom Protocol\cite{Phantom} also provides some important contributions to the project but its implementation(s) have not been keenly uptaken. Virtual Private Networks (VPNs) will be discussed as an existing solution but these networks ultimately lend nothing to the new network design. 
 
-%TODO Crypto things
-Bitcoin, the P2P virtual currency also lends 
+There are some non-network related applications that provide some useful ideas to the project. One such application is Bitcoin, the P2P virtual currency, which will help in hindering and preventing attacks on the network. 
 
 \subsection{Virtual Private Networks}
 
@@ -339,11 +351,32 @@ Gnutella\cite{Gnutella} was originally designed to have all peers on an equal st
 
 \subsection{Phantom}
 
-The Phantom Protocol\cite{Phantom] describes a tunnel based network design with theoretically secure anonymity properties. It claims to be superior to both Tor and I2P in that it isn't vulnerable to some of the same pitfalls. Unlike Tor and I2P, it aims to be completely segregated from the normal Internet and to be compatible with all existing software using a network connection. Whereas Tor forbids large data transfers and dedicates itself mainly to anonymous web browsing, Phantom aims to allow all forms of internet traffic. The tunnel design is obviously similar to that of I2P but it is clear that much more thought has been given to ensuring anonymity throughout tunnel creation and tunnel use.
-
-
+The Phantom Protocol\cite{Phantom} describes a tunnel based network design with theoretically secure anonymity properties. It claims to be superior to both Tor and I2P in that it isn't vulnerable to some of the same pitfalls. Unlike Tor and I2P, it aims to be completely segregated from the normal Internet and to be compatible with all existing software using a network connection. Whereas Tor forbids large data transfers and dedicates itself mainly to anonymous web browsing, Phantom aims to allow all forms of internet traffic. The tunnel design is obviously similar to that of I2P but it is clear that much more thought has been given to ensuring anonymity throughout tunnel creation and tunnel use.
 
 %TODO crypto things
+
+\subsection{Bitcoin}
+
+Bitcoin\cite{Bitcoin} is a P2P virtual currency where Bitcoins are produced at an almost fixed rate. To do this, the network employs a system of proof of work; a proof of work is a solution to a computationally hard problem which is hard to solve but easy to verify the solution. In order to produce Bitcoins a peer must perform some proof of work before obtaining them. As it takes a lot of computational effort to produce the proof of work, the supply of Bitcoins is limited. This rarity gives the Bitcoins value and this makes it feasible to use Bitcoins as a currency. The proof of work mechanism is further augmented in the network by dynamically changing the threshold at which a proof of work will be accepted. As more computational power gets added to the network, it raises this threshold to dynamically return the production of Bitcoins to the predetermined fixed rate.
+
+In the Shadow P2P network, a proof of work system is used to make attacks on the network hard to execute. When a peer wnats to join the network, we first make it produce a proof of work of its identity. If a peer is determined to be hostile and we ban it from the network, the network makes a note to never accept that proof of work again. In order to rejoin the network after being banned, it must first create an entirely new identity and produce a proof of work for that identity. This will severely hinder an attacker's progress in determining the identity of peers in the network.
+
+The dynamic adjustment of the proof of work threshold can be used to future proof the network as computing power increases. We can set the rate of joining the network to be a fixed value (e.g. 3 new peers every minute) and adjust the threshold as needed to maintain the low rate. In contrast to Bitcoin where proofs of work are constantly being sought after, there may not be peers trying to join the network all the time and so proofs of work may be far and few between at times. If the system from Bitcoin were implemented, the threshold would spend a lot of its time decreasing thus making joining the network very easy. Attackers could wait until the threshold is low enough and then mount an attack, rejoining the network with ease. Clearly the system would need modifying before it were fit for use in the network.
+
+% Why is selected approach important / interesting
+% Central challenges and why they are significant
+
+\section{Reaching the limit of anonymity}
+
+This project aims to try and make a network design that provides more anonymity to its users that any other network currently provides. Even upon reaching this level, the project doesn't stop, it aims to reach for the boundary of what it is possible to provide in terms of anonymity on the internet. In creating this network, I look at both networking and crytographic methods of providing anonymity. Details of their theoretical design and practical implementation will be considered.
+
+This project attempts to create a network where not only is it infeasible to eavesdrop on traffic or determine who is talking to who but it will also be infeasible (or at least expensive) to determine whether or not a person is participating in the network. This is a feature not provided by any other network design. Whilst it may be of limited use, I have shown that there are scenarios where it is necessary to have such a level of protection. It is therefore important to try to fill this gap in network designs so that there will at least be something of use in these situations.
+
+This idea of 'hard to detect' participation gives rise to a much more intriguing feature of my network design. In all other P2P networks, the peers hold the details required to connect to their neighbors and engage in communication; namely, the peers hold the IP address of their neighbors. Recall that I defined the IP address of a peer to be their identity as this information can easily be traced back to a person or other entity responsible for that IP address. This means that the neighbors of a peer know that peer's identity. This is far from ideal if we wish to protect against entities discovering that a peer is participating in the network. To rectify this flaw, I have designed the network such that \em{a peer's neighbors do not know that peer's IP address}. To clarify, neighbors do hold the peer's IP address but only amongst many others, thus the peer is anonymised by virtue of being 'lost in the crowd'. As may be obvious, the challenge here is to show exactly how communication can occur between peers who are unsure of their peer's IP address (without which, messages cannot be sent to that peer).
+
+On top of the basic communication links between peers, designing a network around anonymity is another major undertaking. I will use the ideas and proven concepts from the existing networks to construct a network that meets the needs of the project's security and anonymity requirements.
+
+The other P2P networks mentioned previously all employ some variant on the mesh network structure. In such networks, connections and disconnections are generally made between peers as is needed to improve network efficiency, or to perform self-healing. This is inconsistent with the requirement of anonymity; if the network is structured such that peers that exchange more data have a higher chance of being directly linked, then it can be determined who is likely to be talking to who. In essence, for the greatest possible level of anonymity, the network structure should not bear any relation to the traffic the network handles. This will tie off any possible leak in identity. Some networks have mechanisms in place for preventing network structure giving away information. In the case of Tor, packets incur random delays as they pass through nodes. This makes it nearly impossible for an adversary being able to tell which packets entering a node correspond to packets exiting that node. 
 
 % -----------------------------------------------------------------------------
 
