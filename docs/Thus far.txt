@@ -381,3 +381,8 @@ Spoke to Bogdan about ElGamal key scrambling method. Pointed out that certificat
 An adversary may also modify the route a packet takes by changing the key pairs in the routing section of the message. They cannot learn where the packet is going as they need the secret keys to do that. Again, they could send a message to a node without needing a valid packet from somewhere else.
 
 The receiving node knows that a packet has been transmitted correctly if all the decryptions on the data produce a valid plaintext (probably with some verification?) and the next routing header cannot be decrypted under its routing private keys (indicating that the packet has reached its destination). It is up to the sender to give information on where they are, should they desire to do so.
+
+### 31 ###
+26/02/13
+
+Anonymous tunnels can be established in a similar way to Tor. If a location publishes that it has some content, one of the IP addresses in its shout is now known to host the content. If a single intermediate node is added then the intermediate node knows the true position but not the IP address of the host (because it doesn't know the shout). Obviously, the node picked to be the intermediate should not be on that holds the shout for the host.

@@ -419,7 +419,7 @@ The sender should set this field to a random address for every packet sent. If t
 
 \subsection{User Datagram Protocol (UDP)}
 
-UDP is a very basic stateless 
+UDP is a very basic protocol on the top of IP. It simply adds the use of a virtual 'port'. It is desirable for use in the network because it is stateless and uni-directional. Because the shout removes the sender's true IP from each packet, the receiver has no means of replying. Only if the sender sends the receiver the details of a shout list which contains their IP will they be able to respond.s
 
 % -----------------------------------------------------------------------------
 
