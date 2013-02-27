@@ -411,7 +411,9 @@ and understand research-level material.
 
 A 'shout' is the method this project uses for anonymous point to point communication. By analogy, it is as if the sender were shouting to a street full of people behind a wall. The sender cannot be seen by those on the street due to the wall and those on the street all appear to ignore what was shouted. As the receiver acts identically to the rest of the people on the street, the true receiver cannot be determined. To achieve this, the sender is anonymised through the use of IP spoofing and the receiver is anonymised through a broadcast to a list of multiple addresses (a 'shout list').
 
+The act of 'shouting' is defined to be sending packets with their source IP address spoofed to every IP address on the shout list. The act of giving a shout to a peer is where the peer is given the shout list for another peer.
 
+The shout is designed to work against an adversary that aims to identify peers on the network. Our adversary is a realistic one. The adversary is polynomially bounded in computation power and 
 
 \subsection{Shout Lists}
 
@@ -433,7 +435,11 @@ Ideally, the sender should set this field to a random address for every packet s
 
 \subsection{User Datagram Protocol (UDP)}
 
-UDP is a very basic protocol on the top of IP. It simply adds the use of a virtual 'port'. It is desirable for use in the network because it is stateless and uni-directional. Because the shout removes the sender's true IP from each packet, the receiver has no means of replying to any packet received so a bi-directional protocol such as TCP is inappropriate. 
+UDP is a very basic protocol on the top of IP. It simply adds the use of a virtual 'port'. It is desirable for use in the network because it is stateless and uni-directional. Because the shout removes the sender's true IP from each packet, the receiver has no means of replying to any packet received so a bi-directional protocol such as TCP is inappropriate.
+
+Whilst we could give the receiver the shout for the sender, forming bi-directional communication should be avoided. The reasoning behind this is that packets travelling between two endpoints will take the shortest route. It follow that if the communication is bi-directional, messages travelling in both directions will take the same route. If an adversary is eavesdropping at some point along the path, they will pickup both directions of traffic. As it is likely the traffic will have multiple routes out of a jurisdiction, packets being shouted by the sender are likely to exit via multiple exits. The responses coming back to the sender return along the shortest route so an adversary listening at all the exit/entry points will be able to reduce the number of possible locations that the receiver is in.
+
+To avoid this, the network will allow messages to be returned to the sender along multiple routes which prevents this reduction.
 
 % -----------------------------------------------------------------------------
 
