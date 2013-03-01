@@ -386,3 +386,8 @@ The receiving node knows that a packet has been transmitted correctly if all the
 26/02/13
 
 Anonymous tunnels can be established in a similar way to Tor. If a location publishes that it has some content, one of the IP addresses in its shout is now known to host the content. If a single intermediate node is added then the intermediate node knows the true position but not the IP address of the host (because it doesn't know the shout). Obviously, the node picked to be the intermediate should not be on that holds the shout for the host.
+
+### 32 ###
+28/02/13
+
+Paths can be sent to other nodes anonymously. A destination can send a path to a node and they won't know where the path goes, they only know to redirect traffic with a certain tag in that direction.
