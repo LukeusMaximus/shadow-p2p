@@ -391,3 +391,12 @@ Anonymous tunnels can be established in a similar way to Tor. If a location publ
 28/02/13
 
 Paths can be sent to other nodes anonymously. A destination can send a path to a node and they won't know where the path goes, they only know to redirect traffic with a certain tag in that direction.
+
+### 33 ###
+03/02/13
+
+Asmuth-Bloom's secret sharing scheme may be the solution to the secret sharing problem for recipting the messages received by shout groups. The scheme adds randomisation to the secret before sharing it out. If we determine a seed for a CSPRNG and share it secretly amongst all but one of the nodes in the shout group then when these nodes receive a message they can prove to the member they left out that t of them have received the message whilst ensuring that at least t of them have received the message before giving any knowledge to the last node. 
+
+When the nodes that know the seed receive the message, they compute the next random number in the sequence of the CSPRNG and use that as alpha in the secret hiding phase of the secret sharing. Then, using the scheme they generate a share in one of the pre-agreed moduli. This share is then signed and sent privately to the left out node. The left out node cannot generate more shares without knowledge of alpha. They gain knowledge of alpha when they get t or more shares (at which point generating more shares is pointless). The other nodes do not know who received the message as they all encrypted their shares under the public key (possibly hybrid) to the left-out node so they cannot generate more shares to see who received the message. However, nodes can forge more shares with the  scheme as it is because they know the moduli that the other nodes will use. Each node making the shares needs to know the secret, the random alpha and a modulus; therefore, the moduli can be kept secret and only be shared with the verifying node. Nodes cannot then generate more shares and it is secure as long as the other nodes don't reveal the seed to the CSPRNG.
+
+If there are two adversaries among the shout group then this system falls apart as one node can provide the CSPRNG seed to the other. The seed should be agreed upon by some multi party key agreement protocol.
