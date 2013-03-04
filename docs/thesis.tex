@@ -17,6 +17,7 @@
 \usepackage{parskip}
 \usepackage{comment}
 \usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
 \begin{document}
 
 
@@ -474,13 +475,73 @@ The shout group has previously been assumed to be a group of nodes who all expli
 
 The ideal mechanism has properties as follows. We define $P$ to be the set of receipt maker nodes (or "provers") and $V$ to be the set of receipt verifying nodes (or "verifiers"). The ideal system would allow a message to be accepted (or 'receipted') if and only if $t$ or more provers produce a receipt for it. If $t - 1$ or fewer provers produce a receipt then any member of $V$ cannot determine if any member of $P$ has received the message, or how many of them have received it. If $t$ or more provers produce a receipt then the number of provers that received the message is known. A prover cannot produce a receipt for a message more than once, nor can they forge another provers's receipt for the message.
 
-Initial attempts to solve this problem looked into method's of secret sharing. First, we restrict our problem such that there is only one verifier node; this is the message recipient. It is likely that a message is only intended to be received by one member of the shout group and this restriction represents this case. Additionally, we restrict the sets $P$ and $V$ to be mutually exclusive in membership. Now, each secret sharing scheme has some secret that is to be shared and a system from which those shares are generated. If each prover produces some share in the system and then sends them to the verifier, they will be able to determine the secret if $t$ or more valid shares are received. The barriers to implementing such a scheme are that the provers have to agree upon a system in which to create the shares without letting the verifier know the details of the system. For instance, if we were to use Shamir's scheme\cite{Shamir:1979:SS:359168.359176} we would set $a_0$ to be some cryptographic hash of the message and set the coefficients of the polynomial to be random $a_i \in \re | 1 \leq i \leq t-1$. The nodes must agree upon the same random values or the secret cannot be recovered. Additionally, revealing the coefficients to the verifier will allow the verifier to produce more shares in the system and thus they can simply produce $t-1$ shares to combine with any given share from a prover and recover the secret. This would reveal that a single prover has received the message and this breaks the conditions for our system's security.
+Initial attempts to solve this problem looked into method's of secret sharing. First, we restrict our problem such that there is only one verifier node; this is the message recipient. It is likely that a message is only intended to be received by one member of the shout group and this restriction represents this case. Additionally, we restrict the sets $P$ and $V$ to be mutually exclusive in membership. Now, each secret sharing scheme has some secret that is to be shared and a system from which those shares are generated. If each prover produces some share in the system and then sends them to the verifier, they will be able to determine the secret if $t$ or more valid shares are received. The barriers to implementing such a scheme are that the provers have to agree upon a system in which to create the shares without letting the verifier know the details of the system. For instance, if we were to use Shamir's scheme\cite{Shamir} we would set $a_0$ to be some cryptographic hash of the message and set the coefficients of the polynomial to be random $a_i \in \mathbb{R}$ for $i \in {1 \ldots t-1}$. The nodes must agree upon the same random values or the secret cannot be recovered. Additionally, revealing the coefficients to the verifier will allow the verifier to produce more shares in the system and thus they can simply produce $t-1$ shares to combine with any given share from a prover and recover the secret. This would reveal that a single prover has received the message and this breaks the conditions for our system's security.
 
-This method of verification can be achieved through the use of a Cryptographically Secure Pseudo Random Number Generator (CSPRNG) whereby we have all the provers use a multi party key agreement protocol to agree upon a seed. % TODO Do a citation
-With the same seed, the CSPRNG will produce the same outputs and therefore a prover can generate shares in random secret sharing systems autonomously from the other provers. Now even if the verifier is an adversary, they cannot gain knowledge of whether a message sent to a single IP address has had a receipt produced for it. Only if the more than the threshold of receipts are made will they know. Unfortunately this relies on the provers all being mutually trusted; if a prover is under the control of the adversary then that prover can give the adversary the CSPRNG seed and then the adversary can generate $t-1$ arbitrary shares and find if a single node has produced a message as before.
+This method of verification can be achieved through the use of a Cryptographically Secure Pseudo Random Number Generator (CSPRNG) whereby we have all the provers use a multi party key agreement protocol (possibly as in \cite{just1996authenticated}) to agree upon a seed. With the same seed, the CSPRNG will produce the same outputs and therefore a prover can generate shares in random secret sharing systems autonomously from the other provers. Now even if the verifier is an adversary, they cannot gain knowledge of whether a message sent to a single IP address has had a receipt produced for it. Only if the more than the threshold of receipts are made will they know. Unfortunately this relies on the provers all being mutually trusted; if a prover is under the control of the adversary then that prover can give the adversary the CSPRNG seed and then the adversary can generate $t-1$ arbitrary shares and find if a single node has produced a message as before.
 
 % TODO possibly talk about Asmuth-Bloom
 % TODO choose t to be same as in preventing search
+
+\section{Hiding Public Keys}
+
+The peers in the network maintain confidentiality in their communications through the use of symmetric and asymmetric key cryptography. When sending packets to a given receiver, generally a form of hybrid encryption is used where the bulk of the data is encrypted symmetrically and the key for this is then encrypted under the receiver's public key. This is a widely used methodology %citation needed
+however in Shadow P2P, there is a drawback. The onion routing method I intend to use will involve intermediate nodes adding layers of encryption onto packets in order to alter packets going into a node so that the packets are unrecognisable when leaving the node. This is done through symmetrically encrypting the packet under a secret key and then encrypting this key asymmetrically. The problems here are that:
+\begin{enumerate}
+\item The public key will be part of the packet and this cannot change as it passes through the node as it would render the public key unusable. This would allow an adversary to recognise a packet that exits the node as a specific packet that entered it because the public key that the packets bear is the same.
+\item If the adversary has control of the node, it can tell which node the packet is destined for by comparing the public key on the packet with the known public keys of all the other nodes in the network.
+\end{enumerate}
+Both of these are a threat to anonymity, the adversary gains knowledge of the where the packet is heading and possibly information on where it came from.
+
+To avoid this, I have invented a method of manipulating public keys such that they cannot be recognised as above and so that they can still be used for encryption. This method does not work with every public key methodology however it is known to work with the ElGamal cryptosystem\cite{elgamal1985public}. It will therefore be described as applied to ElGamal in this section.
+
+\subsection{Applied with ElGamal}
+
+\begin{algorithm}[t]
+\KwData{The group parameters, $(G, g, q)$, the public key, $h$ and the message $m$.}
+\KwResult{The ciphertext pair $(c_1, c_2)$.}
+    select a random $y = \left\{1 \ldots q\right\}$\\*
+    $c_1 = g^{y}$\\*
+    $m\prime = m$ converted to a member of $G$\\*
+    $s = h^{y}$\\*
+    $c_2 = m\prime.s$\\*
+    $return (c_1, c_2)$
+\caption{ElGamal encryption.}
+\label{ElGamal-enc}
+\end{algorithm}
+\begin{algorithm}[t]
+\KwData{The gropu parameters, $(G, g, q)$, the private key, $x$ and the ciphertext pair $(c_1, c_2)$}
+\KwResult{The message $m$}
+    $s = c_1^{x}$\\*
+    $m\prime = c_2.s^{-1}$\\*
+    $m = m\prime$ deconverted from a member of $G$\\*
+    return $m$\\*
+\caption{ElGamal decryption.}
+\label{ElGamal-dec}
+\end{algorithm}
+\begin{algorithm}[t]
+\KwData{The group parameter, $g$, and the public key, $h$}
+\KwResult{The hidden generator, $g\prime$, and the hidden public key, $h\prime$}
+    select a random $r = \left\{1 \ldots q\right\}$\\*
+    $g\prime = g^{r}$\\*
+    $h\prime = h^{r}$\\*
+    return $g\prime,h\prime$\\*
+\caption{ElGamal public key hiding.}
+\label{ElGamal-hide}
+\end{algorithm}
+
+In ElGamal, encryption and decryption are performed as in algorithm is performed as in \ref{ElGamal-enc} and \ref{ElGamal-dec}. To hide the public key, $h$, we take both $h$ and $g$ and perform the hiding as described in \ref{ElGamal-hide}. The hidden public key is then the pair (). The value of $r$ in \ref{ElGamal-hide} bears no relation to the value of $y$ that used in \ref{ElGamal-enc} and, in fact, when they are selected by the same party, they should be different. If $y$ and $r$ are the same, the value of $h\prime$ can be used to decrypt ciphertexts encrypted with the ephemeral key $y$ as $h\prime = h^{r} = h^{y} = s$.
+
+Encryption under a hidden public key is as in \ref{ElGamal-enc} but changing the parameters such that $(G, g, q) \rightarrow (G, g\prime, q)$ and $h \rightarrow h\prime$. Decryption is performed identically to \ref{ElGamal-dec} with no change in parameters. The decryption algorithm still works because:
+\[c_1 = g\prime^{y} = g^{ry}\]
+\[c_2 = m\prime.h\prime^{y} = m\prime.h^{ry} = m\prime.g^{xry}\]
+\[m\prime = c_2.c_1^{-x} = m\prime.g^{xry}.g^{-xry}\]
+Hopefully it is also apparent that the hiding algorithm can be applied as many times as is desired whilst still maintaining the key's usability. Also note that no matter the number of times the key has been scrambled, the decrypting party still need only perform one exponentiation which is a useful side effect in terms of effeciency. 
+
+In terms of security, the anonymity holds as long as it is hard to compute discrete logarithms in $G$. If this is not the case then $r = \log{g}g\prime$ can be found easily and then an adversary need only compare $h\prime$ with $k^{r} \forall k \in K$ (where $K$ is the set of public keys the adversary holds) in order to find who the public key belongs to. Additionally, the group parameters should be shared between all parties in order to anonymise the recipient among them; otherwise $G$ and $q$ need to be provided for the encryption and the recipient could be identified from these.
+
+\subsection{Applied with Elliptic Curves}
+
+Specifically, this method of hiding can also be applied to the Elliptic Curve Integrated Encryption Scheme (ECIES)\cite{ECIES}. As in ElGamal, the generator and public key are transformed with the same random number to get a hidden public key pair. In this case, the group generator, $G$, is hidden by computing $G\prime = r.G$ and the public key, $K$, is hidden by computing $K\prime = r.K$. For encryption, the value $R = y.G\prime$ is generated with some random $y$ and the shared secret $S = y.K\prime$ is computed. This S is then used to derive keys for a symmetric encryption scheme and a Message Authentication Code (MAC) scheme. When decryption occurs, the private key, $k$, is used to compute the shared secret, $S = k.(y.G\prime)$. The shared secret is then used to derive the keys as done by the encyrpting party, as these keys are the same, decryption and authentication of the data can occur.
 
 % -----------------------------------------------------------------------------
 
