@@ -1,0 +1,104 @@
+% The document class marks this as a poster, supplying various options that
+% control rendering of some standard features (e.g., the title bar).
+
+\documentclass[ % the name of the author
+                    author={Luke Murray},
+                % the name of the supervisor (preferably including title)
+                supervisor={Dr. Simon Hollis},
+                % the thesis    title (which cannot be blank)
+                     title={Shadow Peer-to-Peer Networks},
+                % the thesis subtitle (which can    be blank)
+                  subtitle={},
+                % the degree programme (from BSc, MEng, MSci, MSc and PhD)
+                    degree={MEng},
+                % the year of submission
+                      year={2013} ]{poster}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+
+\begin{frame}{} 
+
+\vfill
+
+\begin{columns}[t]
+    \begin{column}{0.900\linewidth}
+    \begin{block}{\Large Introduction}
+    Shadow P2P is a network designed to provide a level of anonymity that has never been provided before. Other networks achieve this anonymity by encrypting data and routing traffic through intermidiaries. On these networks, it is very hard to tell what a communication is about or who is talking with who. Whilst my network also uses variants on these ideas to achieve these effects, it also aims to prevent people from being able to tell if a person is participating in the network or not. This is a feature not offered by any other network.
+    
+    To achieve this additional level of anonymity, I have conceived and designed several key components for the creation of such a network. These are:
+    \begin{itemize}
+    \item Shouts
+    \item Shout groups
+    \item Public key hiding
+    \item A network structure designed for anonymity
+    \end{itemize}
+    \end{block}
+    \end{column}
+\end{columns}
+
+\vfill
+
+\begin{columns}[t]
+    \begin{column}{0.422\linewidth}
+    \begin{block}{\Large 1. Shouts}
+    What is a shout? A shout is, at its core, a multicast. One peer (the receiver) first provides another peer (the sender) with a list of IP addresses. This list of IP addresses is randomly generated but the receiver also adds their own IP address to it. This list is called a 'shout list'. The sender can then send packets to the receiver by sending a message to every IP address on the shout list; the receiver will receive one of these packets if the communication is reliable. This anonymises the receiver's IP address amongst those in the shout list.
+
+    To remove their IP address, the sender spoofs their IP address on every packet they send. The act of sending packets, with spoofed IP addresses, to a list of IP addresses is called a 'shout'. Together with the shout list, this method of communication reveals very little information about who is sending messages to who.
+
+    % TODO diagram
+
+    As this uses UDP, the communication is unrelaiable, so how do we make sure the receiver gets the message? If messages to the receiver will produce a response, how do we prevent a hostile sender from searching through the shout list to find the receiver's real IP address? Is this method of sending messages not terribly inefficient?
+
+    \end{block}
+    \end{column}
+
+    \begin{column}{0.422\linewidth}
+    \begin{block}{\Large 2. Shout Groups}
+    Shout groups are a defense mechanism against hostile parties searching through the IP addresses on the shout list. A small number of peers work together and create a joint shout list that contains all of their real IP addresses. These peers work together to ensure that they only respond to messages that have been shouted to the entire shout list.
+    
+    % TODO diagram
+    
+    The peers need to be careful which messages they do or do not respond to; the different search methods used by a hostile sender can reveal information about the peers in the shout group. The aim of the shout group is to minimise the amount of information that a hostile sender can gain about the peers' IP addresses.
+    
+    What if the members of the shout group are hostile? How do the shout group members communicate amongst themselves? How are repeated attacks hindered?
+    \end{block}
+    \end{column}
+\end{columns}
+
+\vfill
+
+\begin{columns}[t]
+    \begin{column}{0.422\linewidth}
+    \begin{block}{\Large 3. Public Key Hiding}
+    Peers will be associating their anonymous identity with a public key. What if we don't want the intermediaries that forward our messages to know who it is we are communicationg with. As the routing method I intend to use requires that the intermediaries be able to encrypt packets with the destination's public key, the information cannot simply be removed from the packets. The public key has to be hidden and still work.
+    
+    
+
+    \end{block}
+    \end{column}
+    \begin{column}{0.422\linewidth}
+    \begin{block}{\Large 4. Progress and Status}
+    Example content might include:
+
+    \begin{itemize}
+    \item a list of complete and incomplete aims and objectives,
+    \item a list of open questions or problems,
+        and
+    \item your plan for completing the project, inc. required deliverables.
+    \end{itemize}
+    \end{block}
+    \end{column}
+\end{columns}
+
+\vfill
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+
+\end{document}
+
+
+
