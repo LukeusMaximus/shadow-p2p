@@ -24,8 +24,8 @@
 
 \begin{columns}[t]
     \begin{column}{0.900\linewidth}
-    \begin{block}{\Large Introduction}
-    Shadow P2P is a network designed to provide a level of anonymity that has never been provided before. Other networks achieve this anonymity by encrypting data and routing traffic through intermidiaries. On these networks, it is very hard to tell what a communication is about or who is talking with who. Whilst my network also uses variants on these ideas to achieve these effects, it also aims to prevent people from being able to tell if a person is participating in the network or not. This is a feature not offered by any other network.
+    \begin{block}{\normalsize Introduction}
+    \small Shadow P2P is a network designed to provide a level of anonymity that has never been provided before. Other networks achieve this anonymity by encrypting data and routing traffic through intermidiaries. On these networks, it is very hard to tell what a communication is about or who is talking with who. Whilst my network also uses variants on these ideas to achieve these effects, it also aims to prevent people from being able to tell if a person is participating in the network or not. This is a feature not offered by any other network.
     
     To achieve this additional level of anonymity, I have conceived and designed several key components for the creation of such a network. These are:
     \begin{itemize}
@@ -42,10 +42,8 @@
 
 \begin{columns}[t]
     \begin{column}{0.422\linewidth}
-    \begin{block}{\Large 1. Shouts}
-    What is a shout? A shout is, at its core, a multicast. One peer (the receiver) first provides another peer (the sender) with a list of IP addresses. This list of IP addresses is randomly generated but the receiver also adds their own IP address to it. This list is called a 'shout list'. The sender can then send packets to the receiver by sending a message to every IP address on the shout list; the receiver will receive one of these packets if the communication is reliable. This anonymises the receiver's IP address amongst those in the shout list.
-
-    To remove their IP address, the sender spoofs their IP address on every packet they send. The act of sending packets, with spoofed IP addresses, to a list of IP addresses is called a 'shout'. Together with the shout list, this method of communication reveals very little information about who is sending messages to who.
+    \begin{block}{\normalsize 1. Shouts}
+    \small What is a shout? A shout is, at its core, a multicast. One peer (the receiver) first provides another peer (the sender) with a list of IP addresses, only one of which is the receiver's own IP address. This list is called a 'shout list'. The sender sends packets to the receiver by sending a message to every IP address in the shout list. This anonymises the receiver's IP address amongst those in the shout list. The sender spoofs their IP address on every packet they send, this removes the sender's identity from the message. This method of communication reveals very little about who is talking to who.
 
     % TODO diagram
 
@@ -55,8 +53,8 @@
     \end{column}
 
     \begin{column}{0.422\linewidth}
-    \begin{block}{\Large 2. Shout Groups}
-    Shout groups are a defense mechanism against hostile parties searching through the IP addresses on the shout list. A small number of peers work together and create a joint shout list that contains all of their real IP addresses. These peers work together to ensure that they only respond to messages that have been shouted to the entire shout list.
+    \begin{block}{\normalsize 2. Shout Groups}
+    \small Shout groups are a defense mechanism against hostile parties searching through the IP addresses on the shout list. A small number of peers work together and create a joint shout list that contains all of their real IP addresses. These peers work together to ensure that they only respond to messages that have been shouted to the entire shout list.
     
     % TODO diagram
     
@@ -71,15 +69,19 @@
 
 \begin{columns}[t]
     \begin{column}{0.422\linewidth}
-    \begin{block}{\Large 3. Public Key Hiding}
-    Peers will be associating their anonymous identity with a public key. What if we don't want the intermediaries that forward our messages to know who it is we are communicationg with. As the routing method I intend to use requires that the intermediaries be able to encrypt packets with the destination's public key, the information cannot simply be removed from the packets. The public key has to be hidden and still work.
+    \begin{block}{\normalsize 3. Public Key Hiding}
+    \small Peers will be associating their anonymous identity with a public key. What if we don't want the intermediaries that forward our messages to know who it is we are communicationg with. As the routing method I intend to use requires that the intermediaries be able to encrypt packets with the destination's public key, the information cannot simply be removed from the packets. The public key has to be hidden and still work.
     
+    I have invented a method of hiding a public key such that it becomes unrecognisable from its previous value and can still be used for encryption. Algorithms demonstrating this in the case of ElGamal are given below.
     
+    % TODO algorithms in appropriate format
+    
+    This method of public key hiding also works with ECIES (Elliptic Curve Integrated Encryption Scheme).
 
     \end{block}
     \end{column}
     \begin{column}{0.422\linewidth}
-    \begin{block}{\Large 4. Progress and Status}
+    \begin{block}{\normalsize 4. Progress and Status}
     Example content might include:
 
     \begin{itemize}

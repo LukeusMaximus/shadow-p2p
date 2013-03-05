@@ -57,9 +57,9 @@
   \begin{center}
   \vspace{4ex}
   \raggedright
-  {\Huge  \poster@title}                                         \\ [4ex]
-  {\Large \poster@author, supervised by \poster@supervisor}      \\ [4ex]
-  {\Large University of Bristol, Department of Computer Science}
+  {\Large  \poster@title}                                         \\ [4ex]
+  {\normalsize \poster@author, supervised by \poster@supervisor}      \\ [4ex]
+  {\normalsize University of Bristol, Department of Computer Science}
   \vspace{4ex}
   \end{center}
   \end{column}
