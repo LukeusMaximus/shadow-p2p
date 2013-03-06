@@ -509,7 +509,7 @@ To avoid this, I have invented a method of manipulating public keys such that th
 \label{ElGamal-enc}
 \end{algorithm}
 \begin{algorithm}[t]
-\KwData{The gropu parameters, $(G, g, q)$, the private key, $x$ and the ciphertext pair $(c_1, c_2)$}
+\KwData{The group parameters, $(G, g, q)$, the private key, $x$ and the ciphertext pair $(c_1, c_2)$}
 \KwResult{The message $m$}
     $s = c_1^{x}$\\*
     $m\prime = c_2.s^{-1}$\\*
