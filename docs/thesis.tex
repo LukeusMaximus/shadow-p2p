@@ -529,9 +529,9 @@ To avoid this, I have invented a method of manipulating public keys such that th
 \label{ElGamal-hide}
 \end{algorithm}
 
-In ElGamal, encryption and decryption are performed as in algorithm is performed as in \ref{ElGamal-enc} and \ref{ElGamal-dec}. To hide the public key, $h$, we take both $h$ and $g$ and perform the hiding as described in \ref{ElGamal-hide}. The hidden public key is then the pair (). The value of $r$ in \ref{ElGamal-hide} bears no relation to the value of $y$ that used in \ref{ElGamal-enc} and, in fact, when they are selected by the same party, they should be different. If $y$ and $r$ are the same, the value of $h\prime$ can be used to decrypt ciphertexts encrypted with the ephemeral key $y$ as $h\prime = h^{r} = h^{y} = s$.
+In ElGamal, encryption and decryption are performed as in algorithm is performed as in algorithm \ref{ElGamal-enc} and algorithm \ref{ElGamal-dec}. To hide the public key, $h$, we take both $h$ and $g$ and perform the hiding as described in algorithm \ref{ElGamal-hide}. The hidden public key is then the pair (). The value of $r$ in algorithm \ref{ElGamal-hide} bears no relation to the value of $y$ that used in algorithm \ref{ElGamal-enc} and, in fact, when they are selected by the same party, they should be different. If $y$ and $r$ are the same, the value of $h\prime$ can be used to decrypt ciphertexts encrypted with the ephemeral key $y$ as $h\prime = h^{r} = h^{y} = s$.
 
-Encryption under a hidden public key is as in \ref{ElGamal-enc} but changing the parameters such that $(G, g, q) \rightarrow (G, g\prime, q)$ and $h \rightarrow h\prime$. Decryption is performed identically to \ref{ElGamal-dec} with no change in parameters. The decryption algorithm still works because:
+Encryption under a hidden public key is as in algorithm \ref{ElGamal-enc} but changing the parameters such that $(G, g, q) \rightarrow (G, g\prime, q)$ and $h \rightarrow h\prime$. Decryption is performed identically to algorithm \ref{ElGamal-dec} with no change in parameters. The decryption algorithm still works because:
 \[c_1 = g\prime^{y} = g^{ry}\]
 \[c_2 = m\prime.h\prime^{y} = m\prime.h^{ry} = m\prime.g^{xry}\]
 \[m\prime = c_2.c_1^{-x} = m\prime.g^{xry}.g^{-xry}\]
@@ -542,6 +542,40 @@ In terms of security, the anonymity holds as long as it is hard to compute discr
 \subsection{Applied with Elliptic Curves}
 
 Specifically, this method of hiding can also be applied to the Elliptic Curve Integrated Encryption Scheme (ECIES)\cite{ECIES}. As in ElGamal, the generator and public key are transformed with the same random number to get a hidden public key pair. In this case, the group generator, $G$, is hidden by computing $G\prime = r.G$ and the public key, $K$, is hidden by computing $K\prime = r.K$. For encryption, the value $R = y.G\prime$ is generated with some random $y$ and the shared secret $S = y.K\prime$ is computed. This S is then used to derive keys for a symmetric encryption scheme and a Message Authentication Code (MAC) scheme. When decryption occurs, the private key, $k$, is used to compute the shared secret, $S = k.(y.G\prime)$. The shared secret is then used to derive the keys as done by the encyrpting party, as these keys are the same, decryption and authentication of the data can occur.
+
+\section{Uni-directional Toroidal Network}
+
+The connections between nodes in the network are structured together in a regular fashion; specifically, they are arranged in an k-dimensional grid. Links are then created between the nodes following the dimensional axes, however, links only allow transmission in one direction (and thus uni-directional). This would prevent responses reaching nodes that sent the original requests so the network is connected such that when a packet exceeds the network size in a given dimension, the packet is sent back to the first node in that dimension (therefore the network is toroidal). This structure is shown in figure \ref{toroid}.
+
+\begin{figure}[h]
+\centering
+\includegraphics{diagrams/network_toroidal.eps}
+\caption{An example of a uni-directional toroidal network structure}
+\label{toroid}
+\end{figure}
+
+This project chooses this network layout over other designs as it arguably provides more anonymity than those used in other distributed networks. A popular design amongst these networks is the mesh network (meshnet); nodes form a small number of links with other nodes in the network without considering the overall network layout. Nodes may later reorganise their links to increase network efficiency or robustness based on information they have learned about their local network structure. The flaw here is that if a network is optimised for speed, nodes will form links with nodes that they have lower latency with; in reality this usually means that a node will connect to the closest nodes. This reveals some location based information on the nodes and so this is clearly an undesirable system to use.
+
+Randomly reorganising the nodes from a list of all known nodes is a much more anonymous strategy as it attempts to disregard all information pertaining to the physical world (e.g. constraints due to the laws of physics). However, this may still leak information when a node is reorganising its connections when it doesn't have a complete list because information about nodes further afield will take longer to propagate through the network.
+
+Physical connections are not the only concern, routing methods are also of interest. The two main schools of routing are destination based and source routing based. With destination based routing the packet's destination address is included in the packet so that intermediate nodes can route it correctly, however, that same address can be used to collect and analyse all the traffic going to that node through the intermediate one. With source routing, the source specifies a complete (or partial) route through the network to the destination. This method doesn't explicitly specify the destination so unless the intermediate node recognises the path, the destination becomes anonymised. In Shadow P2P complete source routing is used in a way such that it is computationally infeasible to determine the destination. The network also takes advantage of the regular structure to allow senders to utilise a wide range of routes to the destination as will be discussed.
+
+\subsection{Source Routing}
+
+We assume here that each node has complete knowledge of the network, they know where each node is positioned and all required cryptographic material. A route can be specified through the network by providing a direcion in which the packet should be sent at each node in the path. In the example given in figure \ref{path} a packet will be sent down the blue path if given the routing header "up, right, right, right, up". The red path specifies an alternative route, perhaps for a second packet. As shown the packets only have a single intermediate node in common and is therefore the only node that can attempt to analyse the packets as a pair. It should be clear that there are many different routes between sender and destination and that the sender can choose any one of them to send traffic down. It can be shown that, in 2D networks, there are ${dx + dy \choose dx}$ unique routes through the network between two nodes separated by $dx$ nodes and $dy$ nodes on the x and y axes respectively.
+
+This distribution of traffic amongst many different routes will make traffic analysis exceedingly difficult. In particular, it can disguise a large data transfer as individual packets are dispersed among a large number of intermediate nodes. This would not disguise the fact that a particular pair of nodes is engaging in such a transfer but it will disguise who the other participant is, assuming such transfers are common on the network. This is because, if an advesary monitored the amount of traffic going into and exiting each node, they would see significant rises in the traffic of the two nodes performing the transfer but only small rises in the nodes between them. If the small rises are within the normal operational bounds of those intermediate nodes, the adversary will not be able to make the connection between sender and receiver.
+
+\begin{figure}[h]
+\centering
+\includegraphics{diagrams/network_path.eps}
+\caption{An example of different paths through the network. The sender is at (0,0) and the receiver at (3,2)}
+\label{path}
+\end{figure}
+
+One particular concern with routing is that of packets being routed forever and never reaching a destination. A packet going from a sender to the destination must, at most, traverse links in a given direction equal to the network size in that direction. Therefore we can limit the size of the routing field so that packets cannot traverse the network forever. 
+
+\subsection{Dynamic resizing}
 
 % -----------------------------------------------------------------------------
 
