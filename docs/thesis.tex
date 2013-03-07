@@ -18,6 +18,8 @@
 \usepackage{comment}
 \usepackage[utf8]{inputenc}
 \usepackage{amsfonts}
+\usepackage[caption=false]{subfig}
+
 \begin{document}
 
 
@@ -579,7 +581,7 @@ One particular concern with routing is that of packets being routed forever and 
 
 With such a regular structure, an obvious concern is that of network expansion and contraction. How can a regular grid of nodes be maintained when adding and removing nodes. To this end, I have conceived a method for allowing nodes to join and leave the network freely without compromising the structure of the toroidal grid.
 
-To do this, I introduce the concept of \emp{virtual positions}. Up until now, it has been assumed that each node exists at exactly one position on the grid. Now, nodes may take several positions on the grid simultaneously, even though the node exists but once in reality. We call the positions that the node takes, "virtual positions". This is very useful as we can now freely extend the grid without needing extra nodes to fill the gaps.
+To do this, I introduce the concept of {\em virtual positions}. Up until now, it has been assumed that each node exists at exactly one position on the grid. Now, nodes may take several positions on the grid simultaneously, even though the node exists but once in reality. We call the positions that the node takes, "virtual positions". This is very useful as we can now freely extend the grid without needing extra nodes to fill the gaps.
 
 \subsubsection{Expansion}
 
@@ -592,7 +594,21 @@ This is best explained in reference to a diagram, see figure \ref{expand}. First
 \label{expand}
 \end{figure}
 
-When we want to a node joins the network, it will first contact an existing node. This node will then replace one of its virtual positions with the new node
+When we want to a node joins the network, it will first contact an existing node. This node will then replace one of its virtual positions with the new node. The node will inform both the new node of how to contact its downstream neighbours and will inform the new node's upstream neighbors of the change in their downstream neighbour. In figure \ref{join1}, the node $E$ replaces $A$ at coordinates (2,2). $A$ will tell $E$ how to contact $B$ and $C$ and it will tell $B$ and $C$ how to contact $E$. Figure \ref{join2} shows how this looks 'in reality'.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}
+\includegraphics{diagrams/network_join1.eps}
+\caption{Network joining 1}
+\label{join1}
+\end{subfigure}
+\begin{subfigure}
+\includegraphics{diagrams/network_join2.eps}
+\caption{Network joining 2}
+\label{join2}
+\end{subfigure}
+\end{figure}
 
 % -----------------------------------------------------------------------------
 
