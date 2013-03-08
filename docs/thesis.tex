@@ -18,7 +18,6 @@
 \usepackage{comment}
 \usepackage[utf8]{inputenc}
 \usepackage{amsfonts}
-\usepackage[caption=false]{subfig}
 
 \begin{document}
 
@@ -588,27 +587,61 @@ To do this, I introduce the concept of {\em virtual positions}. Up until now, it
 This is best explained in reference to a diagram, see figure \ref{expand}. First, we require that the network is square, i.e. the network sizes in each dimension are always equal. Then, to expand the network, we simply duplicate the grid of virtual positions in each dimension. Now each node has $2^{k}$ times more virtual positions than they did before. The most important point to note here is that the network has been resized but no new physical connections needed to be created. In the diagram, $A$ still has $B$ as its northwards neighbour and $C$ as its eastward neighbour in all cases. This is achieved because we are simply exploiting the looping nature of the toroid to provide more space. Also important to note is that this expansion is implicit; the nodes all know which virtual positions they are going to take ahead of the expansion.
 
 \begin{figure}[h]
-\centering
-\includegraphics{diagrams/network_expand.eps}
-\caption{A demonstration of network expansion. Wrap-around links not shown.}
-\label{expand}
+    \centering
+    \includegraphics{diagrams/network_expand.eps}
+    \caption{A demonstration of network expansion. Wrap-around links not shown.}
+    \label{expand}
 \end{figure}
 
-When we want to a node joins the network, it will first contact an existing node. This node will then replace one of its virtual positions with the new node. The node will inform both the new node of how to contact its downstream neighbours and will inform the new node's upstream neighbors of the change in their downstream neighbour. In figure \ref{join1}, the node $E$ replaces $A$ at coordinates (2,2). $A$ will tell $E$ how to contact $B$ and $C$ and it will tell $B$ and $C$ how to contact $E$. Figure \ref{join2} shows how this looks 'in reality'.
+When a node wants to join the network, it will must contact an existing node which will help the new node join the network. This node will then replace one of its virtual positions with the new node. The node will inform both the new node of how to contact its downstream neighbours and will inform the new node's upstream neighbors of the change in their downstream neighbour. In figure \ref{join1}, the node $E$ replaces $A$ at coordinates (2,2). $A$ will tell $E$ how to contact $B$ and $C$ and it will tell $B$ and $C$ how to contact $E$. Figure \ref{join2} shows how this looks 'in reality'. Note that $D$ has not been any information regarding $E$'s join; it simply has no need to know.
+
+\begin{figure}[h]%htbp
+    \centering
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/network_join1.eps}
+        \caption{Node virtual positions and virtual links.}
+        \label{join1}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.35\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/network_join2.eps}
+        \caption{Node physical links.}
+        \label{join2}
+    \end{minipage}
+\end{figure}
+
+As the network expands, nodes gain new virtual positions in predetermined places; these are the node's {\em inherited positions}. In the 2D example, a node that owns the virtual position $(x, y)$ inherits the virtual positions $(x + w, y)$, $(x + w, y + w)$ and $(x, y + w)$ where $w$ is the original width of the network in any given dimension (recall that previously the network was defined to be the same width in all dimensions). If we were to expand again, the node with virtual position $(x + w, y)$ would inherit positions $(x + 3w, y)$, $(x + 3w, y + 2w)$ and $(x + w, y + 2w)$. As the netwok begins as a single node, the network will always be a power of 2 in width in any dimension because the network expansions causes all widths to double. The virtual positions that a node will inherit if it owns virtual position $(x, y)$ is then:
+
+\[(x + ai, y + aj)\; a = \lfloor \log_{2}{(max(x,y))} \rfloor + 1; \forall i,j \in \mathbb{N}\]
+
+This provides every node that owns at least one virtual position with a potentially unlimited number of descendant positions. This will allow a node to continue in helping nodes join for as long as that node desires. When a node joins, the helper node should give the new node a virtual position as close as is practical to the helper node's virtual position closest to $(0, 0)$ to prevent expanding the network unnecessarily. It should be noted that when a node is given a virtual position, it also gains all of the virtual positions that the position inherits as described by the equation above.
+
+\subsubsection{Balance}
+
+Nodes have to process traffic coming from (and going to) two virtual positions for every virtual position that they own. Therefore, nodes should be inclined to give away their virtual positions. In figure \ref{balance1}, $A$ has given out all of its virtual positions to new nodes that have joined the network. Unfortunately, the links are poorly balanced between nodes; B and C have ten unidirectional connections apiece wheras all other nodes have just four. To rectify this situation, we allow nodes to be repositioned which occurs through the trade of virtual addresses. In figure \ref{balance2}, $B$ gives position $(3,0)$ to $E$ and $E$ gives $(2,0)$ back to $A$. $G$ moves in a similar fashion. The links between nodes are now far more balanced. 
 
 \begin{figure}[h]
-\centering
-\begin{subfigure}
-\includegraphics{diagrams/network_join1.eps}
-\caption{Network joining 1}
-\label{join1}
-\end{subfigure}
-\begin{subfigure}
-\includegraphics{diagrams/network_join2.eps}
-\caption{Network joining 2}
-\label{join2}
-\end{subfigure}
+    \centering
+    \includegraphics{diagrams/network_balance1.eps}
+    \caption{An unbalanced arrangement of virtual positions.}
+    \label{balance1}
 \end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/network_balance2.eps}
+    \caption{A more balanced arrangement of virtual positions.}
+    \label{balance2}
+\end{figure}
+
+Another consideration is how willing nodes are to perform a balancing trade. For example, $B$ asks $E$ if it will take the virtual position it has at $(3,0)$, $B$ is willing to do this trade as it will lower $B$'s throughput. If $E$ is willing, it informs $A$ that it is leaving the position (2,0) so $A$ can take control of the position again; it then places itself at (3,0). If $E$ is not willing, $B$ can ask another node to trade positions with. $A$ is the party most likely to be unwilling to perform the trade as it increases its load however as the other nodes know of the virtual postitions $A$ owns, $A$ can be forcibly removed from the network for 'not pulling its weight'.
+
+\subsubsection{Contraction}
+
+Contracting the network is basically a reverse of the expansion process in that the network width is halved in each dimension. In order to contract the network, the network has to represent  As nodes leave the network, they return their virtual positions to other nodes. 
+
+%TODO is contraction actually necessary?
 
 % -----------------------------------------------------------------------------
 
