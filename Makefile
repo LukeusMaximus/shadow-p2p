@@ -3,3 +3,6 @@ all:
 	
 clean:
 	@cd docs; make clean;
+	
+spotless:
+	@cd docs; make spotless;

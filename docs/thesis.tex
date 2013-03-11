@@ -618,6 +618,8 @@ As the network expands, nodes gain new virtual positions in predetermined places
 
 This provides every node that owns at least one virtual position with a potentially unlimited number of descendant positions. This will allow a node to continue in helping nodes join for as long as that node desires. When a node joins, the helper node should give the new node a virtual position as close as is practical to the helper node's virtual position closest to $(0, 0)$ to prevent expanding the network unnecessarily. It should be noted that when a node is given a virtual position, it also gains all of the virtual positions that the position inherits as described by the equation above.
 
+%TODO explain tree arrangement
+
 \subsubsection{Balance}
 
 Nodes have to process traffic coming from (and going to) two virtual positions for every virtual position that they own. Therefore, nodes should be inclined to give away their virtual positions. In figure \ref{balance1}, $A$ has given out all of its virtual positions to new nodes that have joined the network. Unfortunately, the links are poorly balanced between nodes; B and C have ten unidirectional connections apiece wheras all other nodes have just four. To rectify this situation, we allow nodes to be repositioned which occurs through the trade of virtual addresses. In figure \ref{balance2}, $B$ gives position $(3,0)$ to $E$ and $E$ gives $(2,0)$ back to $A$. $G$ moves in a similar fashion. The links between nodes are now far more balanced. 
@@ -648,9 +650,7 @@ Contracting the network is basically a reverse of the expansion process in that 
     \label{contraction}
 \end{figure}
 
-As nodes leave the network, they return their virtual positions to other nodes. 
-
-%TODO is contraction actually necessary?
+This clearly requires the nodes within the network to perform a feat of organisation. This is accomplished by controlling how nodes leave the network. As nodes leave the network, they return their virtual positions to other nodes. Consider a single virtual position belonging to the leaving node. If one or more of the corresponding inherited virtual positions have been given to other nodes then it asks one of those nodes to take possession of the current virtual position. If it has not given the inherited virtual positions to other nodes then it gives the virtual position to the node in possession of the virtual position's successor.
 
 % -----------------------------------------------------------------------------
 

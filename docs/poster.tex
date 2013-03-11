@@ -27,7 +27,7 @@
 \begin{columns}[t]
     \begin{column}{0.900\linewidth}
     \begin{block}{\normalsize Introduction}
-    \small Shadow P2P is a network designed to provide a level of anonymity that has never been provided before. On existing networks, it is very hard to tell what a communication is about or who is talking with who. My network aims to provide these anonymity features and it also aims to prevent anyone from being able to tell if a person is participating in the network or not. This is a feature not offered by any other network. This is achieved through the use of several key project components. Among these are: shouts, shout groups, public key hiding and a toroidal network structure.
+    \small Shadow P2P is a network designed to provide a level of anonymity that has never been provided before. In existing networks, it is very hard to tell who is talking with who and what they are talking about. In additon to these features, my network aims to prevent anyone from being able to tell if a person is participating in the network or not. This is a feature not offered by any other network. This is achieved through the use of several key project components. Among these are: shouts, shout groups, public key hiding and a toroidal network structure.
     \end{block}
     \end{column}
 \end{columns}
@@ -37,39 +37,29 @@
 \begin{columns}[t]
     \begin{column}{0.422\linewidth}
     \begin{block}{\normalsize 1. Shouts}
-%    \small A shout is essentially a multicast. This is where a message is sent to a known list of IP addresses. In my network, the receiver provides a list of IP addresses, only one of which is the receiver's true IP address. This list is called a 'shout list'. The sender "shouts" by sending a message to every IP address in the shout list whilst also spoofing their own IP address. This anonymises the receiver's IP address amongst those in the shout list and the sender's identity has been removed the message. This method of communication reveals very little about who is talking to who and is the communication primitive that the network depends on.
+    \small A shout is how peers communicate anonymously. To do this, the sender gets the shout list corresponding to the receiver.
     \begin{figure}[h]
         \includegraphics{diagrams/poster_get_list.eps}
-        \caption{1. Peer gets the shout list of another peer.}
     \end{figure}
-    \begin{figure}[h]
-        \includegraphics{diagrams/poster_spoof_IP.eps}
-        \caption{2. Peer sets up IP address spoofing.}
-    \end{figure}
+    The sender then sends messages to the receiver by sending packets with a spoofed source IP address to every IP address in the shout list.
     \begin{figure}[h]
         \includegraphics{diagrams/poster_d2.eps}
-        \caption{3. Peer sends messages to each IP on the shout list.}
     \end{figure}
-%    The communication is unreliable, so how do we make sure the receiver gets the message? How do we prevent a hostile sender from searching the shout list to find the receiver's real IP address? Isn't this method of sending messages not incredibly inefficient?
+    This method of communication is unreliable and very inefficient but it does remove most of the information about the peers' identities. The point of most concern is that some party could search through the IP addresses in the shout list to find the true identity of the peer. For that reason, shout groups have been created.
     \end{block}
     \end{column}
 
     \begin{column}{0.422\linewidth}
     \begin{block}{\normalsize 2. Shout Groups}
-%    \small Shout groups are a defence mechanism against hostile parties searching through the IP addresses on the shout list. A small number of peers work together and create a joint shout list that contains all of their real IP addresses. These peers work together to ensure that they only respond to messages that have been shouted to the entire shout list.
+    \small Shout groups are a defence mechanism that prevents adversaries from searching through the IP addresses in the shout list. A small number of peers work together and create a joint shout list that contains all of their real IP addresses.
     \begin{figure}[h]
         \includegraphics{diagrams/poster_search_list.eps}
-        \caption{An adversary may attempt to search the shout list for the IP addresses of the peers.}
     \end{figure}
+    These peers work together to ensure that they only respond to messages that do not give their identities away.
     \begin{figure}[h]
         \includegraphics{diagrams/poster_d3.eps}
-        \caption{The peers exchange messages to prevent the adversary from doing this.}
     \end{figure}
-    \begin{figure}[h]
-        \includegraphics{diagrams/poster_getting_old.eps}
-        \caption{}
-    \end{figure}
-%    The peers need to be careful which messages they do or do not respond to; the different search methods used by a hostile sender can reveal information about the peers in the shout group. The aim of the shout group is to minimise the amount of information that a hostile sender can gain about the peers' IP addresses. What if the members of the shout group are hostile? How do the shout group members communicate amongst themselves? How are repeated attacks hindered?
+    The aim of the shout group is to minimise the amount of information that a hostile sender can gain about the peers' IP addresses. Here, we also need to consider the cases where members of the shout group are hostile and how we reduce the frequency of these attacks.
     \end{block}
     \end{column}
 \end{columns}
@@ -79,7 +69,7 @@
 \begin{columns}[t]
     \begin{column}{0.422\linewidth}
     \begin{block}{\normalsize 3. Public Key Hiding}
-    \small Peers are associated with a public key. This can reveal who is communicating with whom, even with anonymous identities. To prevent this I have invented a method of hiding a public key such that it becomes unrecognisable but such that it can still be used for encryption. In ElGamal, this can be done as follows:
+    \small Peers are associated with a public key. This can reveal who is communicating with whom, even with anonymous identities. To prevent this I have invented a method of hiding a public key such that it becomes unrecognisable but so that it can still be used for encryption. In ElGamal, this can be done as follows:
     \begin{figure}[h]
         \includegraphics{diagrams/poster_d4.eps}
     \end{figure}    
