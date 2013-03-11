@@ -14,6 +14,7 @@
                 % the year of submission
                       year={2013} ]{poster}
 
+\usepackage{epstopdf}
 \usepackage{algorithm2e}
 \begin{document}
 
@@ -36,21 +37,39 @@
 \begin{columns}[t]
     \begin{column}{0.422\linewidth}
     \begin{block}{\normalsize 1. Shouts}
-    \small A shout is essentially a multicast. This is where a message is sent to a known list of IP addresses. In my network, the receiver provides a list of IP addresses, only one of which is the receiver's true IP address. This list is called a 'shout list'. The sender "shouts" by sending a message to every IP address in the shout list whilst also spoofing their own IP address. This anonymises the receiver's IP address amongst those in the shout list and the sender's identity has been removed the message. This method of communication reveals very little about who is talking to who and is the communication primitive that the network depends on.
+%    \small A shout is essentially a multicast. This is where a message is sent to a known list of IP addresses. In my network, the receiver provides a list of IP addresses, only one of which is the receiver's true IP address. This list is called a 'shout list'. The sender "shouts" by sending a message to every IP address in the shout list whilst also spoofing their own IP address. This anonymises the receiver's IP address amongst those in the shout list and the sender's identity has been removed the message. This method of communication reveals very little about who is talking to who and is the communication primitive that the network depends on.
+    \begin{figure}[h]
+        \includegraphics{diagrams/poster_get_list.eps}
+        \caption{1. Peer gets the shout list of another peer.}
+    \end{figure}
+    \begin{figure}[h]
+        \includegraphics{diagrams/poster_spoof_IP.eps}
+        \caption{2. Peer sets up IP address spoofing.}
+    \end{figure}
     \begin{figure}[h]
         \includegraphics{diagrams/poster_d2.eps}
+        \caption{3. Peer sends messages to each IP on the shout list.}
     \end{figure}
-    The communication is unreliable, so how do we make sure the receiver gets the message? How do we prevent a hostile sender from searching the shout list to find the receiver's real IP address? Isn't this method of sending messages not incredibly inefficient?
+%    The communication is unreliable, so how do we make sure the receiver gets the message? How do we prevent a hostile sender from searching the shout list to find the receiver's real IP address? Isn't this method of sending messages not incredibly inefficient?
     \end{block}
     \end{column}
 
     \begin{column}{0.422\linewidth}
     \begin{block}{\normalsize 2. Shout Groups}
-    \small Shout groups are a defence mechanism against hostile parties searching through the IP addresses on the shout list. A small number of peers work together and create a joint shout list that contains all of their real IP addresses. These peers work together to ensure that they only respond to messages that have been shouted to the entire shout list.
+%    \small Shout groups are a defence mechanism against hostile parties searching through the IP addresses on the shout list. A small number of peers work together and create a joint shout list that contains all of their real IP addresses. These peers work together to ensure that they only respond to messages that have been shouted to the entire shout list.
+    \begin{figure}[h]
+        \includegraphics{diagrams/poster_search_list.eps}
+        \caption{An adversary may attempt to search the shout list for the IP addresses of the peers.}
+    \end{figure}
     \begin{figure}[h]
         \includegraphics{diagrams/poster_d3.eps}
+        \caption{The peers exchange messages to prevent the adversary from doing this.}
     \end{figure}
-    The peers need to be careful which messages they do or do not respond to; the different search methods used by a hostile sender can reveal information about the peers in the shout group. The aim of the shout group is to minimise the amount of information that a hostile sender can gain about the peers' IP addresses. What if the members of the shout group are hostile? How do the shout group members communicate amongst themselves? How are repeated attacks hindered?
+    \begin{figure}[h]
+        \includegraphics{diagrams/poster_getting_old.eps}
+        \caption{}
+    \end{figure}
+%    The peers need to be careful which messages they do or do not respond to; the different search methods used by a hostile sender can reveal information about the peers in the shout group. The aim of the shout group is to minimise the amount of information that a hostile sender can gain about the peers' IP addresses. What if the members of the shout group are hostile? How do the shout group members communicate amongst themselves? How are repeated attacks hindered?
     \end{block}
     \end{column}
 \end{columns}
