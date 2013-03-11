@@ -639,7 +639,16 @@ Another consideration is how willing nodes are to perform a balancing trade. For
 
 \subsubsection{Contraction}
 
-Contracting the network is basically a reverse of the expansion process in that the network width is halved in each dimension. In order to contract the network, the network has to represent  As nodes leave the network, they return their virtual positions to other nodes. 
+Contracting the network is basically a reverse of the expansion process in that the network width is halved in each dimension. In order to contract the network, the nodes have to be in a configuration identical to if the network had just undergone an expansion, i.e. the nodes' virtual positions are repeated once in each dimension (see figure \ref{contraction}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/network_contraction.eps}
+    \caption{Once the nodes enter the correct configuration, the network can be downsized.}
+    \label{contraction}
+\end{figure}
+
+As nodes leave the network, they return their virtual positions to other nodes. 
 
 %TODO is contraction actually necessary?
 
