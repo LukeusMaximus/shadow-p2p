@@ -655,6 +655,7 @@ This clearly requires the nodes within the network to perform a feat of organisa
 \chapter{Project Execution}
 \label{chap:execution}
 
+\begin{comment}
 {\bf A topic-specific chapter, of roughly $20$ pages} 
 \vspace{1cm} 
 
@@ -747,6 +748,25 @@ the following content is auto-generated dummy text.
 
 This is an example paragraph; note the trailing full-stop in the title,
 which is common style intended to ensure it does not run into the text.
+\end{comment}
+
+The overarching goal of this project is to design a network in full that meets the requirements for anonymity previously stated. In this chapter, the complete network design is explained and the use of each component detailed in the previous chapter is shown.
+
+\section{User Requirements}
+
+This project makes some assumptions about the abilities of the network's users, namely, that they can perform IP spoofing. It is further assumed that the users have a single IP address assigned to them by their ISP (which doubles as the user's identity in the design) and that the connection between the computer running Shadow P2P software and their ISP is mediated by a router in possession of the user. Two things make IP spoofing a non-trivial task, Network Address Translation (NAT) and ISP source address filtering.
+
+NAT is a feature of the user's router that provides a large number of Local Area Network (LAN) IP addresses so that all machines on the LAN can access the internet via the single IP provided by the ISP. The NAT will replace the source IP address of any packet exiting the LAN with the IP address provided by the ISP. Therefore, if the user's machine is spoofing the IP address on packets it emits to the Shadow P2P network, a router with NAT enabled will undo the effort of the IP spoofing and will add information about the user's identity to each and every packet. To make things harder, most commercially avaiable routers do not allow disabling NAT because there are very few reasons that a user with a single IP address would have to do this. However, it is just a matter of acquiring the correct hardware.
+
+ISPs perform source address filtering on packets that enter their networks (ingress filtering). The aim of such filtering is to block malicious IPs from performing attacks within, or across the ISP's network. These filters are also in place to block spoofed IP addresses. Research into how effective these filters are showed that 31\% of the clients performing the testing were able to perform some form of IP address spoofing\cite{beverly2009understanding}. Furthermore, some of the same tests were used in a similar research effort 4 years prior\cite{bb-spoofer-sruti} where it was estimated that 20\% - 30\% of the clients could perform IP spoofing leading to the conclusion that uptake of filtering is very slow. Therefore, whilst this does indicate that 69\% of all users would not be able to use Shadow P2P, the proportion that can will be able to so for some time. Users of Shadow P2P will have to determine for themselves whether they can perform IP spoofing of some form, ideally using some physically distant machine to determin if spoofed packets have been received.
+
+%TODO mention spoofing other IP addresses in dynamically assigned IP blocks.
+
+Once IP spoofing has been achieved, the user will need to acquire software for interaction with the Shadow P2P network. How this is achieved anonymously is beyond the scope of this project but simple methods do exist. For example, the software may be passed between users on some removable media; as this takes place without use of the Internet, there is no chance of the user revealing their IP address. On top of this, the user will have to acquire a shout list for a node in the network. P2P software is often distributed with IP addresses of known nodes so, in Shadow P2P there would be shout lists of known nodes included. Whilst it is true that a node is more vulnerable the longer it maintains the same shout list (in the case of onging attacks), the node can stop responding to requests using a given shout list at any time which renders it useless to attackers. The software distributors would then later remove the unresponsive shout list and replace it with another. 
+
+The last step before joining the network is to make a shout group with other users
+
+%http://dataprivacylab.org/dataprivacy/projects/randomorder/paper.pdf
 
 % -----------------------------------------------------------------------------
 
