@@ -753,20 +753,78 @@ which is common style intended to ensure it does not run into the text.
 The overarching goal of this project is to design a network in full that meets the requirements for anonymity previously stated. In this chapter, the complete network design is explained and the use of each component detailed in the previous chapter is shown.
 
 \section{User Requirements}
+\subsection{IP Spoofing}
 
 This project makes some assumptions about the abilities of the network's users, namely, that they can perform IP spoofing. It is further assumed that the users have a single IP address assigned to them by their ISP (which doubles as the user's identity in the design) and that the connection between the computer running Shadow P2P software and their ISP is mediated by a router in possession of the user. Two things make IP spoofing a non-trivial task, Network Address Translation (NAT) and ISP source address filtering.
 
 NAT is a feature of the user's router that provides a large number of Local Area Network (LAN) IP addresses so that all machines on the LAN can access the internet via the single IP provided by the ISP. The NAT will replace the source IP address of any packet exiting the LAN with the IP address provided by the ISP. Therefore, if the user's machine is spoofing the IP address on packets it emits to the Shadow P2P network, a router with NAT enabled will undo the effort of the IP spoofing and will add information about the user's identity to each and every packet. To make things harder, most commercially avaiable routers do not allow disabling NAT because there are very few reasons that a user with a single IP address would have to do this. However, it is just a matter of acquiring the correct hardware.
 
-ISPs perform source address filtering on packets that enter their networks (ingress filtering). The aim of such filtering is to block malicious IPs from performing attacks within, or across the ISP's network. These filters are also in place to block spoofed IP addresses. Research into how effective these filters are showed that 31\% of the clients performing the testing were able to perform some form of IP address spoofing\cite{beverly2009understanding}. Furthermore, some of the same tests were used in a similar research effort 4 years prior\cite{bb-spoofer-sruti} where it was estimated that 20\% - 30\% of the clients could perform IP spoofing leading to the conclusion that uptake of filtering is very slow. Therefore, whilst this does indicate that 69\% of all users would not be able to use Shadow P2P, the proportion that can will be able to so for some time. Users of Shadow P2P will have to determine for themselves whether they can perform IP spoofing of some form, ideally using some physically distant machine to determin if spoofed packets have been received.
+ISPs perform source address filtering on packets that enter their networks (ingress filtering). The aim of such filtering is to block malicious IPs from performing attacks within, or across the ISP's network. These filters are also in place to block spoofed IP addresses. Research into how effective these filters are showed that 31\% of the clients performing the testing were able to perform some form of IP address spoofing\cite{beverly2009understanding}. Furthermore, some of the same tests were used in a similar research effort 4 years prior\cite{bb-spoofer-sruti} where it was estimated that 20\% - 30\% of the clients could perform IP spoofing leading to the conclusion that uptake of filtering is very slow. Therefore, whilst this does indicate that 69\% of all users would not be able to use Shadow P2P, the proportion that can will be able to so for some time. Users of Shadow P2P will have to determine for themselves whether they can perform IP spoofing of some form, ideally using some physically distant machine to determine if spoofed packets have been received.
 
 %TODO mention spoofing other IP addresses in dynamically assigned IP blocks.
 
 Once IP spoofing has been achieved, the user will need to acquire software for interaction with the Shadow P2P network. How this is achieved anonymously is beyond the scope of this project but simple methods do exist. For example, the software may be passed between users on some removable media; as this takes place without use of the Internet, there is no chance of the user revealing their IP address. On top of this, the user will have to acquire a shout list for a node in the network. P2P software is often distributed with IP addresses of known nodes so, in Shadow P2P there would be shout lists of known nodes included. Whilst it is true that a node is more vulnerable the longer it maintains the same shout list (in the case of onging attacks), the node can stop responding to requests using a given shout list at any time which renders it useless to attackers. The software distributors would then later remove the unresponsive shout list and replace it with another. 
 
-The last step before joining the network is to make a shout group with other users
+\subsection{Creating a Shout Group}
 
-%http://dataprivacylab.org/dataprivacy/projects/randomorder/paper.pdf
+Before a user is ready to join the network as a peer, they will need to generate their own shout list and join a shout group. Shout list generation can easily be performed as described previously. Creation of a shout group, however, is harder as it requires users to create a shared shout list from their own shout lists without revealing to one another what their shout lists are. Shout groups can be formed in one of two ways.
+
+Firstly, if the user can find a small group of potential users offline, then this group of users can form a shout group. In this case, the users will share the node in the network. This does involve meeting those users in the shout group face to face so it would be preferable to form this group from people that the user knows and trusts personally.
+
+Secondly, the user can ask a node in the network (via the shout obtained previously) to broadcast a message that requests the creation of a shout group, contains the user's own shout and provides a timestamp. Nodes then offer to take part in the shout group by sending their public keys to the user using the shout list provided along with a proof of work token that corresponds to the public key and timestamp received from the user. The user will then choose a subset of these to be members of their shout group. Through the use of a secure multiparty computation that computes a random permutation on its inputs, a shout list containing the user's real IP and those of the volunteers can be generated. This list could be generated using a method described in \cite{sweeney2004multiparty} to ensure its randomness. When a shout group is created this way, the user will be the sole owner of their network node.
+
+A risk of using the second method is that the shout the user provides does not allow them to verify if the volunteers are shouting correctly. An adversary that volunteers could send different public keys to each address in the shout list and could then identify the user's real IP address by observing which public key the user used to secure messages between them. This risk is mitigated by requiring the volunteer to give proof of work tokens corresponding to both the public key they provide and the timestamp. The adversary would then need to produce a different proof of work for each IP in the user's shout list. If the user limits the time between requesting volunteers and choosing between volunteers that responded then the attack is very likely to fail. This is because it is computationally infeasible for the adversary to produce a large number of proof of work tokens in a short space of time.
+
+There is also a risk to the volunteers. As the network requires that a peer use the same set of IP addresses for their individual shout list, the shout groups that the volunteer is part of will have shout lists which have non-negligibly sized intersections. If an adversary managed to obtain the shout lists for two shout group's with a common volunteer, then the intersection would give the adversary the individual shout list of the volunteer. From this shout list, an attack can be mounted against one of these shout groups without triggering the attack prevention mechanism and the volunteer's real IP can be obtained.
+
+\section{Network Structure}
+
+The network takes on the form of a uni-directional toroid as explained in the previous chapter. This structure is necessary in order to perform the proposed method of routing. Before the routing is possible, the nodes need to have complete network knowledge, i.e. the virtual positions and public keys of every node in the network. This information is necessary for anonymity because the more paths there are available, the more packets in the same communication can be spread out and so it becomes harder for an adversary to piece the traffic back together.
+
+\subsection{Network Size}
+
+$k$ is the number of dimensions that the toroidal network takes. $w$ is the network width in any dimension (recall that the width is the same in all dimensions)
+
+\subsection{Information Required for Complete Network Knowledge}
+
+The information that needs to be known for each node is as follows.
+\start{enumerate}
+\item The public key for data encryption.
+\item The public key for data signatures.
+\item The public keys for routing in each dimension.
+\item The proof of work token associated with these keys.
+%TODO reliability info; signatures to confirm that a node is where it is in the network
+\item A signature of the above items using the signature key.
+\end{enumerate}
+The data encryption and routing keys are required for routing, these keys need to be of a type which supports the public key hiding technique described in the previous chapter. The signature key is required for verifying message authenticity and database entries. The proof of work token verifies that a node has gone through the required effort to join the network. The signature is used to bind all of the information together and prevent tampering.
+
+\section{Packets}
+
+Shadow P2P uses a number of different packets for different purposes. For simplicity, the number of packet types is kept to a minimum. The packet structures, their uses and usages are described in this section. Due to the anonymity requirements of the network, all packets represent unreliable transmissions. A TCP-like 'ACK' response to each packet can aid adversaries in detecting a receiver or sender of a communication.
+
+\subsection{Generic Data}
+
+This packet should make up the bulk of the network's traffic. It is used for transferring any form of data between nodes. This packet can be used providing that a path is known between from the sender to the receiver (if the sender has complete network knowledge then this requirement is obviously fulfilled). This packet provides confidential and authenticated data transfer. Furthermore, it ensures that messages cannot be traced as they pass through nodes and that no intermediate node can determine the destination of the message.
+%TODO diagram
+The packet is divided up into 4 sections. The first section is for routing keys, the second is for the data encryption public key of the receiver, the third is for so-called 'hybrid headers' and the fourth is the data payload field (including data signature).
+
+\subsubsection{Packet Construction}
+
+Once a random route has been selected to send the packet along, the routing keys field is filled out as follows. For each node in the path, take the key corresponding to the direction the packet will take from this node to the next node. This public key is then hidden using the public key hiding technique and the resulting pair $(g\prime, h\prime)$ is appended to the field. After these keys have been added, pairs of random group members are appended to the field so that the final number of pairs in the field is equivalent to $k \times w$. This is the maximum number of pairs that the field may take; it allows packets to route to any other node on the network and prevents packets traversing the network forever. It should be clear that this field doubles as the packet's Time To Live (TTL).
+
+The data encryption public key field is set to be the data encryption public key of the receiving node with the hiding technique applied.
+
+The hybrid headers field contains encryptions of symmetric encryption keys under the data encryption public key. A random symmetric encryption key is chosen and encrypted under the data encryption public key. The field is then set to this encryption and then random encryptions are appended to this field until the total number of encryptions is equal to $k \times w$.
+
+The data payload first has a signature computed using the sending node's private part of their data signature key. This is then appended to the data. The result is then encrypted symmetrically under the same symmetric key generated for the hybrid headers field. This becomes the data payload field.
+
+The final packet is sent to the first node in the random route that was generated.
+
+\subsubsection{Packet Processing En-route}
+%TODO here
+{\bf Routing Keys:} These keys are used to indicate the direction that the packet should take at any given node. Each node will have a routing key for each dimension and these are known by the sender. The idea behind the routing keys is that when generic data packet is received by a node, the node checks the first routing key within the field and sends the packet in the dimension corresponding to that key. If the key doesn't correspond to one of its routing keys then the data encryption public key (the second field) is checked to see if the data can be decrypted. If it can, decryption of the packet is attempted, otherwise, the packet is dropped.
+
+The routing key is a pair of ($g\prime$, $h\prime$) as described for public key hiding. The node uses the private part of each of their routing keys to see if $f(g\prime, x) = h\prime$. If it does then the packet is to be routed in the direction corresponding to that key. The node removes this pair from the front of the field and adds a random pair of group members to the back. The packet is then sent in the specified direction.
 
 % -----------------------------------------------------------------------------
 
