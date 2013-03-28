@@ -378,7 +378,7 @@ This project aims to try and make a network design that provides more anonymity 
 
 This project attempts to create a network where not only is it infeasible to eavesdrop on traffic or determine who is talking to who but it will also be infeasible (or at least expensive) to determine whether or not a person is participating in the network. This is a feature not provided by any other network design. Whilst it may be of limited use, I have shown that there are scenarios where it is necessary to have such a level of protection. It is therefore important to try to fill this gap in network designs so that there will at least be something of use in these situations.
 
-This idea of 'hard to detect' participation gives rise to a much more intriguing feature of my network design. In all other P2P networks, the peers hold the details required to connect to their neighbours and engage in communication; namely, the peers hold the IP address of their neighbours. Recall that I defined the IP address of a peer to be their identity as this information can easily be traced back to a person or other entity responsible for that IP address. This means that the neighbours of a peer know that peer's identity. This is far from ideal if we wish to protect against entities discovering that a peer is participating in the network. To rectify this flaw, I have designed the network such that \em{a peer's neighbours do not know that peer's IP address}. To clarify, neighbours do hold the peer's IP address but only amongst many others, thus the peer is anonymised by virtue of being 'lost in the crowd'. As may be obvious, the challenge here is to show exactly how communication can occur between peers who are unsure of their peer's IP address (without which, messages cannot be sent to that peer).
+This idea of 'hard to detect' participation gives rise to a much more intriguing feature of my network design. In all other P2P networks, the peers hold the details required to connect to their neighbours and engage in communication; namely, the peers hold the IP address of their neighbours. Recall that I defined the IP address of a peer to be their identity as this information can easily be traced back to a person or other entity responsible for that IP address. This means that the neighbours of a peer know that peer's identity. This is far from ideal if we wish to protect against entities discovering that a peer is participating in the network. To rectify this flaw, I have designed the network such that {\em a peer's neighbours do not know that peer's IP address}. To clarify, neighbours do hold the peer's IP address but only amongst many others, thus the peer is anonymised by virtue of being 'lost in the crowd'. As may be obvious, the challenge here is to show exactly how communication can occur between peers who are unsure of their peer's IP address (without which, messages cannot be sent to that peer).
 
 On top of the basic communication links between peers, designing a network around anonymity is another major undertaking. I will use the ideas and proven concepts from the existing networks to construct a network that meets the needs of the project's security and anonymity requirements.
 
@@ -616,7 +616,14 @@ As the network expands, nodes gain new virtual positions in predetermined places
 
 \[(x + ai, y + aj)\; a = \lfloor \log_{2}{(max(x,y))} \rfloor + 1; \forall i,j \in \mathbb{N}\]
 
-This provides every node that owns at least one virtual position with a potentially unlimited number of descendant positions. This will allow a node to continue in helping nodes join for as long as that node desires. When a node joins, the helper node should give the new node a virtual position as close as is practical to the helper node's virtual position closest to $(0, 0)$ to prevent expanding the network unnecessarily. It should be noted that when a node is given a virtual position, it also gains all of the virtual positions that the position inherits as described by the equation above. The virtual position inheritance scheme is clearly arranged in a tree with virtual postition (0,0) being the root.
+This provides every node that owns at least one virtual position with a potentially unlimited number of descendant positions. This will allow a node to continue in helping nodes join for as long as that node desires. When a node joins, the helper node should give the new node a virtual position as close as is practical to the helper node's virtual position closest to $(0, 0)$ to prevent expanding the network unnecessarily. It should be noted that when a node is given a virtual position, it also gains all of the virtual positions that the position inherits as described by the equation above. The virtual position inheritance scheme is clearly arranged in a tree with virtual postition (0,0) being the root (see figure \ref{tree}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/network_tree.eps}
+    \caption{Each position indicates the node coordinates of its parents in (x,y) form.}
+    \label{tree}
+\end{figure}
 
 \subsubsection{Balance}
 
@@ -779,16 +786,14 @@ There is also a risk to the volunteers. As the network requires that a peer use 
 
 \section{Network Structure}
 
-The network takes on the form of a uni-directional toroid as explained in the previous chapter. This structure is necessary in order to perform the proposed method of routing. Before the routing is possible, the nodes need to have complete network knowledge, i.e. the virtual positions and public keys of every node in the network. This information is necessary for anonymity because the more paths there are available, the more packets in the same communication can be spread out and so it becomes harder for an adversary to piece the traffic back together.
+Here, it is detailed how the nodes in the network are organised. Node arrangement, necessary information and node joining / leaving are considered.
 
-\subsection{Network Size}
+The network takes on the form of a uni-directional toroid as explained in the previous chapter. This structure is necessary in order to perform the proposed method of routing and network resizing. For notation: $k$ is the number of dimensions that the toroidal network takes, $w$ is the network width in any dimension (recall that the width is the same in all dimensions).
 
-$k$ is the number of dimensions that the toroidal network takes. $w$ is the network width in any dimension (recall that the width is the same in all dimensions)
+It was shown earlier that the nodes of the grid formed a tree for the purposes of inheriting virtual positions. When a virtual position is given to another node it also gains all virtual positions that that virtual position inherits. A potential problem that needs to be addressed is that a node belonging to an adversary could claim to new nodes that they own a given virtual position on the network when in reality they do not. A new node needs to know who to believe when colleting information about the network.
 
-\subsection{Information Required for Complete Network Knowledge}
-
-The information that needs to be known for each node is as follows.
-\start{enumerate}
+Before the routing is possible, the nodes need to have complete network knowledge, i.e. the virtual positions and public keys of every node in the network. This information is necessary for anonymity because the more paths there are available, the more packets in the same communication can be spread out and so it becomes harder for an adversary to piece the traffic back together. The information that needs to be known for each node is as follows.
+\begin{enumerate}
 \item The public key for data encryption.
 \item The public key for data signatures.
 \item The public keys for routing in each dimension.
@@ -805,8 +810,8 @@ Shadow P2P uses a number of different packets for different purposes. For simpli
 \subsection{Generic Data}
 
 This packet should make up the bulk of the network's traffic. It is used for transferring any form of data between nodes. This packet can be used providing that a path is known between from the sender to the receiver (if the sender has complete network knowledge then this requirement is obviously fulfilled). This packet provides confidential and authenticated data transfer. Furthermore, it ensures that messages cannot be traced as they pass through nodes and that no intermediate node can determine the destination of the message.
-%TODO diagram
-The packet is divided up into 4 sections. The first section is for routing keys, the second is for the data encryption public key of the receiver, the third is for so-called 'hybrid headers' and the fourth is the data payload field (including data signature).
+
+The packet is divided up into 4 sections. The first section is for routing keys, the second is for the data encryption public key of the receiver, the third is for so-called 'hybrid headers' and the fourth is the data payload field.
 
 \subsubsection{Packet Construction}
 
@@ -816,15 +821,38 @@ The data encryption public key field is set to be the data encryption public key
 
 The hybrid headers field contains encryptions of symmetric encryption keys under the data encryption public key. A random symmetric encryption key is chosen and encrypted under the data encryption public key. The field is then set to this encryption and then random encryptions are appended to this field until the total number of encryptions is equal to $k \times w$.
 
-The data payload first has a signature computed using the sending node's private part of their data signature key. This is then appended to the data. The result is then encrypted symmetrically under the same symmetric key generated for the hybrid headers field. This becomes the data payload field.
+The data field is set to be the plaintext data and is then encrypted symmetrically under the same symmetric key generated for the hybrid headers field.
 
-The final packet is sent to the first node in the random route that was generated.
+The finished packet is sent to the first node in the random route that was generated.
 
 \subsubsection{Packet Processing En-route}
-%TODO here
-{\bf Routing Keys:} These keys are used to indicate the direction that the packet should take at any given node. Each node will have a routing key for each dimension and these are known by the sender. The idea behind the routing keys is that when generic data packet is received by a node, the node checks the first routing key within the field and sends the packet in the dimension corresponding to that key. If the key doesn't correspond to one of its routing keys then the data encryption public key (the second field) is checked to see if the data can be decrypted. If it can, decryption of the packet is attempted, otherwise, the packet is dropped.
 
-The routing key is a pair of ($g\prime$, $h\prime$) as described for public key hiding. The node uses the private part of each of their routing keys to see if $f(g\prime, x) = h\prime$. If it does then the packet is to be routed in the direction corresponding to that key. The node removes this pair from the front of the field and adds a random pair of group members to the back. The packet is then sent in the specified direction.
+Every node in the path that a packet takes performs operations on the packet as it passes through. The aim is to transform the packet so that none of its elements can be recognised as their previous values. This will prevent packets being tracked along their paths.
+
+The node checks the first routing key within the routing keys field and determines which direction to send the packet in once processing is complete. The routing key is a pair of ($g\prime$, $h\prime$) as described for public key hiding. The node uses the private part of each of their routing keys to see if $f(g\prime, x) = h\prime$. If it does then the packet is to be routed in the direction corresponding to that key. The node removes this pair from the front of the field and adds a random pair of group members to the back to maintain the field's size. Each pair in the field then has the public key hiding technique applied, this should result in the field being unrecognisable from it's previous value. If the key doesn't correspond to one of its routing keys then the data encryption public key (the second field) is checked to see if the data can be decrypted. If it can, decryption of the packet is attempted, otherwise, the packet is dropped.
+
+The node will apply the public key hiding technique to the data encryption public key field. The field will then be unrecognisable from it's previous value.
+
+The node generates a symmetric key for data encryption. The last encryption in the hybrid headers field is removed and the remainder of the field has a symmetric encryption applied to the rest of it using the generated symmetric key. An encryption of the symmetric key under the data encryption public key is added to the front of the field. The field's length is maintained and all of the field's elements are unrecognisable from their previous values.
+
+The data field then is then encrypted under the generated symmetric key. This will make the field unrecognisable as its previous value.
+
+\subsubsection{Packet Decryption}
+
+If a node receives a packet and the first element in the routing key field doesn't correspond to one of their routing public keys then the data encryption public key is inspected. Using the private part of their data encryption key, $x$, if $f(g\prime, x) = h\prime$ then the packet's destination is this node. The packet's data field may be decrypted as follows. First, the first element of the hybrid header's field is decrypted with the private part of the node's data encryption key; this obtains a symmetric key. The remainder of the hybrid headers field and the entire data field is decrypted using this key. The process may then be repeated on the first element of the remainder of the hybrid headers field; a new symmetric key will be obtained with each iteration (see figure \ref{hybrid_decrypt}). The decryption ends when the data field becomes plaintext.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/hybrid_header_decryption.eps}
+    \caption{The process of decrypting the hybrid headers to obtain the sequence of keys used to encrypt the data field}
+    \label{hybrid_decrypt}
+\end{figure}
+
+\subsubsection{Choice of Authenticity or Anonymity}
+
+The sender may choose to compute a signature on the data using the private part of their signature key. If they do, they will have to identify themselves to the receiver so that the receiver can verify the signature. Quite clearly, the sender cannot remain anonymous and authenticate data they send as authentication is a function that requires the identity of the sender. Here, "anonymity" is referring to how nodes are anonymised amongst all of the nodes in the network rather than being anonymised amongst a set of IP addresses; if this form of anonymity is broken then only the sender's node in the network is identified and not their real IP address.
+
+A node can send these packets to another node {\em and receive replies} anonymously as follows. The data that the sender sends is left unsigned, the node's identifier is left out. As long as the data otherwise contains no identification of the node, the packet is anonymous. No information about the sender is required to deliver this packet type to the receiver. If the sender requires a reply, they need not provide information on their location, instead they perform source routing from the receiver back to them. This is possible as they have complete network knowledge. The sender will then have a sequence of direction keys that would guide a packet from the receiver back to the sender if the receiver used this sequence as the routing keys field. This sequence is provided as part of the data field in the packet. The receiver cannot determine the sender's location in the network from the routing keys, in order to send a packet back to the sender, they simply use the provided sequence as the packet's routing keys field.
 
 % -----------------------------------------------------------------------------
 
