@@ -3,7 +3,6 @@ package ui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.image.BufferedImage;
@@ -11,9 +10,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import components.ComponentManager;
-
-
-import main.NetSim;
 
 public class DrawArea extends JPanel {
 
@@ -46,7 +42,6 @@ public class DrawArea extends JPanel {
     }
 
     public void drawCalibrationSquares() {
-        System.out.println("bounds = " + this.getBounds().toString());
         int w = this.getBounds().width;
         int h = this.getBounds().height;
         int squareSize = 10;
@@ -78,7 +73,6 @@ public class DrawArea extends JPanel {
         super.paintComponent(g);
         drawCalibrationSquares();
         if(this.componentManager != null) {
-            System.out.println("Rendering components");
             this.componentManager.renderComponents(getGraphics(), this.getBounds());
         }
         g.drawImage(buffer, 0, 0, null);

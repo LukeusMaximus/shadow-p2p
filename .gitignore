@@ -6,5 +6,7 @@ LANSim.ppt
 *.pcap
 *.tr
 ns3/
-netsim/
 lansim/
+tmp/
+reading/
+netsim/bin

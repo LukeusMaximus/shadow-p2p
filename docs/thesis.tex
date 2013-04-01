@@ -786,22 +786,51 @@ There is also a risk to the volunteers. As the network requires that a peer use 
 
 \section{Network Structure}
 
-Here, it is detailed how the nodes in the network are organised. Node arrangement, necessary information and node joining / leaving are considered.
+Here, it is detailed how the nodes in the network are organised. Node arrangement, necessary information and node joining / leaving are explained. The network takes on the form of a uni-directional toroid as explained in the previous chapter. This structure is necessary in order to perform the proposed method of routing and network resizing. For notation: $k$ is the number of dimensions that the toroidal network takes, $w$ is the network width in any dimension (recall that the width is the same in all dimensions). Communication between nodes is achieved using the shout and shout group methods.
 
-The network takes on the form of a uni-directional toroid as explained in the previous chapter. This structure is necessary in order to perform the proposed method of routing and network resizing. For notation: $k$ is the number of dimensions that the toroidal network takes, $w$ is the network width in any dimension (recall that the width is the same in all dimensions).
+\subsection{Authenticated Virtual Position Transfer}
+
+In order to change which nodes are connected to which other nodes, virtual positions are transferred between nodes. If a node is informed that the virtual position of one of its downstream neighbours has been given to another node, it will have to change the shout used for that neighbour.
 
 It was shown earlier that the nodes of the grid formed a tree for the purposes of inheriting virtual positions. When a virtual position is given to another node it also gains all virtual positions that that virtual position inherits. A potential problem that needs to be addressed is that a node belonging to an adversary could claim to new nodes that they own a given virtual position on the network when in reality they do not. A new node needs to know who to believe when colleting information about the network.
 
-Before the routing is possible, the nodes need to have complete network knowledge, i.e. the virtual positions and public keys of every node in the network. This information is necessary for anonymity because the more paths there are available, the more packets in the same communication can be spread out and so it becomes harder for an adversary to piece the traffic back together. The information that needs to be known for each node is as follows.
+To validate the transfer of ownership of a virtual location from one node to another, a signed certificate detailing the transfer is created by the node doing the giving (the giver). It is required that the giver signs the message or other nodes could simply claim they own the positions that rightfully belong to the giver. These certificates will form chains reminiscent of the X509 certification model. The signed certificate is then broadcast to the network which gives the network information on who owns which address. The other nodes in the network are then the regulators for who owns which virtual positions. They can ensure that no virtual position is given twice and that no node gives a virtual position that it doesn't currently own. This resembles the way the Bitcoin network prevents double spending of its currency.
+
+To keep things elegant, we restrict which virtual positions can be given and which nodes they can be given to.
+\begin{itemize}
+\item A node may only ever be given one virtual location (note that when given a virtual location, all the virtual positions that that position inherits are also transferred). This virtual position becomes their "local root". This also prevents a node simply offloading virtual positions that it is responsible for onto arbitrary nodes.
+\item Nodes may only give virtual positions that are immediate descendants of their local root.
+\end{itemize}
+
+The network also requires a mechanism for returning virtual positions for when a node leaves the network. There are several cases that need to be covered:
+\begin{itemize}
+\item The node has not given any of its virtual positions. The position is simply returned to the node that owns the leaving node's local root's parent virtual position. This takes the form of a signed message. This message can then be broadcast to the network so that the other nodes are aware that the original owner has regained ownership of the nodes.
+\item The node has given one or more of its virtual positons. The node performs a breadth first search on the nodes owning the children of its local root virtual position. When it finds a node that has not given any of its virtual positions, it sends a signed message to the parent of its local root virtual position indicating its intention to leave and the virtual position of the replacement node that it has just found. The parent owning node will then broadcast the signed message (causing the virtual position to change ownership) and will give the virtual position to the replacement node. The replacement node will then return its current virtual position to the node owning its local root's parent. The node's local root will then be that of the node that has just left the network.
+\end{itemize}
+
+These operations should result in a tidy tree of certificates. Each node that has been given a virtual position will have a certificate from the node owning the immediate parent of that virtual position, proving that it does indeed own that virtual position.
+
+The exception to this is the node that owns the root virtual position of the network. It quite obviously does not have a parent virtual position and so if the node leaves, there will be no node that can take its virtual position or reassign it. In this special case, when the node finds its replacement, it signs the message itself that gives the root virtual position to the replacement. This is similar to X509 where root certificate authorities sign each other's certificates because they have no parent authority.
+
+Should a certificate be produced that conflicts with the requirements of the network, or with current ownership, then the network will simply not accept the change.
+
+The network also has to handle nodes disconnecting without "saying goodbye". This presents a problem because the methods outlined for transferring virtual positions thus far assume that all nodes disconnect from the network in a controlled manner. To handle this, we further require that nodes assert their claim to the virtual position they have been given at regular intervals. This assertion will take the form of a message broadcast to the network telling it that it is still there. If the node owning the parent virtual position of the local root of the node that has disconnected doesn't receive an assertion from the node within the pre-agreed time interval, it replaces the node as if that node had informed it of its intention to leave.
+
+\subsection{Necessary Information for Complete Network Knowledge}
+
+Before the routing is possible, the nodes need to have complete network knowledge, i.e. the virtual positions and public keys of every node in the network. This information is necessary for anonymity because the more paths there are available, the more packets in the same communication can be spread out and so it becomes harder for an adversary to piece the traffic back together.
+
+The information that needs to be known for each node is as follows.
 \begin{enumerate}
 \item The public key for data encryption.
 \item The public key for data signatures.
 \item The public keys for routing in each dimension.
 \item The proof of work token associated with these keys.
-%TODO reliability info; signatures to confirm that a node is where it is in the network
 \item A signature of the above items using the signature key.
 \end{enumerate}
-The data encryption and routing keys are required for routing, these keys need to be of a type which supports the public key hiding technique described in the previous chapter. The signature key is required for verifying message authenticity and database entries. The proof of work token verifies that a node has gone through the required effort to join the network. The signature is used to bind all of the information together and prevent tampering.
+The data encryption and routing keys are required for routing, these keys need to be of a type which supports the public key hiding technique described in the previous chapter. The signature key is required for verifying message authenticity and database entries. The proof of work token verifies that a node has gone through the required effort to join the network. The signature is used to bind all of the information together and prevent tampering. Together this forms a node's keyset.
+
+In addition to this, all certificates concerning which virtual positions have been given to whom must be acquired. These will confirm which nodes are in which positions.
 
 \section{Packets}
 
@@ -833,7 +862,7 @@ The node checks the first routing key within the routing keys field and determin
 
 The node will apply the public key hiding technique to the data encryption public key field. The field will then be unrecognisable from it's previous value.
 
-The node generates a symmetric key for data encryption. The last encryption in the hybrid headers field is removed and the remainder of the field has a symmetric encryption applied to the rest of it using the generated symmetric key. An encryption of the symmetric key under the data encryption public key is added to the front of the field. The field's length is maintained and all of the field's elements are unrecognisable from their previous values.
+The node generates a symmetric key for data encryption. The last encryption in the hybrid headers field is removed and the remaining encryptions have a symmetric encryption applied to them using the generated symmetric key. An encryption of the symmetric key under the data encryption public key is added to the front of the field. The field's length is maintained and all of the field's elements are unrecognisable from their previous values.
 
 The data field then is then encrypted under the generated symmetric key. This will make the field unrecognisable as its previous value.
 
@@ -843,7 +872,7 @@ If a node receives a packet and the first element in the routing key field doesn
 
 \begin{figure}[h]
     \centering
-    \includegraphics{diagrams/hybrid_header_decryption.eps}
+    \includegraphics{diagrams/hybrid_header_decryption2.eps}
     \caption{The process of decrypting the hybrid headers to obtain the sequence of keys used to encrypt the data field}
     \label{hybrid_decrypt}
 \end{figure}
@@ -853,6 +882,34 @@ If a node receives a packet and the first element in the routing key field doesn
 The sender may choose to compute a signature on the data using the private part of their signature key. If they do, they will have to identify themselves to the receiver so that the receiver can verify the signature. Quite clearly, the sender cannot remain anonymous and authenticate data they send as authentication is a function that requires the identity of the sender. Here, "anonymity" is referring to how nodes are anonymised amongst all of the nodes in the network rather than being anonymised amongst a set of IP addresses; if this form of anonymity is broken then only the sender's node in the network is identified and not their real IP address.
 
 A node can send these packets to another node {\em and receive replies} anonymously as follows. The data that the sender sends is left unsigned, the node's identifier is left out. As long as the data otherwise contains no identification of the node, the packet is anonymous. No information about the sender is required to deliver this packet type to the receiver. If the sender requires a reply, they need not provide information on their location, instead they perform source routing from the receiver back to them. This is possible as they have complete network knowledge. The sender will then have a sequence of direction keys that would guide a packet from the receiver back to the sender if the receiver used this sequence as the routing keys field. This sequence is provided as part of the data field in the packet. The receiver cannot determine the sender's location in the network from the routing keys, in order to send a packet back to the sender, they simply use the provided sequence as the packet's routing keys field.
+
+\subsection{Packets for making shout groups}
+
+%TODO explain shout groups making one node per valid IP
+%TODO explain that making shout groups from existing nodes is not so bad
+This packet is sent by the node that wishes to create a shout group from existing nodes in the network. The receiver is a node in the network and broadcasts this message to the other nodes. Nodes will compute a proof of work before sending their details to the node making the shout group. The node will select randomly from the responses and then will confirm the groups creation via a third message.
+
+\subsubsection{Request for nodes}
+
+This packet contains the node's signed set of keys mentioned for complete network knowledge and the 
+
+\subsection{Packets for joining}
+
+\subsubsection{Join Request}
+
+This packet is sent from the joining node to a node already in the network and contains details of the joining node's keyset and shout list. The shout list is that of the shout group which the joining node has formed previously. The node in the network can either give the new node one of its virtual positions or it can select a node in the network that should give the node one of its positions. In the first case, the joiner node broadcasts a packet transferring a virtual position to the new node. In the second case, the joining packet is encapsulated within a generic data packet and sent to the node selected to be teh joiner node. This 'passing-the-buck' behaviour is used to improve network balance as much as possible; as a node is better off giving away its virtual positions then the selected joiner node has no reason to refuse this request. Once the selected joiner node receives the joining packet, they give a virtual position through the creation and broadcast of a certificate.
+
+\subsubsection{Join Response}
+
+The node that created the certificate will then inform the new node of its new position in the network. As the node has been in the position being given, the node knows the shout lists needed to contact their downstream neighbours. These shout lists are also sent to the new node. The new node will then need to inform their upstream neighbours of their shout group to complete the connection creation.
+
+\subsubsection{Shout List Change}
+
+This packet contains the shout list of the new node. It is sent to the upstream nodes encapsulated in a generic data packet; the data field is authenticated by the new node. The upstream nodes will verify the signature of the data field and will begin using the shout list as the replacement downstream connection. The connection replaces the previous downstream connection that these nodes had to the joiner node; this old connection would have terminated once the upstream node received the certificate informing them of the change in their downstream neighbour.
+
+\subsection{Packet for transfer of virtual positions}
+
+This packet is broadcast through the network; as such, delivery is in a controlled manner to ensure that unnecessary transmission of the packet does not occur. The diagonal method described in \cite{218454} modified for a uni-directional toroidal network is a good way to achieve this broadcast. The packet contains a certificate from one node giving a virtual position to another.
 
 % -----------------------------------------------------------------------------
 
