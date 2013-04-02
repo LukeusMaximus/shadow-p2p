@@ -30,6 +30,7 @@ public class ScheduledAction {
 
     public enum ScheduledActionType {
         nodejoin,
-        nodeleave
+        nodeleave,
+        sendDummy
     }
 }

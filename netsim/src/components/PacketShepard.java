@@ -2,7 +2,8 @@ package components;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.UUID;
+
+import misc.Packet;
 
 public class PacketShepard {
     private static final Integer travelTime = 20;
@@ -21,37 +22,27 @@ public class PacketShepard {
             }
         }
         for(Packet packet : removeSet) {
-            Node.findNodeByUUID(packet.destination).addMessageToInputBuffer(packet.message);
+            Node.findNodeByUUID(packet.getDestination()).addMessageToInputBuffer(packet.getMessage());
             packets.remove(packet);
         }
     }
     
-    public void sendPacket(UUID destination, String message) {
-        Packet packet = new Packet(destination, message);
+    public static Integer getTraveltime() {
+        return travelTime;
+    }
+    
+    public void sendPacket(Packet packet) {
         packets.add(packet);
     }
     
-    private class Packet {
-        private UUID destination;
-        private String message;
-        private Integer ticks;
-        
-        Packet(UUID destination, String message) {
-            this.destination = destination;
-            this.message = message;
-            this.ticks = 0;
+    public Collection<Packet> getNetworkPackets() {
+        Collection<Packet> networkPackets = new HashSet<Packet>();
+        for(Packet p : packets) {
+            if(p.getEndPosition() != null && p.getStartPosition() != null) {
+                networkPackets.add(p);
+            }
         }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public Integer getTicks() {
-            return ticks;
-        }
-        
-        public void tick() {
-            ++this.ticks;
-        }
+        return networkPackets;
     }
+    
 }

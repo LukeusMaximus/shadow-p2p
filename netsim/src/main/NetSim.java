@@ -1,16 +1,18 @@
 package main;
 
-import java.awt.Graphics;
 import java.awt.Point;
+import java.security.Security;
 
 import javax.swing.JFrame;
 
-import components.ComponentManager;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import simulation.NetworkSim;
 import simulation.ScheduledAction;
 import simulation.ScheduledAction.ScheduledActionType;
 import ui.DrawArea;
+
+import components.ComponentManager;
 
 public class NetSim {
 
@@ -45,6 +47,12 @@ public class NetSim {
         ScheduledAction action = new ScheduledAction(20, ScheduledActionType.nodejoin);
         action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
+        action = new ScheduledAction(100, ScheduledActionType.sendDummy);
+        simulation.addAction(action);
+        action = new ScheduledAction(120, ScheduledActionType.sendDummy);
+        simulation.addAction(action);
+        action = new ScheduledAction(140, ScheduledActionType.sendDummy);
+        simulation.addAction(action);
         simulation.simulate();
     }
     
@@ -52,14 +60,9 @@ public class NetSim {
      * @param args
      */
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
+        Security.addProvider(new BouncyCastleProvider());
         NetSim sim = new NetSim();
         sim.start();
-    }
-
-    public void drawComponents(Graphics g) {
-        // TODO Auto-generated method stub
-        
     }
 
 }

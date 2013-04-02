@@ -1,5 +1,6 @@
 package components;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,29 +11,51 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 
+import misc.Packet;
+
 import com.google.gson.Gson;
+
+import crypto.KeySet;
 
 public class Node {
     
-    public static ArrayList<Node> nodesInNetwork = new ArrayList<Node>();
-    private static ArrayList<Node> nodesOutsideNetwork = new ArrayList<Node>();
+    public static ArrayList<Node> nodes = new ArrayList<Node>();
+    
+    private PacketShepard internet;
     
     private UUID nodeID;
+    private Color nodeColour;
+    private Boolean inNetwork;
     private Queue<String> inBuffer;
     private Integer networkWidth;
     private VirtualPositionInfo localRoot;
     private Map<Point, VirtualPositionInfo> pointsOwned;
-    private PacketShepard internet;
+    private KeySet keySet;
     
     public Node(PacketShepard internet) {
         this.nodeID = UUID.randomUUID();
-        this.nodesOutsideNetwork.add(this);
         this.inBuffer = new LinkedList<String>();
         this.networkWidth = 1;
         this.localRoot = null;
         this.pointsOwned = null;
         this.internet = internet;
+        this.inNetwork = false;
+        
+        long col = this.nodeID.getLeastSignificantBits();
+        this.nodeColour = new Color((int)col & 255, (int)(col >> 8) & 255, (int)(col >> 16) & 255);
+        
+        this.keySet = KeySet.generateKeySet(this.nodeID);
+        
+        nodes.add(this);
     }    
+    
+    public Color getNodeColour() {
+        return nodeColour;
+    }
+
+    public Boolean isInNetwork() {
+        return inNetwork;
+    }
     
     @Override
     public String toString() {
@@ -78,13 +101,47 @@ public class Node {
         req.nodeID = this.nodeID;
         Gson gson = new Gson();
         String joinMessage = "JOIN_REQ: " + gson.toJson(req);
-        internet.sendPacket(foundNode.nodeID, joinMessage);
+        
+        internet.sendPacket(new Packet(foundNode.nodeID, joinMessage));
+    }
+    
+    public void sendDummyPacket() {
+        Packet packet = new Packet(localRoot.east, "DUMMY PACKET");
+        packet.setStartPosition(localRoot.virtualPosition);
+        Point pos = new Point(localRoot.virtualPosition);
+        pos = getEastPosition(pos);
+        packet.setEndPosition(pos);
+        internet.sendPacket(packet);
+        
+        packet = new Packet(localRoot.north, "DUMMY PACKET");
+        packet.setStartPosition(localRoot.virtualPosition);
+        pos = new Point(localRoot.virtualPosition);
+        pos = getNorthPosition(pos);
+        packet.setEndPosition(pos);
+        internet.sendPacket(packet);
+        
+        for(Point position : pointsOwned.keySet()) {
+            VirtualPositionInfo virtPosInfo = pointsOwned.get(position);
+            
+            packet = new Packet(virtPosInfo.east, "DUMMY PACKET");
+            packet.setStartPosition(virtPosInfo.virtualPosition);
+            pos = new Point(virtPosInfo.virtualPosition);
+            pos = getEastPosition(pos);
+            packet.setEndPosition(pos);
+            internet.sendPacket(packet);
+            
+            packet = new Packet(virtPosInfo.north, "DUMMY PACKET");
+            packet.setStartPosition(virtPosInfo.virtualPosition);
+            pos = new Point(virtPosInfo.virtualPosition);
+            pos = getNorthPosition(pos);
+            packet.setEndPosition(pos);
+            internet.sendPacket(packet);
+        }
     }
     
     public void enterNetwork(Point pos, UUID north, UUID east) {
         System.out.println("Entering network at " + pos.toString());
-        nodesOutsideNetwork.remove(this);
-        nodesInNetwork.add(this);
+        this.inNetwork = true;
         VirtualPositionInfo virtPosInfo = new VirtualPositionInfo();
         virtPosInfo.virtualPosition = pos;
         virtPosInfo.east = east;
@@ -95,7 +152,6 @@ public class Node {
             this.networkWidth *= 2;
         }
         this.pointsOwned = new HashMap<Point, VirtualPositionInfo>();
-        
     }
     
     private void processMessage(String message) {
@@ -115,7 +171,7 @@ public class Node {
             resp.north = position.north;
             resp.east = position.east;
             String joinReply = "JOIN_RESP: " + gson.toJson(resp);
-            internet.sendPacket(req.nodeID, joinReply);
+            internet.sendPacket(new Packet(req.nodeID, joinReply));
         } else if(message.startsWith("JOIN_RESP: ")) {
             System.out.println("Response received.");
             if(localRoot == null) {
@@ -160,28 +216,10 @@ public class Node {
         return this.networkWidth;
     }
     
-    class JoinRequest {
-        public UUID nodeID;
-        public JoinRequest() {
-            
-        }
-    }
-    
-    class JoinResponse {
-        public int x;
-        public int y;
-        public UUID north;
-        public UUID east;
-        public JoinResponse() {
-            
-        }
-        
-    }
-    
     public static Integer getMaxWidth() {
         Integer maxWidth = 1;
-        for(Node node : nodesInNetwork) {
-            if(node.getNetworkWidth() > maxWidth) {
+        for(Node node : nodes) {
+            if(node.isInNetwork() && node.getNetworkWidth() > maxWidth) {
                 maxWidth = node.getNetworkWidth();
             }
         }
@@ -189,8 +227,8 @@ public class Node {
     }
     
     public static Node findNodeByPoint(Point virtualLocationParam) {
-        for(Node node : nodesInNetwork) {
-            if(node.ownsPosition(virtualLocationParam)) {
+        for(Node node : nodes) {
+            if(node.isInNetwork() && node.ownsPosition(virtualLocationParam)) {
                 return node;
             }
         }
@@ -198,12 +236,7 @@ public class Node {
     } 
     
     public static Node findNodeByUUID(UUID nodeID) {
-        for(Node node : nodesInNetwork) {
-            if(node.getNodeID().equals(nodeID)) {
-                return node;
-            }
-        }
-        for(Node node : nodesOutsideNetwork) {
+        for(Node node : nodes) {
             if(node.getNodeID().equals(nodeID)) {
                 return node;
             }
@@ -212,12 +245,19 @@ public class Node {
     }
 
     public static void tickAll() {
-        for(Node node : nodesInNetwork) {
+        for(Node node : nodes) {
             node.tick();
         }
-        for(Node node : nodesOutsideNetwork) {
-            node.tick();
+    }
+    
+    public static Collection<Node> getNodesInNetwork() {
+        Collection<Node> inNetwork = new HashSet<Node>();
+        for(Node node : nodes) {
+            if(node.isInNetwork()) {
+                inNetwork.add(node);
+            }
         }
+        return inNetwork;
     }
     
     private static Collection<Point> getPointsInheritedForStepSize(Point pos, Integer stepSize) {
@@ -232,6 +272,19 @@ public class Node {
         public Point virtualPosition;
         public UUID north;
         public UUID east;
+    }
+    
+    private class JoinRequest {
+        public UUID nodeID;
+        public JoinRequest() {}
+    }
+    
+    private class JoinResponse {
+        public int x;
+        public int y;
+        public UUID north;
+        public UUID east;
+        public JoinResponse() {}
     }
     
 }

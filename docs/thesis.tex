@@ -836,6 +836,8 @@ In addition to this, all certificates concerning which virtual positions have be
 
 Shadow P2P uses a number of different packets for different purposes. For simplicity, the number of packet types is kept to a minimum. The packet structures, their uses and usages are described in this section. Due to the anonymity requirements of the network, all packets represent unreliable transmissions. A TCP-like 'ACK' response to each packet can aid adversaries in detecting a receiver or sender of a communication.
 
+Some packets require that they are broadcast. Such broadcasts need to occur a controlled manner to ensure that unnecessary transmission of the packet does not occur. The diagonal method described in \cite{218454} modified for a uni-directional toroidal network is a good way to achieve this. For this end, the virtual position of the source of the broadcast should be included with the packet; this will allow the nodes receiving the packet to determine if they need to resend it and, if so, in which direction.
+
 \subsection{Generic Data}
 
 This packet should make up the bulk of the network's traffic. It is used for transferring any form of data between nodes. This packet can be used providing that a path is known between from the sender to the receiver (if the sender has complete network knowledge then this requirement is obviously fulfilled). This packet provides confidential and authenticated data transfer. Furthermore, it ensures that messages cannot be traced as they pass through nodes and that no intermediate node can determine the destination of the message.
@@ -897,19 +899,31 @@ This packet contains the node's signed set of keys mentioned for complete networ
 
 \subsubsection{Join Request}
 
-This packet is sent from the joining node to a node already in the network and contains details of the joining node's keyset and shout list. The shout list is that of the shout group which the joining node has formed previously. The node in the network can either give the new node one of its virtual positions or it can select a node in the network that should give the node one of its positions. In the first case, the joiner node broadcasts a packet transferring a virtual position to the new node. In the second case, the joining packet is encapsulated within a generic data packet and sent to the node selected to be teh joiner node. This 'passing-the-buck' behaviour is used to improve network balance as much as possible; as a node is better off giving away its virtual positions then the selected joiner node has no reason to refuse this request. Once the selected joiner node receives the joining packet, they give a virtual position through the creation and broadcast of a certificate.
+This packet is sent from the joining node to a node already in the network and contains details of the joining node's keyset and shout list. The shout list is that of the shout group which the joining node has formed previously. The node in the network can either give the new node one of its virtual positions or it can select a node in the network that should give the node one of its positions. In the first case, the joiner node broadcasts a packet transferring a virtual position to the new node. In the second case, the joining packet is encapsulated within a generic data packet and sent to the node selected to be the joiner node. This 'passing-the-buck' behaviour is used to improve network balance as much as possible; as a node is better off giving away its virtual positions then the selected joiner node has no reason to refuse this request.
+
+In addition, this packet also contains a signature by the joining node of its shout list. This will be used to prove to the joining node's upstream neighbours that the shout list thay will use to contact it is authentic.
 
 \subsubsection{Join Response}
 
-The node that created the certificate will then inform the new node of its new position in the network. As the node has been in the position being given, the node knows the shout lists needed to contact their downstream neighbours. These shout lists are also sent to the new node. The new node will then need to inform their upstream neighbours of their shout group to complete the connection creation.
+Once the selected joiner node receives the joining packet, they give a virtual position to the joining node by creating a certificate of this transfer. The keyset info from the joining node and the virtual position transfer certificate are then broadcast to the network via the associated packets.
 
-\subsubsection{Shout List Change}
+The joiner node will then inform the joining node of its new position in the network (which becomes its local root). As the joiner node has been in the virtual position being given, the node knows the shout lists needed to contact the downstream neighbours of that position. These shout lists are also sent to the joining node so that it can send packets downstream.
 
-This packet contains the shout list of the new node. It is sent to the upstream nodes encapsulated in a generic data packet; the data field is authenticated by the new node. The upstream nodes will verify the signature of the data field and will begin using the shout list as the replacement downstream connection. The connection replaces the previous downstream connection that these nodes had to the joiner node; this old connection would have terminated once the upstream node received the certificate informing them of the change in their downstream neighbour.
+The upstream nodes of the joining node's virtual position will hear of the change in ownership from the certificate broadcast and will need the joining node's shout list in order to connect with them. To facilitate this, the joiner node, which knows the joining node's shout list, will send the list and its signature to the upstream nodes via the appropriate packet. The joining node will then need to get all keysets and all virtual position transfer certificates in order to construct its own complete network knowledge. Again, using the appropriate packet, the joiner node can provide all the necessary info.
+
+\subsection{Shout List Change}
+
+This packet contains the shout list of the joining node. It is sent to the upstream nodes encapsulated in a generic data packet; the data field is authenticated by the joining node. The upstream nodes will verify the signature of the data field and will begin using the shout list as the replacement downstream connection. The connection replaces the previous downstream connection that these nodes had to the joiner node; this old connection would have terminated once the upstream node received the certificate informing them of the change in their downstream neighbour.
+
+\subsection{Keyset Info}
+
+This packet provides information on keysets of nodes and is broadcast to the network. Upon receiving this packet type, the proof of work and signature on the keyset are checked for correctness. If the signature or proof of work is not valid then the packet is discarded immediately. Otherwise, the information is added to the node's knowledge of the network and the packet is resent as the broadcast requires. The checks on the data prevent flooding attacks from packets with unseen data as an attacker would have to generate many different proofs of work making it very difficult to do. To prevent flooding attacks with existing node data, the network simply will not continue the broadcast of anything that has been seen before.
 
 \subsection{Packet for transfer of virtual positions}
 
-This packet is broadcast through the network; as such, delivery is in a controlled manner to ensure that unnecessary transmission of the packet does not occur. The diagonal method described in \cite{218454} modified for a uni-directional toroidal network is a good way to achieve this broadcast. The packet contains a certificate from one node giving a virtual position to another.
+This packet contains a certificate from one node giving a virtual position to another. This packet is also broadcast through the network. Again, flooding is prevented by checking the data within the packet when it is received by a node. If it is a certificate that the node seen before, the signature is invalid or the node doing the signing is not permitted to give that virtual position, the packet is not resent. Otherwise the node resends the packet as the broadcast requires.
+
+%TODO packets for requests of keysets / position transfer certificates
 
 % -----------------------------------------------------------------------------
 
