@@ -1068,11 +1068,47 @@ Once all 1000 $S$ results had been collected, the total number of times any give
 
 Clearly, the addresses belonging to the members of the shout group have received the lowest tallies and most of the shout group members can be identified. As the members of $V$ in the shout group all have tallies within the lowest 20, it is safe to say that the majority of the anonymity provided by the shout has been eliminated. Thus the shout group should not use this method of selecting a cut-off point.
 
-Now the second strategy is analysed. Here, a threshold, $t$ is chosen to represent the number of members of $V$ that may be removed from $S$ before a random cut-off is chosen. The random cut-off is selected so that it should occur before $|V| - t$ members of $V$ have been removed from $S$. With these changes, the simulation is performed as before.
+Now the second strategy is analysed. Here, a threshold, $t$ is chosen to represent the number of members of $V$ that may be removed from $S$ before a random cut-off is chosen. The random cut-off is selected so that it should occur before $|V| - t$ members of $V$ have been removed from $S$. With these changes, the simulation is performed as before with $t = 3$. The results are illustrated in Figure \ref{threshold_attack1}.
 
-%TODO is the binomial distribution valid; difference between binomial and this distribution, statistically significant
-%TODO the distribution that the adversary actually gets due to thresholds
-%TODO simulation of gathering many S and distinguishing members of V from them
+\begin{figure}[h]%htbp
+    \centering
+    \begin{minipage}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/threshold_attack1.eps}
+        \caption{$|L|$ = 100 using thresholds}
+        \label{threshold_attack1}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/threshold_attack2.eps}
+        \caption{The cut-off doesn't occur before $|V| - t$ addresses are removed in 35\% of cases}
+        \label{threshold_attack2}
+    \end{minipage}
+\end{figure}
+
+There is little improvement on anonymity protection with the introduction of thresholds; members of $V$ are still grouped towards the end of the graph with fewer occurrences in $S$. A probable reason for this is illustrated in Figure \ref{threhold_attack2}. Here it is shown how many of the members of $V$ have been removed from $S$ by $A$ when the cut-off occurs. In 35\% of cases, the cut-off does not occur inside the desired range but at the hard cut-off set to occur if $|V| - t$ members of $V$ are removed from $S$. Not only that, the distribution of the number of cases that fall within the threshold range is skewed heavily towards $t$. This case is quite a way from the desirable binomial distribution for which it is claimed that the cut-offs will produce variants of $S$ that are indistinguishable from a randomly chosen cut of $L$.
+
+In the following simulation, $B$ is provided with $S$ before the attack commences so that it can select a cut-off point uniformly that will fall within the set of attacks where between $t$ and $|V| - t$ members of $V$ have been removed from $S$. Figures \ref{desired1} and \ref{desired2} show the results obtained. These figures show the desirable situation that $B$ can achieve using information that it would never have in reality. In Figure \ref{desired1}, the members of $V$ now appear to be distributed uniformly. Therefore it can clearly be summised that if the number of members of $V$ in $S$ at the end of an attack is distributed uniformly, so too is the number of variants of $S$ that a member of $V$ appears in.
+
+\begin{figure}[h]%htbp
+    \centering
+    \begin{minipage}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/threshold_attack_desirable1.eps}
+        \caption{$|L|$ = 100 using thresholds}
+        \label{threshold_attack1}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/threshold_attack_desirable2.eps}
+        \caption{The cut-offs are chosen uniformly}
+        \label{threshold_attack2}
+    \end{minipage}
+\end{figure}
+
+%TODO use a binomial instead of uniform, larger |V| necessary
 
 % -----------------------------------------------------------------------------
 

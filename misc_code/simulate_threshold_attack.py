@@ -10,7 +10,8 @@ class ShoutGroup:
         self.hard_reset()
     def reset(self):
         self.reset_count += 1
-        self.previous_count = len(self.V)
+        self.v_remove_count_down = len(self.V)
+        self.v_remove_count_up = 0
         self.random_cut_off = -1
         self.calls_between = [0] * (self.threshold-1)
         self.calls_between_index = -1
@@ -23,31 +24,39 @@ class ShoutGroup:
         if len(sv) == 0:
             self.return_path_counts[3] += 1
             return 0;
-        elif len(sv) >= self.previous_count:
+        elif len(sv) >= self.v_remove_count_down:
             if self.random_cut_off == -1:
                 self.calls_between[self.calls_between_index] += 1
                 return 1
             else:
                 if self.random_cut_off > 0:
-                    self.random_cut_off -= 1
+                    self.random_cut_off -= self.current_decrement
                     return 1
                 else:
                     self.return_path_counts[0] += 1
                     return 0
-        elif len(sv) == self.previous_count-1:
-            self.previous_count = len(sv)
-            if self.previous_count <= self.threshold:
+        elif len(sv) == self.v_remove_count_down-1:
+            self.v_remove_count_down -= 1
+            self.v_remove_count_up += 1
+            if self.v_remove_count_up < self.threshold:
+                self.calls_between_index += 1
+            elif self.v_remove_count_down <= self.threshold:
                 self.return_path_counts[1] += 1
                 return 0
-            self.calls_between_index += 1
-            if self.calls_between_index == len(self.calls_between):
-                self.random_cut_off = randint(0, self.estimate_search() * (len(self.V) - 2 * self.threshold))
+            elif self.v_remove_count_up == self.threshold:
+                self.random_cut_off = randint(0, self.compute_cut_off_limit())
+                self.current_decrement = 1
+            else:
+                self.current_decrement = 1
             return 1
         else:
             self.return_path_counts[2] += 1
             return 0
-    def estimate_search(self):
-        return len(L)/len(V)#sum(self.calls_between) / len(self.calls_between)
+    def compute_cut_off_limit(self):
+        estimate_rate = sum(self.calls_between) / len(self.calls_between)
+        number_of_blocks = len(self.V) - 2 * self.threshold
+        ratio = 1
+        return int(estimate_rate * number_of_blocks * ratio)
         
         
 
@@ -64,7 +73,7 @@ class Adversary:
         while self.shout_group.respond(S) == 1:
             S = S[1:]
         self.set_of_sets.append(S)
-        a = self.shout_group.previous_count
+        a = self.shout_group.v_remove_count_up
         if a in self.number_of_v_removed:
             self.number_of_v_removed[a] += 1
         else:
@@ -124,6 +133,9 @@ if __name__ == "__main__":
     for a in ad.number_of_v_removed:
         cut_off_pos[a] = ad.number_of_v_removed[a]
     plt.bar(range(len(V) + 1), cut_off_pos, width=1, color='g')
+    plt.xlim(0,len(V))
+    plt.xlabel("Number of addresses removed from V during attack")
+    plt.ylabel("Times this number of addresses was removed")
     
     plt.show()
     raw_input()
