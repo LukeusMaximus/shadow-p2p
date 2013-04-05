@@ -1045,6 +1045,8 @@ First, it is claimed that if $A$ were to split a random ordering of $L$ in half,
 
 In order for $B$ to protect its members identities, it should perform the cut-off event such that $A$ gains as little information as possible. When a cut-off event occurs, the resulting $S$ should be indistinguishable from if $A$ had split a random ordering of $L$ in half at random. We simulate the attacks $A$ performs on $B$ and analyse the resulting distribution. $B$ has two strategies it can use: cut-off at some random point after exactly half of $V$ have been removed from $S$ and cut-off at some random point between the removal of $t$ and $|V| - t$ members of $V$.
 
+\subsection{No Threshold}
+
 This first strategy was simulated over 1000 attacks on the same shout group. In each attack, $S$ was set to a random permutation of $L$ and $B$ was asked for a response, if it responded, $S$ had one of its members removed. The attack was repeated with this continually shrinking $S$ unti $B$ did not respond, i.e. $B$ had performed a cut-off. The final set $S$ was then recorded. $B$ was set up to collect information on the rate at which addresses were being removed from $S$. Once half of the members of $V$ had been removed from $S$, $B$ has $\frac{|V|}{2} - 1$ data points representing the number of shouts received between each address being removed. A mean, $m$, of these results was then calculated and $B$ chose a random number, $r$, in the range $\left\{0 ... m\right\}$. Once $r$ more shouts had been heard, $B$ stopped responding to shouts. 
 
 Once all 1000 $S$ results had been collected, the total number of times any given address appeared was tallied. These tallies were then sorted and plotted to obtain Figures \ref{simulated_attack_result100} and \ref{simulated_attack_result100}; in each of these, $|V|$ = 10. The lower part of each figure shows where in the distribution the members of $V$ lie; a point with a y-coordinate of 1 indicates that the bar in the same location on the histogram represents a member of the shout group.
@@ -1068,7 +1070,9 @@ Once all 1000 $S$ results had been collected, the total number of times any give
 
 Clearly, the addresses belonging to the members of the shout group have received the lowest tallies and most of the shout group members can be identified. As the members of $V$ in the shout group all have tallies within the lowest 20, it is safe to say that the majority of the anonymity provided by the shout has been eliminated. Thus the shout group should not use this method of selecting a cut-off point.
 
-Now the second strategy is analysed. Here, a threshold, $t$ is chosen to represent the number of members of $V$ that may be removed from $S$ before a random cut-off is chosen. The random cut-off is selected so that it should occur before $|V| - t$ members of $V$ have been removed from $S$. With these changes, the simulation is performed as before with $t = 3$. The results are illustrated in Figure \ref{threshold_attack1}.
+\subsection{Threshold Methods}
+
+A threshold, $t$ is chosen to represent the number of members of $V$ that may be removed from $S$ before a random cut-off is chosen. The random cut-off is selected so that it should occur before $|V| - t$ members of $V$ have been removed from $S$. This is done by measuring the number of shouts received between each member of V being removed before the threshold is reached. Assuming that one address is removed from $S$ between each shout, the average number of shouts received is computed; this is the estimate of how many shouts occur between the removal of addresses from $V$. Using this estimate, a value is generated randomly from the binomial with $\mu=\frac{|V|}{2}$ and $\sigma=\frac{|V|}{6}$ and to this is added a uniformly selected random number between zero and the estimate block size. If the value generated from the binomial is below $t$ or above $|V| - t$ then the process is repeated to ensure the value falls within the threshold boundaries. This reuslting value is the number of shouts that $B$ will respond to before performing the cut-off. With these changes, the simulation is performed as before with $t = 3$. The results are illustrated in Figure \ref{threshold_attack1}.
 
 \begin{figure}[h]%htbp
     \centering
@@ -1087,9 +1091,9 @@ Now the second strategy is analysed. Here, a threshold, $t$ is chosen to represe
     \end{minipage}
 \end{figure}
 
-There is little improvement on anonymity protection with the introduction of thresholds; members of $V$ are still grouped towards the end of the graph with fewer occurrences in $S$. A probable reason for this is illustrated in Figure \ref{threhold_attack2}. Here it is shown how many of the members of $V$ have been removed from $S$ by $A$ when the cut-off occurs. In 35\% of cases, the cut-off does not occur inside the desired range but at the hard cut-off set to occur if $|V| - t$ members of $V$ are removed from $S$. Not only that, the distribution of the number of cases that fall within the threshold range is skewed heavily towards $t$. This case is quite a way from the desirable binomial distribution for which it is claimed that the cut-offs will produce variants of $S$ that are indistinguishable from a randomly chosen cut of $L$.
+There is little improvement on anonymity protection with the introduction of thresholds; members of $V$ are still grouped towards the end of the graph with fewer occurrences in $S$. A probable reason for this is illustrated in Figure \ref{threhold_attack2}. Here it is shown how many of the members of $V$ have been removed from $S$ by $A$ when the cut-off occurs. In 35\% of cases, the cut-off does not occur inside the desired range but at the hard cut-off set to occur if $|V| - t$ members of $V$ are removed from $S$. This hard cut-off leaks information about $V$ to $A$ as the last address removed will be a member of $V$. This case is quite a way from the desirable binomial distribution for which it is claimed that the cut-offs will produce variants of $S$ that are indistinguishable from a randomly chosen cut of $L$.
 
-In the following simulation, $B$ is provided with $S$ before the attack commences so that it can select a cut-off point uniformly that will fall within the set of attacks where between $t$ and $|V| - t$ members of $V$ have been removed from $S$. Figures \ref{desired1} and \ref{desired2} show the results obtained. These figures show the desirable situation that $B$ can achieve using information that it would never have in reality. In Figure \ref{desired1}, the members of $V$ now appear to be distributed uniformly. Therefore it can clearly be summised that if the number of members of $V$ in $S$ at the end of an attack is distributed uniformly, so too is the number of variants of $S$ that a member of $V$ appears in.
+In order to find a method to overcome the issue, it is worth looking at the desired case. To illustrate this, we perform the same simulation but allow $B$ to use information about $S$ to pick a cut-off. The cut-offs chosen are generated from a binomial distribution. Figures \ref{desired1} and \ref{desired2} show the results obtained. These figures show the desirable situation that $B$ can achieve using information that it would never have in reality. In Figure \ref{desired1}, the members of $V$ now appear to be distributed uniformly; the number of times an address appears in the variants of $S$ is independent of whether that address is in $V$.
 
 \begin{figure}[h]%htbp
     \centering
@@ -1108,7 +1112,50 @@ In the following simulation, $B$ is provided with $S$ before the attack commence
     \end{minipage}
 \end{figure}
 
-%TODO use a binomial instead of uniform, larger |V| necessary
+It should now be quite clear that the rate of search estimation method used initially is not sufficient to protect anonymity. A new method must be conceived if shout groups are to be at all useful. The aim here is to model a random variable, $P$, that uses only information that $B$ has such that it is indistiguishable from another random variable, $Q$, which has knowledge of everything that $A$ and $B$ know. $P$ and $Q$ both give the number of shouts that are responded to before a cut-off occurs. As in the desired case, $Q$ is modeled as follows. $S$ is initially set to a random permutation of $L$, $x_i$ is the position of the $i$-th member of $V$ in $S$, $q$ is the cut-off position in $S$ such that $0 <= x_{i-1} <= q < x_i <= |L|$.
+\[Pr(Q = q) = \left\{
+    \begin{array}{l l}
+        \frac{x_i - x_{i-1}}{|L|} \times {|V| \choose i}0.5^{|V|} & \quad \text{if}\;\;t < i < |V| - t\\
+        0 & \quad \text{otherwise}
+    \end{array}
+\right.\]
+$P$ will have to model this, however, it may not use the information concerning $S$. In $Q$ this information is in the $x$ elements and so a replacement for the expression ${x_i - x_{i-1}}$ must be found. Previously this was set to be the estimate of the number of shouts received between addresses removed; this was calculated by taking the average number of shouts between address removals. However, this doesn't hold up well in circumstances where the gaps between members of $V$ is larger than average. Multiplying this estimate by the number of unremoved members of $V$ and adding the number of shouts already received should ideally yield $|L|$, however, large values of the average will often cause it to exceed $|L|$. Instead, $B$ can use its knowledge of $|L|$ to fix this behaviour. By subtracting the number of shouts received from $|L|$ and dividing by the number of unremoved members of $V$, a better estimate is obtained. If the number of shouts before the threshold is reached is larger than average, the estimate becomes smaller and vice-versa. Here, $g$ represents the number of shouts received 
+\[Pr(P = p) = \left\{
+    \begin{array}{l l}
+        \frac{|L| - g}{|L|} \times {|V| \choose i}0.5^{|V|} & \quad \text{if}\;\;t < i < |V| - t\\
+        0 & \quad \text{otherwise}
+    \end{array}
+\right.\]
+We use this better estimate in the simulation. The results in Figure %TODO result pictures
+show that there is now a much smaller proportion of cases which trigger the hard cut-off, as desired. However, this small proportion of cases does leak some information on $V$ as shown.
+
+Fortunately, there is still some information that hasn't been utilised by $B$. So far, a cut-off has always been selected just after the threshold number of members of $V$ havbe been removed from $S$. Instead, we can update our estimate of the gap between address removals as more addresses are removed. Towards the end of the attack where nearly $|V| - t$ addresses have been removed, the estimate will be more accurate and so the hard cut-off is less likely to be triggered. Simulations with this method of estimation obtain the following results: %TODO insert results
+
+Suprisingly, this gives a worse result than before. The members of $V$ are all heavily skewed towards one end of the diagram. The members of $V$ are being removed from $S$ more than other addresses. Therefore it is concluded that the previous method is currently the best known method to use for selecting cut-offs. A better method may exist, however, it should be noted that it already takes a large number %TODO how large a number
+of attacks on the same shout group to produce this result so this method should suffice.
+
+\subsection{Number of Attacks Required}
+
+Now the best method from the previous section is analysed to see how many attacks are required on the shout group before the IP addresses of the shout group members can be guessed with some level of confidence.
+
+%TODO appropriate statistical test
+
+\section{Public Key Hiding}
+
+Here a cryptographic proof of security is presented showing that the public key hiding method is secure.
+
+For the ElGamal case of public key hiding there are some group parameters $G$, $g$ and $q$, a public key $h$, and a private key $x$. The public key is then hidden by producing the pair ($g\prime = g^{r}$, $h\prime = h^{r}$) where $r$ is a randomly selected from {1 ... q}. Breaking the anonymity of this system involves finding $h$ given $G$, $g$, $q$, $g\prime$ and $h\prime$.
+
+Consider the following adversary, $A$. $A$ can break the anonymity of the public key hiding by taking $G$, $g$, $q$, $g\prime$ and $h\prime$ and producing $h$. Consider also $B$, which uses $A$ to break the Decisional Diffie Hellman (DDH) problem. They are arranged as in Figure \ref{crypto_diag}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/crypto_proof.eps}
+    \caption{B uses A to solve DDH}
+    \label{crypto_diag}
+\end{figure}
+
+$B$ uses $A$ as follows, it sets $g_2$ to $g_1$, $g\prime_2$ to $g_1^{y}$ and $h\prime_2$ to $g_1^{xy}$. $A$ returns $h_2$, if $h_2 = g_1^{x}$ then $B$ returns "Yes", otherwise "No". Therefore, if the anonymity of the public key hiding can be broken, so too can DDH. Therefore this public key hiding scheme is as at least as hard to solve as DDH.
 
 % -----------------------------------------------------------------------------
 

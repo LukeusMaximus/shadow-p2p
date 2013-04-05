@@ -1,4 +1,4 @@
-from random import choice, randint, shuffle
+from random import choice, randint, shuffle, gauss
 import matplotlib.pyplot as plt
 
 class ShoutGroup:
@@ -16,6 +16,10 @@ class ShoutGroup:
         self.reset()
         self.reset_count = 0
     def give_list(self, S):
+        desired_v_removed = int(gauss(len(V) / 2, len(V)/6))
+        while desired_v_removed > len(V) - self.threshold or desired_v_removed < self.threshold:
+            desired_v_removed = int(gauss(len(V) / 2, len(V)/6))
+    
         i = 0;
         start = -1
         end = -1
@@ -23,11 +27,12 @@ class ShoutGroup:
         while start == -1 or end == -1:
             if S[i] in V:
                 count += 1
-                if count == self.threshold:
+                if count == desired_v_removed:
                     start = i+1
-                elif count == len(self.V) - self.threshold:
+                elif count == desired_v_removed + 1:
                     end = i
             i += 1
+        
         self.cut_off_iterations = randint(start, end)
     def respond(self, S):
         sv = [v for v in self.V if v in S]
@@ -81,7 +86,7 @@ if __name__ == "__main__":
         
     sg = ShoutGroup(L, V, 3)
     ad = Adversary(L, sg)
-    iterations = 1000
+    iterations = 10000
     for i in xrange(iterations):
         if i % (iterations / 100) == 0:
             print i
@@ -103,8 +108,10 @@ if __name__ == "__main__":
     
     plt.figure(1)
     plt.subplot(211)
-    plt.bar(range(len(L)), [x[1] for x in sorted_tally], width = 1, lw=0)
+    vals = [x[1] for x in sorted_tally]
+    plt.bar(range(len(L)), vals, width = 1, lw=0)
     plt.ylabel("Number of appearances")
+    plt.ylim(min(vals), max(vals))
     plt.subplot(212)
     plt.scatter(range(len(L)), [x[2] for x in sorted_tally], lw=0)
     plt.xlim(0, len(L))
@@ -116,7 +123,7 @@ if __name__ == "__main__":
     cut_off_pos = [0] * (len(V)+1)
     for a in ad.number_of_v_removed:
         cut_off_pos[a] = ad.number_of_v_removed[a]
-    plt.bar(range(len(V) + 1), cut_off_pos, width=1, color='g')
+    plt.bar([x-0.5 for x in xrange(len(V)+1)], cut_off_pos, width=1, color='g')
     plt.xlim(0,len(V))
     plt.xlabel("Number of addresses removed from V during attack")
     plt.ylabel("Times this number of addresses was removed")
