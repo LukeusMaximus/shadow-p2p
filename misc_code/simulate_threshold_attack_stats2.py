@@ -1,5 +1,5 @@
 from random import choice, randint, shuffle, gauss
-from stats import graphs
+import matplotlib.pyplot as plt
 
 class ShoutGroup:
     def __init__(self, L, V, threshold):
@@ -16,12 +16,10 @@ class ShoutGroup:
         self.calls_between = [0] * (self.threshold-1)
         self.calls_between_index = -1
         self.return_path_counts = [0] * 4
-        self.received_count = 0
     def hard_reset(self):
         self.reset()
         self.reset_count = 0
     def respond(self, S):
-        self.received_count += 1
         sv = [v for v in self.V if v in S]
         if len(sv) == 0:
             self.return_path_counts[3] += 1
@@ -42,7 +40,7 @@ class ShoutGroup:
             self.v_remove_count_up += 1
             if self.v_remove_count_up < self.threshold:
                 self.calls_between_index += 1
-            elif self.v_remove_count_down < self.threshold:
+            elif self.v_remove_count_down <= self.threshold:
                 self.return_path_counts[1] += 1
                 return 0
             elif self.v_remove_count_up == self.threshold:
@@ -56,11 +54,10 @@ class ShoutGroup:
             return 0
     def compute_random_cut_off(self):
         desired_v_removed = int(gauss(len(V) / 2, len(V)/6))
-        while desired_v_removed >= len(V) - self.threshold or desired_v_removed < self.threshold:
+        while desired_v_removed > len(V) - self.threshold or desired_v_removed < self.threshold:
             desired_v_removed = int(gauss(len(V) / 2, len(V)/6))
-        ratio = 1
-        estimate_block_size = int(((len(self.L) - sum(self.calls_between)) / (len(self.V) - self.threshold)) * ratio)
-        return estimate_block_size * desired_v_removed + randint(0, estimate_block_size) - self.received_count
+        estimate_block_size = int(sum(self.calls_between) / len(self.calls_between))
+        return estimate_block_size * desired_v_removed + randint(0, estimate_block_size)
 
 class Adversary:
     def __init__(self, L, sg):
@@ -101,9 +98,8 @@ if __name__ == "__main__":
         
     sg = ShoutGroup(L, V, 3)
     ad = Adversary(L, sg)
-    iterations = 1000
-    for i in xrange(iterations):
-        if i % (iterations / 100) == 0:
+    for i in xrange(1000):
+        if i % 10 == 0:
             print i
         ad.attack()
     ad.tally()
@@ -119,12 +115,27 @@ if __name__ == "__main__":
     sorted_tally = sorted(sorted_tally, key=lambda x: x[1])
     
     print V
-       
+    
+    plt.figure(1)
+    plt.subplot(211)
+    plt.bar(range(len(L)), [x[1] for x in sorted_tally], width = 1, lw=0)
+    plt.ylabel("Number of appearances")
+    plt.subplot(212)
+    plt.scatter(range(len(L)), [x[2] for x in sorted_tally], lw=0)
+    plt.xlim(0, len(L))
+    plt.ylabel("Is address in shout group")
+    plt.xlabel("Address occurring in S")
+    
+    plt.figure(2)    
     cut_off_pos = [0] * (len(V)+1)
     for a in ad.number_of_v_removed:
         cut_off_pos[a] = ad.number_of_v_removed[a]
-
-    graphs(sorted_tally, cut_off_pos)    
+    plt.bar(range(len(V) + 1), cut_off_pos, width=1, color='g')
+    plt.xlim(0,len(V))
+    plt.xlabel("Number of addresses removed from V during attack")
+    plt.ylabel("Times this number of addresses was removed")
+    
+    plt.show()
     raw_input()
     
     

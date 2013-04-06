@@ -1049,20 +1049,20 @@ In order for $B$ to protect its members identities, it should perform the cut-of
 
 This first strategy was simulated over 1000 attacks on the same shout group. In each attack, $S$ was set to a random permutation of $L$ and $B$ was asked for a response, if it responded, $S$ had one of its members removed. The attack was repeated with this continually shrinking $S$ unti $B$ did not respond, i.e. $B$ had performed a cut-off. The final set $S$ was then recorded. $B$ was set up to collect information on the rate at which addresses were being removed from $S$. Once half of the members of $V$ had been removed from $S$, $B$ has $\frac{|V|}{2} - 1$ data points representing the number of shouts received between each address being removed. A mean, $m$, of these results was then calculated and $B$ chose a random number, $r$, in the range $\left\{0 ... m\right\}$. Once $r$ more shouts had been heard, $B$ stopped responding to shouts. 
 
-Once all 1000 $S$ results had been collected, the total number of times any given address appeared was tallied. These tallies were then sorted and plotted to obtain Figures \ref{simulated_attack_result100} and \ref{simulated_attack_result100}; in each of these, $|V|$ = 10. The lower part of each figure shows where in the distribution the members of $V$ lie; a point with a y-coordinate of 1 indicates that the bar in the same location on the histogram represents a member of the shout group.
+Once all 1000 $S$ results had been collected, the total number of times any given address appeared was tallied. These tallies were then sorted and plotted to obtain Figures \ref{simulated_attack_result100} and \ref{simulated_attack_result100}; in each of these, $|V|$ = 20. The lower part of each figure shows where in the distribution the members of $V$ lie; a point with a y-coordinate of 1 indicates that the bar in the same location on the histogram represents a member of the shout group.
 
 \begin{figure}[h]%htbp
     \centering
     \begin{minipage}[b]{0.4\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{diagrams/split_attack_100.eps}
+        \includegraphics[width=\linewidth]{diagrams/split100.eps}
         \caption{$|L|$ = 100}
         \label{simulated_attack_result100}
     \end{minipage}
     \hspace{0.5cm}
     \begin{minipage}[b]{0.4\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{diagrams/split_attack_1000.eps}
+        \includegraphics[width=\linewidth]{diagrams/split1000.eps}
         \caption{$|L|$ = 1000}
         \label{simulated_attack_result1000}
     \end{minipage}
@@ -1072,43 +1072,43 @@ Clearly, the addresses belonging to the members of the shout group have received
 
 \subsection{Threshold Methods}
 
-A threshold, $t$ is chosen to represent the number of members of $V$ that may be removed from $S$ before a random cut-off is chosen. The random cut-off is selected so that it should occur before $|V| - t$ members of $V$ have been removed from $S$. This is done by measuring the number of shouts received between each member of V being removed before the threshold is reached. Assuming that one address is removed from $S$ between each shout, the average number of shouts received is computed; this is the estimate of how many shouts occur between the removal of addresses from $V$. Using this estimate, a value is generated randomly from the binomial with $\mu=\frac{|V|}{2}$ and $\sigma=\frac{|V|}{6}$ and to this is added a uniformly selected random number between zero and the estimate block size. If the value generated from the binomial is below $t$ or above $|V| - t$ then the process is repeated to ensure the value falls within the threshold boundaries. This reuslting value is the number of shouts that $B$ will respond to before performing the cut-off. With these changes, the simulation is performed as before with $t = 3$. The results are illustrated in Figure \ref{threshold_attack1}.
+A threshold, $t$ is chosen to represent the number of members of $V$ that may be removed from $S$ before a random cut-off is chosen. The random cut-off is selected so that it should occur before $|V| - t$ members of $V$ have been removed from $S$. This is done by measuring the number of shouts received between each member of V being removed before the threshold is reached. Assuming that one address is removed from $S$ between each shout, the average number of shouts received is computed; this is the estimate of how many shouts occur between the removal of addresses from $V$. Using this estimate, a value is generated randomly from the binomial with $\mu=\frac{|V|}{2}$ and $\sigma=\frac{|V|}{6}$ and to this is added a uniformly selected random number between zero and the estimate block size. If the value generated from the binomial is below $t$ or above $|V| - t$ then the process is repeated to ensure the value falls within the threshold boundaries. This reuslting value is the number of shouts that $B$ will respond to before performing the cut-off. The simulations below are run with $|L| = 200$, $|V| = 20$ and $t = 3$ over 1000 iterations. The results are illustrated in Figure \ref{threshold_attack1}.
 
 \begin{figure}[h]%htbp
     \centering
     \begin{minipage}[b]{0.4\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{diagrams/threshold_attack1.eps}
-        \caption{$|L|$ = 100 using thresholds}
+        \includegraphics[width=\linewidth]{diagrams/binomial1.eps}
+        \caption{Members of $V$ occur in $S$ less frequently than other addresses}
         \label{threshold_attack1}
     \end{minipage}
     \hspace{0.5cm}
     \begin{minipage}[b]{0.4\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{diagrams/threshold_attack2.eps}
-        \caption{The cut-off doesn't occur before $|V| - t$ addresses are removed in 35\% of cases}
+        \includegraphics[width=\linewidth]{diagrams/binomial2.eps}
+        \caption{50\% of cases trigger the hard cut-off}
         \label{threshold_attack2}
     \end{minipage}
 \end{figure}
 
-There is little improvement on anonymity protection with the introduction of thresholds; members of $V$ are still grouped towards the end of the graph with fewer occurrences in $S$. A probable reason for this is illustrated in Figure \ref{threhold_attack2}. Here it is shown how many of the members of $V$ have been removed from $S$ by $A$ when the cut-off occurs. In 35\% of cases, the cut-off does not occur inside the desired range but at the hard cut-off set to occur if $|V| - t$ members of $V$ are removed from $S$. This hard cut-off leaks information about $V$ to $A$ as the last address removed will be a member of $V$. This case is quite a way from the desirable binomial distribution for which it is claimed that the cut-offs will produce variants of $S$ that are indistinguishable from a randomly chosen cut of $L$.
+There is little improvement on anonymity protection with the introduction of thresholds; members of $V$ are still grouped towards the end of the graph with fewer occurrences in $S$. A probable reason for this is illustrated in Figure \ref{threshold_attack2}. Here it is shown how many of the members of $V$ have been removed from $S$ by $A$ when the cut-off occurs. In a half of cases, the cut-off does not occur inside the desired range but at the 'hard' cut-off that set to occur if $|V| - t$ members of $V$ are removed from $S$. This hard cut-off leaks information about $V$ to $A$ as the last address removed will be a member of $V$. This case is quite a way from the desirable binomial distribution for which it is claimed that the cut-offs will produce variants of $S$ that are indistinguishable from a randomly chosen cut of $L$.
 
-In order to find a method to overcome the issue, it is worth looking at the desired case. To illustrate this, we perform the same simulation but allow $B$ to use information about $S$ to pick a cut-off. The cut-offs chosen are generated from a binomial distribution. Figures \ref{desired1} and \ref{desired2} show the results obtained. These figures show the desirable situation that $B$ can achieve using information that it would never have in reality. In Figure \ref{desired1}, the members of $V$ now appear to be distributed uniformly; the number of times an address appears in the variants of $S$ is independent of whether that address is in $V$.
+In order to find a method to overcome the issue, it is worth looking at the desired case. To illustrate this, we perform the same simulation but allow $B$ to use information about $S$ to pick a cut-off. The cut-offs chosen are generated from a binomial distribution. Figures \ref{threshold_attack_desired1} and \ref{threshold_attack_desired2} show the results obtained. These figures show the desirable situation that $B$ can achieve using information that it would never have in reality. In Figure \ref{threshold_attack_desired1}, the members of $V$ now appear to be distributed uniformly; the number of times an address appears in the variants of $S$ is independent of whether that address is in $V$.
 
 \begin{figure}[h]%htbp
     \centering
     \begin{minipage}[b]{0.4\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{diagrams/threshold_attack_desirable1.eps}
-        \caption{$|L|$ = 100 using thresholds}
-        \label{threshold_attack1}
+        \includegraphics[width=\linewidth]{diagrams/desired1.eps}
+        \caption{Addresses occurrence in $S$ is independent of its membership in $V$}
+        \label{threshold_attack_desired1}
     \end{minipage}
     \hspace{0.5cm}
     \begin{minipage}[b]{0.4\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{diagrams/threshold_attack_desirable2.eps}
-        \caption{The cut-offs are chosen uniformly}
-        \label{threshold_attack2}
+        \includegraphics[width=\linewidth]{diagrams/desired2.eps}
+        \caption{The cut-offs that were chosen randomly from the binomial distribution}
+        \label{threshold_attack_desired2}
     \end{minipage}
 \end{figure}
 
@@ -1126,17 +1126,49 @@ $P$ will have to model this, however, it may not use the information concerning 
         0 & \quad \text{otherwise}
     \end{array}
 \right.\]
-We use this better estimate in the simulation. The results in Figure %TODO result pictures
-show that there is now a much smaller proportion of cases which trigger the hard cut-off, as desired. However, this small proportion of cases does leak some information on $V$ as shown.
+We use this better estimate in the simulation. The results in Figure \ref{threshold_attack_better2} shows that there is now a negligible proportion of cases which trigger the hard cut-off, as desired. Figure \ref{threshold_attack_better1} shows a similar result to that in Figure \ref{threshold_attack_desired1}, the number of cases where an address appears in $S$ seems to be independent of its membership in $V$.
 
-Fortunately, there is still some information that hasn't been utilised by $B$. So far, a cut-off has always been selected just after the threshold number of members of $V$ havbe been removed from $S$. Instead, we can update our estimate of the gap between address removals as more addresses are removed. Towards the end of the attack where nearly $|V| - t$ addresses have been removed, the estimate will be more accurate and so the hard cut-off is less likely to be triggered. Simulations with this method of estimation obtain the following results: %TODO insert results
+\begin{figure}[h]%htbp
+    \centering
+    \begin{minipage}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/better1.eps}
+        \caption{$|L|$ = 100 using thresholds}
+        \label{threshold_attack_better1}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/better2.eps}
+        \caption{The cut-offs are chosen uniformly}
+        \label{threshold_attack_better2}
+    \end{minipage}
+\end{figure}
 
-Suprisingly, this gives a worse result than before. The members of $V$ are all heavily skewed towards one end of the diagram. The members of $V$ are being removed from $S$ more than other addresses. Therefore it is concluded that the previous method is currently the best known method to use for selecting cut-offs. A better method may exist, however, it should be noted that it already takes a large number %TODO how large a number
-of attacks on the same shout group to produce this result so this method should suffice.
+The method of cut-off selection can be improved yet further, there is still some information that hasn't been utilised by $B$. So far, a cut-off has always been selected just after the threshold number of members of $V$ havbe been removed from $S$. Instead, we can update our estimate of the gap between address removals as more addresses are removed. Towards the end of the attack where nearly $|V| - t$ addresses have been removed, the estimate will be more accurate and so the hard cut-off is less likely to be triggered. Simulations with this method of estimation obtain the results shown in Figures \ref{threshold_attack_dynamic1} and \ref{threshold_attack_dynamic2}.
+ 
+\begin{figure}[h]%htbp
+    \centering
+    \begin{minipage}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/dyn1.eps}
+        \caption{$|L|$ = 100 using thresholds}
+        \label{threshold_attack_dynamic1}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/dyn2.eps}
+        \caption{The cut-offs are chosen uniformly}
+        \label{threshold_attack_dynamic2}
+    \end{minipage}
+\end{figure}
+
+Suprisingly, this gives a worse result than before. The members of $V$ are skewed towards one end of the diagram. The members of $V$ are being removed from $S$ more than the other addresses. Therefore it is concluded that the previous method is currently the best known method to use for selecting cut-offs. A better method may exist, however, it should be noted that it already takes 1000 attacks on the same shout group to produce this result so this method should suffice.
 
 \subsection{Number of Attacks Required}
 
-Now the best method from the previous section is analysed to see how many attacks are required on the shout group before the IP addresses of the shout group members can be guessed with some level of confidence.
+Although the shout group does provide a high level of protection to the members of $V$, it will always leak some information about $V$ to $A$. It is therefore worth seeing how many attacks are likely to be required before $A$ has some level of confidence about which addresses belong to $V$. For this, the best method from the previous section is used as an increasing number of attacks are compiled against it.
 
 %TODO appropriate statistical test
 

@@ -63,9 +63,9 @@ class Adversary:
 
 
 if __name__ == "__main__":
-    L = range(1000)
+    L = range(100)
     V = []
-    while len(V) < 10:
+    while len(V) < 20:
         c = choice(L)
         if not (c in V):
             V.append(c)
@@ -97,6 +97,7 @@ if __name__ == "__main__":
     plt.scatter(range(len(L)), [x[2] for x in sorted_tally], lw=0)
     plt.xlim(0, len(L))
     plt.ylabel("Is address in shout group")
+    plt.yticks([0,1])
     plt.xlabel("Address occurring in S")
     plt.show()
     raw_input()

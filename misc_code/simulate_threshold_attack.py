@@ -1,5 +1,5 @@
 from random import choice, randint, shuffle
-import matplotlib.pyplot as plt
+from stats import graphs
 
 class ShoutGroup:
     def __init__(self, L, V, threshold):
@@ -89,9 +89,9 @@ class Adversary:
 
 
 if __name__ == "__main__":
-    L = range(100)
+    L = range(200)
     V = []
-    while len(V) < 10:
+    while len(V) < 20:
         c = choice(L)
         if not (c in V):
             V.append(c)
@@ -118,26 +118,11 @@ if __name__ == "__main__":
     print V
     print sorted_tally
     
-    plt.figure(1)
-    plt.subplot(211)
-    plt.bar(range(len(L)), [x[1] for x in sorted_tally], width = 1, lw=0)
-    plt.ylabel("Number of appearances")
-    plt.subplot(212)
-    plt.scatter(range(len(L)), [x[2] for x in sorted_tally], lw=0)
-    plt.xlim(0, len(L))
-    plt.ylabel("Is address in shout group")
-    plt.xlabel("Address occurring in S")
-    
-    plt.figure(2)    
     cut_off_pos = [0] * (len(V)+1)
     for a in ad.number_of_v_removed:
         cut_off_pos[a] = ad.number_of_v_removed[a]
-    plt.bar(range(len(V) + 1), cut_off_pos, width=1, color='g')
-    plt.xlim(0,len(V))
-    plt.xlabel("Number of addresses removed from V during attack")
-    plt.ylabel("Times this number of addresses was removed")
-    
-    plt.show()
+
+    graphs(sorted_tally, cut_off_pos)    
     raw_input()
     
     
