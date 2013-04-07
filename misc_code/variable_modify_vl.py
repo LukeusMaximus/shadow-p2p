@@ -16,6 +16,7 @@ class ShoutGroup:
         self.random_cut_off = -1
         self.calls_between = [0] * (self.threshold-1)
         self.calls_between_index = -1
+        self.return_path_counts = [0] * 4
         self.received_count = 0
     def hard_reset(self):
         self.reset()
@@ -24,6 +25,7 @@ class ShoutGroup:
         self.received_count += 1
         sv = [v for v in self.V if v in S]
         if len(sv) == 0:
+            self.return_path_counts[3] += 1
             return 0;
         elif len(sv) >= self.v_remove_count_down:
             if self.random_cut_off == -1:
@@ -34,6 +36,7 @@ class ShoutGroup:
                     self.random_cut_off -= self.current_decrement
                     return 1
                 else:
+                    self.return_path_counts[0] += 1
                     return 0
         elif len(sv) == self.v_remove_count_down-1:
             self.v_remove_count_down -= 1
@@ -41,6 +44,7 @@ class ShoutGroup:
             if self.v_remove_count_up < self.threshold:
                 self.calls_between_index += 1
             elif self.v_remove_count_down < self.threshold:
+                self.return_path_counts[1] += 1
                 return 0
             elif self.v_remove_count_up == self.threshold:
                 self.random_cut_off = self.compute_random_cut_off()
@@ -49,6 +53,7 @@ class ShoutGroup:
                 self.current_decrement = 1
             return 1
         else:
+            self.return_path_counts[2] += 1
             return 0
     def compute_random_cut_off(self):
         desired_v_removed = int(gauss(len(self.V) / 2, len(self.V)/6))
@@ -64,6 +69,7 @@ class Adversary:
         self.set_of_sets = []
         self.shout_group = sg
         self.number_of_v_removed = {}
+        self.cumulative_paths = [0] * 4
     def attack(self):
         shuffle(self.L)
         S = list(self.L)
@@ -75,13 +81,14 @@ class Adversary:
             self.number_of_v_removed[a] += 1
         else:
             self.number_of_v_removed[a] = 1
+        for i in xrange(len(self.cumulative_paths)):
+            self.cumulative_paths[i] += self.shout_group.return_path_counts[i]
         self.shout_group.reset()
     def tally(self):
         self.counts = [0] * len(self.L)
         for s in self.set_of_sets:
             for address in s:
                 self.counts[address] += 1
-
 
 class Attack:
     def __init__(self, l, v, t):
@@ -111,36 +118,28 @@ class Attack:
         for a in self.ad.number_of_v_removed:
             self.cut_off_pos[a] = self.ad.number_of_v_removed[a]
 
+
 if __name__ == "__main__":
-    iterations = 200
-    increment = 100
+    increment = 5
+    iterations = 10
     average_over = 10
-    max_p_vals = [0] * iterations
-    avg_p_vals = [0] * iterations
-    iterations_array = [i*increment + increment for i in xrange(iterations)]
+    
+    iter_nums = [x*increment + increment for x in xrange(iterations)]
+    p_results = [0] * iterations
     for j in xrange(average_over):
-        a = Attack(200, 20, 3)
         for i in xrange(iterations):
             print j, i
-            a.attack(increment)
-            p_vals = binom_stats(a.sorted_tally, iterations_array[i])
-            max_p_vals[i] += max(p_vals)
-            avg_p_vals[i] += sum(p_vals) / len(p_vals)
-    max_p_vals = [x/average_over for x in max_p_vals]
-    avg_p_vals = [x/average_over for x in avg_p_vals]
+            a = Attack(iter_nums[i] * 10, iter_nums[i], 3)
+            a.attack(100)
+            p_vals = binom_stats(a.sorted_tally, 100)
+            p_results[i] += sum(p_vals)/len(p_vals)
+    p_results = [x / average_over for x in p_results]
     
-    fig = plt.figure()
-    ax = fig.add_subplot(121)
-    ax.plot(iterations_array, max_p_vals, 'b-', label="Maximum p-value")
-    ax.plot(iterations_array, avg_p_vals, 'g-', label="Average p-value")
-    ax.plot(iterations_array, [0.05] * iterations, 'r--', label="0.05 level of confidence")
-    ax.plot(iterations_array, [0.01] * iterations, 'm--', label="0.01 level of confidence")
-    ax.set_xlabel("Number of attacks")
-    ax.set_ylabel("Level of confidence")
-    ax.legend(bbox_to_anchor=(1.05, 0.5), loc=6, borderaxespad=0.)
-    fig.show()
-    
-    
+    plt.plot(iter_nums, p_results);
+    plt.xlabel("Number of addresses in shout list")
+    plt.ylabel("p value")
+    plt.show()    
+       
     raw_input()
     
     

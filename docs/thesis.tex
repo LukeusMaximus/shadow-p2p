@@ -1047,7 +1047,7 @@ In order for $B$ to protect its members identities, it should perform the cut-of
 
 \subsection{No Threshold}
 
-This first strategy was simulated over 1000 attacks on the same shout group. In each attack, $S$ was set to a random permutation of $L$ and $B$ was asked for a response, if it responded, $S$ had one of its members removed. The attack was repeated with this continually shrinking $S$ unti $B$ did not respond, i.e. $B$ had performed a cut-off. The final set $S$ was then recorded. $B$ was set up to collect information on the rate at which addresses were being removed from $S$. Once half of the members of $V$ had been removed from $S$, $B$ has $\frac{|V|}{2} - 1$ data points representing the number of shouts received between each address being removed. A mean, $m$, of these results was then calculated and $B$ chose a random number, $r$, in the range $\left\{0 ... m\right\}$. Once $r$ more shouts had been heard, $B$ stopped responding to shouts. 
+This first strategy was simulated over 1,000 attacks on the same shout group. In each attack, $S$ was set to a random permutation of $L$ and $B$ was asked for a response, if it responded, $S$ had one of its members removed. The attack was repeated with this continually shrinking $S$ unti $B$ did not respond, i.e. $B$ had performed a cut-off. The final set $S$ was then recorded. $B$ was set up to collect information on the rate at which addresses were being removed from $S$. Once half of the members of $V$ had been removed from $S$, $B$ has $\frac{|V|}{2} - 1$ data points representing the number of shouts received between each address being removed. A mean, $m$, of these results was then calculated and $B$ chose a random number, $r$, in the range $\left\{0 ... m\right\}$. Once $r$ more shouts had been heard, $B$ stopped responding to shouts. 
 
 Once all 1000 $S$ results had been collected, the total number of times any given address appeared was tallied. These tallies were then sorted and plotted to obtain Figures \ref{simulated_attack_result100} and \ref{simulated_attack_result100}; in each of these, $|V|$ = 20. The lower part of each figure shows where in the distribution the members of $V$ lie; a point with a y-coordinate of 1 indicates that the bar in the same location on the histogram represents a member of the shout group.
 
@@ -1133,14 +1133,14 @@ We use this better estimate in the simulation. The results in Figure \ref{thresh
     \begin{minipage}[b]{0.4\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/better1.eps}
-        \caption{$|L|$ = 100 using thresholds}
+        \caption{Under the better estimate, the variables appear independent}
         \label{threshold_attack_better1}
     \end{minipage}
     \hspace{0.5cm}
     \begin{minipage}[b]{0.4\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/better2.eps}
-        \caption{The cut-offs are chosen uniformly}
+        \caption{Very few cut-offs occur at the hard cut-off.}
         \label{threshold_attack_better2}
     \end{minipage}
 \end{figure}
@@ -1152,14 +1152,14 @@ The method of cut-off selection can be improved yet further, there is still some
     \begin{minipage}[b]{0.4\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/dyn1.eps}
-        \caption{$|L|$ = 100 using thresholds}
+        \caption{The members of $V$ generally have fewer occurrence in $S$}
         \label{threshold_attack_dynamic1}
     \end{minipage}
     \hspace{0.5cm}
     \begin{minipage}[b]{0.4\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/dyn2.eps}
-        \caption{The cut-offs are chosen uniformly}
+        \caption{A negligible number of cases trigger the hard cut-off}
         \label{threshold_attack_dynamic2}
     \end{minipage}
 \end{figure}
@@ -1168,9 +1168,73 @@ Suprisingly, this gives a worse result than before. The members of $V$ are skewe
 
 \subsection{Number of Attacks Required}
 
-Although the shout group does provide a high level of protection to the members of $V$, it will always leak some information about $V$ to $A$. It is therefore worth seeing how many attacks are likely to be required before $A$ has some level of confidence about which addresses belong to $V$. For this, the best method from the previous section is used as an increasing number of attacks are compiled against it.
+Although the shout group does provide a high level of protection to the members of $V$, it will always leak some information about $V$ to $A$. It is therefore worth seeing how many attacks are likely to be required before $A$ has some level of confidence about which addresses belong to $V$. For this, the best method from the previous section is used as an increasing number of attacks are compiled against it. A shout group with $|L| = 200$, $|V| = 20$ and $t = 3$ is used for these simulations.
 
-%TODO appropriate statistical test
+The expectation that any given member of $V$ will appear in $S$ is $\frac{1}{2}$. As an address may either appear or not appear in $S$, it should be clear that the number of times an address appears in all variants of $S$ that are collected is binomially distributed. In this analysis, the number of times each member of $V$ appears in variants of $S$ is recorded against how many attacks have been performed against the shout group. From this data, the p-value is calculated from each member of $V$ using the binomial distribution; this obtains a set of p-values for a given number of attacks. For each set, the maximum and mean p-value are computed. These are plotted in Figure \ref{confidence}.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.8\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/confidence.eps}
+        \caption{The change in mean and maximum p-value as more attacks are performed}
+    \end{minipage}
+    \label{confidence}
+\end{figure}
+
+The graph shows that as the number of attacks increases, the average and maximum p-values decrease. The attacker need only perform the number of attacks that gives them a desired level of confidence. The traditional confidence levels of $p = 0.05$ and $p = 0.01$ have been highlighted. An attacker that seeks to identify all of the shout group members would be interested in where the maximum p-values drop below a given level of confidence. The attacker can then has that level of confidence in the identity of every single shout group member. For a $p = 0.05$ level of confidence, the attacker needs to perform 8,000 attacks; at $p = 0.01$, 10,000 attacks are required.
+
+If the attacker is interested in identifying just a single member of the shout group, they would be interested in the minimum p-value. Figure \ref{confidence_min} plots these against the number of attacks performed. This gives discouraging results; just 200 attacks are needed to drop the p_value below the $p = 0.05$ level of confidence. For the $p = 0.01$ level of confidence, roughly 750 attacks are needed. Clearly the shout group does not provide a satisfactory level of protection under these conditions. However, it is claimed that different values for $|L|$, $|V|$ and $t$ can be chosen so that the shout group provides protection on any level desired.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.8\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/confidence_min.eps}
+        \caption{The change in minimum p-value as more attacks are performed}
+    \end{minipage}
+    \label{confidence_min}
+\end{figure}
+
+\subsection{Fraction of Shout List and Threshold Parameters}
+
+In the previous section it was shown that only a small number of attacks was necessary to identify a single shout group member. However, these were under a fixed set of shout group parameters. In this section, how the level of protection changes with these parameters is investigated. The simulations that follow all obtain sets of p-values for each member of $V$. The mean of these p-values is then calculated from all the simulations performed and this is the p-value plotted. All of the following simulations perform 100 attacks on the shout group.
+
+First, $|L|$ is modified with a fixed $|V|$ and fixed $t$. $|V| = 20$ and $t = 3$ in these simulations. The result in Figure \ref{variable_l} shows that increasing the number of addresses in the shout list increases the p-value but only up until $|L|$ is ten times the size of $V$. This plateau means that simply increasing the number of addresses in the shout list will not increase the level of protection afforded. %TODO why?
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.8\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/variable_l.eps}
+        \caption{The change in p-value as the shout list varies in size}
+    \end{minipage}
+    \label{variable_l}
+\end{figure}
+
+Secondly, $|V|$ is modified with fixed $|L|$ and fixed $t$. The constants set here are $|L| = 200$ and $t = 3$. Figure \ref{variable_v} shows a steep decline in p-value as more addresses become members of $V$. Where $|V|$ is greater than one half of $|L|$, there will a 50/50 chance of the next address removed from $S$ being a member of $V$. The cut-off selection process demands that if the next member of $V$ is removed and a cut-off has not been performed then a cut-off immediately occurs. The random selection should either choose to wait 1 shout or cut-off immediately as the limit of the random selection will tend towards a gap of 1 address between members of $V$. When there is no gap between members of $V$ being removed, the random cut-off selection has no effect; a member of $V$ will always be the last address removed from $S$. Therefore, members of $V$ are less likely to appear in the remainder of $S$ after the cut-off.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.8\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/variable_v.eps}
+        \caption{The change in p-value as the number of members of $V$ variess}
+    \end{minipage}
+    \label{variable_v}
+\end{figure}
+
+Next, $t$ is modified with fixed $|L|$ and $|V|$. Here $|L| = 200$ and $|V| = 40$. The results are shown in Figure \ref{varibale_t}. Again, it appears there is a plateau that occurs once $t$ is one quarter the size of $V$. From the simulations performed with no threshold that leave $S$ with exactly half of the members of $V$, it is known that the members of $V$ can easily be identified. a threshold of $\frac{|V|}{2}$ will produ.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.8\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/variable_t2.eps}
+        \caption{The change in p-value as the threshold varies in size}
+    \end{minipage}
+    \label{variable_t}
+\end{figure}
 
 \section{Public Key Hiding}
 
