@@ -3,7 +3,7 @@ package components;
 import java.util.Collection;
 import java.util.HashSet;
 
-import misc.Packet;
+import packets.Packet;
 
 public class PacketShepard {
     private static final Integer travelTime = 20;
@@ -22,7 +22,7 @@ public class PacketShepard {
             }
         }
         for(Packet packet : removeSet) {
-            Node.findNodeByUUID(packet.getDestination()).addMessageToInputBuffer(packet.getMessage());
+            Node.findNodeByUUID(packet.getDestination()).addMessageToInputBuffer(packet);
             packets.remove(packet);
         }
     }

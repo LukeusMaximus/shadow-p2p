@@ -7,7 +7,7 @@ import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Map;
 
-import misc.Packet;
+import packets.Packet;
 import simulation.ScheduledAction;
 import ui.DrawArea;
 

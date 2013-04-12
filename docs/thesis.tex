@@ -610,7 +610,7 @@ This is best explained in reference to a diagram, see Figure \ref{expand}. First
     \label{expand}
 \end{figure}
 
-When a node wants to join the network, it will must contact an existing node which will help the new node join the network. This node will then replace one of its virtual positions with the new node. The node will inform both the new node of how to contact its downstream neighbours and will inform the new node's upstream neighbors of the change in their downstream neighbour. In Figure \ref{join1}, the node $E$ replaces $A$ at coordinates (2,2). $A$ will tell $E$ how to contact $B$ and $C$ and it will tell $B$ and $C$ how to contact $E$. Figure \ref{join2} shows how this looks 'in reality'. Note that $D$ has not been any information regarding $E$'s join; it simply has no need to know.
+When a node wants to join the network, it will must contact an existing node which will help the new node join the network. This node will then replace one of its virtual positions with the new node. The node will inform both the new node of how to contact its downstream neighbours and will inform the new node's upstream neighbors of the change in their downstream neighbour. In Figure \ref{join1}, the node $E$ replaces $A$ at coordinates (2,2). $A$ will tell $E$ how to contact $B$ and $C$ and it will tell $B$ and $C$ how to contact $E$. Figure \ref{join2} shows how this looks 'in reality'. Note that $D$ has not been given any information regarding $E$'s join; it simply has no need to know.
 
 \begin{figure}[h]%htbp
     \centering
@@ -940,10 +940,6 @@ A risk of using this method to create a shout group is that the shout list the j
 
 There is also a risk to the volunteers. As the network requires that a peer use the same set of IP addresses for their individual shout list, the shout groups that the volunteer is part of will have shout lists which have non-negligibly sized intersections. If an adversary managed to obtain the shout lists for two shout group's with a common volunteer, then the intersection would give the adversary the individual shout list of the volunteer. This list is useless on its own as a node will not respond to a message that is not receipted by their shout group, however, it does give an adversary additional information when attacking the shout group.
 
-\subsubsection{Request for nodes}
-
-This packet contains the node's signed set of keys mentioned for complete network knowledge and the 
-
 \subsection{Packets for joining}
 
 \subsubsection{Join Request}
@@ -1224,7 +1220,7 @@ Secondly, $|V|$ is modified with fixed $|L|$ and fixed $t$. The constants set he
     \label{variable_v}
 \end{figure}
 
-Next, $t$ is modified with fixed $|L|$ and $|V|$. Here $|L| = 200$ and $|V| = 40$. The results are shown in Figure \ref{varibale_t}. Again, it appears there is a plateau that occurs once $t$ is one quarter the size of $V$. From the simulations performed with no threshold that leave $S$ with exactly half of the members of $V$, it is known that the members of $V$ can easily be identified. a threshold of $\frac{|V|}{2}$ will produ.
+Next, $t$ is modified with fixed $|L|$ and $|V|$. Here $|L| = 200$ and $|V| = 40$. The results are shown in Figure \ref{varibale_t}. Again, it appears there is a plateau that occurs once $t$ is one quarter the size of $V$. From the simulations performed with no threshold that leave $S$ with exactly half of the members of $V$, it is known that the members of $V$ can easily be identified. A threshold of $\frac{|V|}{2}$ will produce the same result as it requires exactly half of the members of $V$ to be removed before the cut-off occurs. We may therefore deduce that a threshold of $\frac{|V|}{2}$ has a low p-value. Taking this into account, the best setting for the threshold is where the plateau begins, i.e. $t = \frac{|V|}{4}$.
 
 \begin{figure}[h]
     \centering
@@ -1252,6 +1248,12 @@ Consider the following adversary, $A$. $A$ can break the anonymity of the public
 \end{figure}
 
 $B$ uses $A$ as follows, it sets $g_2$ to $g_1$, $g\prime_2$ to $g_1^{y}$ and $h\prime_2$ to $g_1^{xy}$. $A$ returns $h_2$, if $h_2 = g_1^{x}$ then $B$ returns "Yes", otherwise "No". Therefore, if the anonymity of the public key hiding can be broken, so too can DDH. Therefore this public key hiding scheme is as at least as hard to solve as DDH.
+
+\section{Network Structure}
+
+In this section a proof-of-concept simulation of the network structure is analysed to determine whether network expansion, network balancing, source routing, virtual address allocation and complete network knowledge all function as intended. The simulator simulates the nodes, the packets they send to other nodes and the connections they make between them. The simulator does not simulatate the shout mechanism or shout groups and no cryptographic element is implemented.
+
+
 
 % -----------------------------------------------------------------------------
 

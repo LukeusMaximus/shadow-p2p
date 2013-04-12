@@ -1,19 +1,18 @@
 package crypto;
 
-import java.security.PublicKey;
 import java.util.Map;
 import java.util.UUID;
 
 public class PublicKeySet {
     private UUID nodeID;
-    private PublicKey dataKey;
-    private PublicKey signKey;
-    private Map<Integer, PublicKey> routeKeys;
+    private PseudoPublicKey dataKey;
+    private PseudoPublicKey signKey;
+    private Map<Integer, PseudoPublicKey> routeKeys;
     private byte[] proofOfWork;
     private byte[] signature;
     
-    public PublicKeySet(UUID nodeID, PublicKey dataKey, PublicKey signKey,
-            Map<Integer, PublicKey> routeKeys, byte[] proofOfWork,
+    public PublicKeySet(UUID nodeID, PseudoPublicKey dataKey, PseudoPublicKey signKey,
+            Map<Integer, PseudoPublicKey> routeKeys, byte[] proofOfWork,
             byte[] signature) {
         super();
         this.nodeID = nodeID;
@@ -27,13 +26,13 @@ public class PublicKeySet {
     public UUID getNodeID() {
         return nodeID;
     }
-    public PublicKey getDataKey() {
+    public PseudoPublicKey getDataKey() {
         return dataKey;
     }
-    public PublicKey getSignKey() {
+    public PseudoPublicKey getSignKey() {
         return signKey;
     }
-    public Map<Integer, PublicKey> getRouteKeys() {
+    public Map<Integer, PseudoPublicKey> getRouteKeys() {
         return routeKeys;
     }
     public byte[] getProofOfWork() {

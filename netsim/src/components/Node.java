@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 
-import misc.Packet;
+import misc.VirtualPositionInfo;
 
-import com.google.gson.Gson;
+import packets.*;
 
 import crypto.KeySet;
 
@@ -26,7 +26,7 @@ public class Node {
     private UUID nodeID;
     private Color nodeColour;
     private Boolean inNetwork;
-    private Queue<String> inBuffer;
+    private Queue<Packet> inBuffer;
     private Integer networkWidth;
     private VirtualPositionInfo localRoot;
     private Map<Point, VirtualPositionInfo> pointsOwned;
@@ -34,7 +34,7 @@ public class Node {
     
     public Node(PacketShepard internet) {
         this.nodeID = UUID.randomUUID();
-        this.inBuffer = new LinkedList<String>();
+        this.inBuffer = new LinkedList<Packet>();
         this.networkWidth = 1;
         this.localRoot = null;
         this.pointsOwned = null;
@@ -80,14 +80,14 @@ public class Node {
         return points;
     }
 
-    public void addMessageToInputBuffer(String message) {
-        inBuffer.add(message);
+    public void addMessageToInputBuffer(Packet packet) {
+        inBuffer.add(packet);
     }
     
     public void tick() {
         // Process everything in inBuffer.
         while(!inBuffer.isEmpty()) {
-            processMessage(inBuffer.poll());
+            processPacket(inBuffer.poll());
         }
     }
     
@@ -97,23 +97,19 @@ public class Node {
         Node foundNode = Node.findNodeByPoint(virtualLocationParam);
         
         // Add join message to their input buffer
-        JoinRequest req = new JoinRequest();
-        req.nodeID = this.nodeID;
-        Gson gson = new Gson();
-        String joinMessage = "JOIN_REQ: " + gson.toJson(req);
-        
-        internet.sendPacket(new Packet(foundNode.nodeID, joinMessage));
+        JoinRequest req = new JoinRequest(foundNode.getNodeID(), this.nodeID);
+        internet.sendPacket(req);
     }
     
     public void sendDummyPacket() {
-        Packet packet = new Packet(localRoot.east, "DUMMY PACKET");
+        DummyPacket packet = new DummyPacket(localRoot.east);
         packet.setStartPosition(localRoot.virtualPosition);
         Point pos = new Point(localRoot.virtualPosition);
         pos = getEastPosition(pos);
         packet.setEndPosition(pos);
         internet.sendPacket(packet);
         
-        packet = new Packet(localRoot.north, "DUMMY PACKET");
+        packet = new DummyPacket(localRoot.north);
         packet.setStartPosition(localRoot.virtualPosition);
         pos = new Point(localRoot.virtualPosition);
         pos = getNorthPosition(pos);
@@ -123,14 +119,14 @@ public class Node {
         for(Point position : pointsOwned.keySet()) {
             VirtualPositionInfo virtPosInfo = pointsOwned.get(position);
             
-            packet = new Packet(virtPosInfo.east, "DUMMY PACKET");
+            packet = new DummyPacket(virtPosInfo.east);
             packet.setStartPosition(virtPosInfo.virtualPosition);
             pos = new Point(virtPosInfo.virtualPosition);
             pos = getEastPosition(pos);
             packet.setEndPosition(pos);
             internet.sendPacket(packet);
             
-            packet = new Packet(virtPosInfo.north, "DUMMY PACKET");
+            packet = new DummyPacket(virtPosInfo.north);
             packet.setStartPosition(virtPosInfo.virtualPosition);
             pos = new Point(virtPosInfo.virtualPosition);
             pos = getNorthPosition(pos);
@@ -154,31 +150,25 @@ public class Node {
         this.pointsOwned = new HashMap<Point, VirtualPositionInfo>();
     }
     
-    private void processMessage(String message) {
-        System.out.println(message);
-        Gson gson = new Gson();
-        if(message.startsWith("JOIN_REQ: ")) {
-            JoinRequest req = gson.fromJson(message.substring(10), JoinRequest.class);
+    private void processPacket(Packet packet) {
+        if(packet.getClass() == JoinRequest.class) {
+            JoinRequest req = (JoinRequest)packet;
             if(pointsOwned.isEmpty()) {
                 networkWidth = this.increaseNetworkSize();
             }
             VirtualPositionInfo position = pointsOwned.remove(pointsOwned.keySet().iterator().next());
             
             // Send response
-            JoinResponse resp = new JoinResponse();
-            resp.x = position.virtualPosition.x;
-            resp.y = position.virtualPosition.y;
-            resp.north = position.north;
-            resp.east = position.east;
-            String joinReply = "JOIN_RESP: " + gson.toJson(resp);
-            internet.sendPacket(new Packet(req.nodeID, joinReply));
-        } else if(message.startsWith("JOIN_RESP: ")) {
+            JoinResponse resp = new JoinResponse(req.getNodeID(), position.virtualPosition.x, position.virtualPosition.y,
+                    position.north, position.east);
+            internet.sendPacket(resp);
+        } else if(packet.getClass() == JoinResponse.class) {
             System.out.println("Response received.");
             if(localRoot == null) {
                 System.out.println("Response being processed.");
-                JoinResponse resp = gson.fromJson(message.substring(11), JoinResponse.class); 
-                Point joinPos = new Point(resp.x, resp.y);
-                enterNetwork(joinPos, resp.north, resp.east);
+                JoinResponse resp = (JoinResponse)packet;
+                Point joinPos = new Point(resp.getX(), resp.getY());
+                enterNetwork(joinPos, resp.getNorth(), resp.getEast());
             }
         }
     }
@@ -266,25 +256,6 @@ public class Node {
         points.add(new Point(pos.x + stepSize, pos.y + stepSize));
         points.add(new Point(pos.x, pos.y + stepSize));
         return points;
-    }
-    
-    private class VirtualPositionInfo {
-        public Point virtualPosition;
-        public UUID north;
-        public UUID east;
-    }
-    
-    private class JoinRequest {
-        public UUID nodeID;
-        public JoinRequest() {}
-    }
-    
-    private class JoinResponse {
-        public int x;
-        public int y;
-        public UUID north;
-        public UUID east;
-        public JoinResponse() {}
     }
     
 }

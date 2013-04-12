@@ -1,0 +1,73 @@
+package packets;
+
+import java.util.Map;
+import java.util.UUID;
+
+import crypto.Encryption;
+import crypto.PseudoPrivateKey;
+import crypto.PseudoPublicKey;
+
+public class GenericData extends Packet {
+    private PseudoPublicKey[] routingKeys;
+    private PseudoPublicKey dataKey;
+    private Encryption[] hybridHeaders;
+    private Encryption data;
+
+    public GenericData(UUID dest, PseudoPublicKey[] routingKeys, PseudoPublicKey dataKey, String data) {
+        super(dest);
+        this.routingKeys = routingKeys;
+        this.dataKey = dataKey;
+        this.data = new Encryption(data);
+        UUID sk = UUID.randomUUID();
+        this.data.EncryptSymmetric(sk);
+        this.hybridHeaders = new Encryption[routingKeys.length]; 
+        this.hybridHeaders[0] = new Encryption(sk.toString());
+        this.hybridHeaders[0].EncryptAsymmetric(dataKey);
+        for(int i = 1; i < this.hybridHeaders.length; i++) {
+            // These represent random encryptions
+            this.hybridHeaders[i] = new Encryption("blah");
+        }
+    }
+    
+    public void scramble() {
+        UUID sk = UUID.randomUUID();
+        this.data.EncryptSymmetric(sk);
+        for(int i = this.hybridHeaders.length; i > 0; i--) {
+            this.hybridHeaders[i] = this.hybridHeaders[i-1];
+            this.hybridHeaders[i].EncryptSymmetric(sk);
+        }
+        this.hybridHeaders[0] = new Encryption(sk.toString());
+        this.hybridHeaders[0].EncryptAsymmetric(dataKey);
+    }
+    
+    public String decrypt(PseudoPrivateKey k) {
+        int i = 0;
+        while(!this.data.isDecrypted()) {
+            this.hybridHeaders[i].DecryptAsymmetric(k);
+            String key = this.hybridHeaders[i].getData();
+            if(key == null) {
+                return key;
+            }
+            UUID sk = UUID.fromString(key);
+            for(int j = i+1; j < this.hybridHeaders.length; j++) {
+                this.hybridHeaders[j].DecryptSymmetric(sk);
+            }
+            this.data.DecryptSymmetric(sk);
+            ++i;
+        }
+        return data.getData();
+    }
+    
+    public Integer getNextDirection(Map<Integer, PseudoPrivateKey> routingKeys) {
+        for(Integer d : routingKeys.keySet()) {
+            if(routingKeys.get(d).canDecrypt(this.routingKeys[0].getPublicKey())) {
+                return d;
+            }
+        }
+        return null;
+    }
+    
+    public String getData() {
+        return data.getData();
+    }
+}
