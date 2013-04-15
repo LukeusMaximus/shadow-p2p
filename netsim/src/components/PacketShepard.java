@@ -22,7 +22,8 @@ public class PacketShepard {
             }
         }
         for(Packet packet : removeSet) {
-            Node.findNodeByUUID(packet.getDestination()).addMessageToInputBuffer(packet);
+            Node receiver = Node.findNodeByUUID(packet.getDestination());
+            if(receiver != null) receiver.addMessageToInputBuffer(packet);
             packets.remove(packet);
         }
     }

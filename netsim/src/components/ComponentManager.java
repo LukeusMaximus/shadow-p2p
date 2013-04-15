@@ -140,12 +140,19 @@ public class ComponentManager {
         switch(action.getAction()) {
         case nodejoin:
             Node newNode = new Node(internet);
-            System.out.println(newNode.getNodeID().toString());
+            System.out.println("New node " + newNode.getNodeID().toString());
             newNode.attemptJoin(action.getNodeParam());
+            break;
+        case nodeleave:
+            Node leavingNode = Node.findNodeByPoint(action.getNodeParam());
+            System.out.println("Leaving node " + leavingNode.getNodeID().toString());
+            leavingNode.leaveNetwork();
+            break;
         case sendDummy:
             for(Node node : Node.getNodesInNetwork()) {
                 node.sendDummyPacket();
             }
+            break;
         }
     }
     

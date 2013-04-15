@@ -28,22 +28,7 @@ public class NetSim {
         
     }
     
-    public void start() {
-        frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(initWidth, initHeight);
-        frame.setTitle("NetSim");
-        
-        drawArea = new DrawArea(initWidth, initHeight);
-        componentManager = new ComponentManager();
-        simulation = new NetworkSim();
-        drawArea.setComponentManager(componentManager);
-        simulation.setComponentManager(componentManager);
-        componentManager.setDrawArea(drawArea);
-        
-        frame.setContentPane(drawArea);
-        frame.setVisible(true);
-        
+    private void setupExpandTest() {
         ScheduledAction action = new ScheduledAction(20, ScheduledActionType.nodejoin);
         action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
@@ -65,9 +50,52 @@ public class NetSim {
         action = new ScheduledAction(260, ScheduledActionType.nodejoin);
         action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
-        action = new ScheduledAction(400, ScheduledActionType.stopSim);
+        action = new ScheduledAction(340, ScheduledActionType.stopSim);
         action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
+    }
+    
+    private void setupBalanceTest() {
+        ScheduledAction action = new ScheduledAction(20, ScheduledActionType.nodejoin);
+        action.setNodeParam(new Point(0,0));
+        simulation.addAction(action);
+        action = new ScheduledAction(60, ScheduledActionType.nodejoin);
+        action.setNodeParam(new Point(0,0));
+        simulation.addAction(action);
+        action = new ScheduledAction(100, ScheduledActionType.nodejoin);
+        action.setNodeParam(new Point(0,0));
+        simulation.addAction(action);
+        action = new ScheduledAction(140, ScheduledActionType.nodejoin);
+        action.setNodeParam(new Point(0,0));
+        simulation.addAction(action);
+        
+        action = new ScheduledAction(180, ScheduledActionType.nodeleave);
+        action.setNodeParam(new Point(0,0));
+        simulation.addAction(action);
+        
+        action = new ScheduledAction(340, ScheduledActionType.stopSim);
+        action.setNodeParam(new Point(0,0));
+        simulation.addAction(action);
+    }
+    
+    public void start() {
+        frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(initWidth, initHeight);
+        frame.setTitle("NetSim");
+        
+        drawArea = new DrawArea(initWidth, initHeight);
+        componentManager = new ComponentManager();
+        simulation = new NetworkSim();
+        drawArea.setComponentManager(componentManager);
+        simulation.setComponentManager(componentManager);
+        componentManager.setDrawArea(drawArea);
+        
+        frame.setContentPane(drawArea);
+        frame.setVisible(true);
+        
+        //setupExpandTest();
+        setupBalanceTest();
         simulation.simulate();
     }
     
