@@ -93,7 +93,7 @@ public class ComponentManager {
                 drawPos2.x += distx/4;
             } else if(packet.getStartPosition().y == networkWidth-1 && packet.getEndPosition().y != packet.getStartPosition().y) {
                 drawPos2 = new Point(drawPos);
-                drawPos2.y -= distx/4;
+                drawPos2.y -= disty/4;
             } else {
                 drawPos2 = screenPositions.get(packet.getEndPosition());
             }
@@ -133,13 +133,14 @@ public class ComponentManager {
     
     public void initializeNetwork() {
         Node root = new Node(internet);
-        root.enterNetwork(new Point(0,0), root.getNodeID(), root.getNodeID());
+        root.makeRootNode();
     }
     
     public void performAction(ScheduledAction action) {
         switch(action.getAction()) {
         case nodejoin:
             Node newNode = new Node(internet);
+            System.out.println(newNode.getNodeID().toString());
             newNode.attemptJoin(action.getNodeParam());
         case sendDummy:
             for(Node node : Node.getNodesInNetwork()) {

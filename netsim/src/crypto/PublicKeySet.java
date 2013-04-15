@@ -35,6 +35,9 @@ public class PublicKeySet {
     public Map<Integer, PseudoPublicKey> getRouteKeys() {
         return routeKeys;
     }
+    public PseudoPublicKey getRouteKey(Integer direction) {
+        return routeKeys.get(direction);
+    }
     public byte[] getProofOfWork() {
         return proofOfWork;
     }

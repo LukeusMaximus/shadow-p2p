@@ -61,7 +61,12 @@ public class NetworkSim {
         do {
             if(!actions.isEmpty() && actions.peek().getTick() == tickCounter) {
                 // Do action
-                this.componentManager.performAction(actions.poll());
+                if(actions.peek().getAction() == ScheduledAction.ScheduledActionType.stopSim) {
+                    actions.clear();
+                    this.timer.stop();
+                } else {
+                    this.componentManager.performAction(actions.poll());
+                }
             }
         } while(!actions.isEmpty() && actions.peek().getTick() == tickCounter);
         this.componentManager.tick();

@@ -2,19 +2,19 @@ package packets;
 
 import java.util.UUID;
 
+import virtualposition.VirtualPositionCertificate;
+
 
 public class JoinResponse extends Packet {
     private int x;
     private int y;
-    private UUID north;
-    private UUID east;
+    private VirtualPositionCertificate ownPosCert;
     
-    public JoinResponse(UUID dest, int x, int y, UUID north, UUID east) {
+    public JoinResponse(UUID dest, int x, int y, VirtualPositionCertificate ownPosCert) {
         super(dest);
         this.x = x;
         this.y = y;
-        this.north = north;
-        this.east = east;
+        this.ownPosCert = ownPosCert;
     }
 
     public int getX() {
@@ -25,12 +25,8 @@ public class JoinResponse extends Packet {
         return y;
     }
 
-    public UUID getNorth() {
-        return north;
-    }
-
-    public UUID getEast() {
-        return east;
+    public VirtualPositionCertificate getOwnPosCert() {
+        return ownPosCert;
     }
 
 }

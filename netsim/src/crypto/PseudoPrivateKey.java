@@ -12,10 +12,14 @@ public class PseudoPrivateKey {
     }
     
     public PseudoPublicKey getPseudoPublicKey() {
-        return new PseudoPublicKey(publicKey);
+        return new PseudoPublicKey(publicKey, privateKey);
     }
 
     public boolean canDecrypt(UUID k) {
         return k.equals(publicKey);
+    }
+    
+    public UUID getPrivateKey() {
+        return this.privateKey;
     }
 }

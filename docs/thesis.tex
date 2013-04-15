@@ -960,15 +960,27 @@ The upstream nodes of the joining node's virtual position will hear of the chang
 
 This packet contains the shout list of the joining node. It is sent to the upstream nodes encapsulated in a generic data packet; the data field is authenticated by the joining node. The upstream nodes will verify the signature of the data field and will begin using the shout list as the replacement downstream connection. The connection replaces the previous downstream connection that these nodes had to the joiner node; this old connection would have terminated once the upstream node received the certificate informing them of the change in their downstream neighbour.
 
-\subsection{Keyset Info}
+\subsection{Packets for Keyset Info}
+\label{keysetinfo}
 
-This packet provides information on keysets of nodes and is broadcast to the network. Upon receiving this packet type, the proof of work and signature on the keyset are checked for correctness. If the signature or proof of work is not valid then the packet is discarded immediately. Otherwise, the information is added to the node's knowledge of the network and the packet is resent as the broadcast requires. The checks on the data prevent flooding attacks from packets with unseen data as an attacker would have to generate many different proofs of work making it very difficult to do. To prevent flooding attacks with existing node data, the network simply will not continue the broadcast of anything that has been seen before.
+These packets are used to distribute information on the keysets of nodes. There is a packet for broadcasting keysets, a packet for requesting keysets and a packet for delivering keysets to specific nodes.
 
-\subsection{Packet for transfer of virtual positions}
+\subsubsection{Broadcast}
 
-This packet contains a certificate from one node giving a virtual position to another. This packet is also broadcast through the network. Again, flooding is prevented by checking the data within the packet when it is received by a node. If it is a certificate that the node seen before, the signature is invalid or the node doing the signing is not permitted to give that virtual position, the packet is not resent. Otherwise the node resends the packet as the broadcast requires.
+Upon receiving this packet type, the proof of work and signature on the keyset are checked for correctness. If the signature or proof of work is not valid then the packet is discarded immediately. Otherwise, the information is added to the node's knowledge of the network and the packet is resent as the broadcast requires. The checks on the data prevent flooding attacks from packets with unseen data as an attacker would have to generate many different proofs of work making it very difficult to do. To prevent flooding attacks with existing node data, the network simply will not continue the broadcast of anything that has been seen before.
 
-%TODO packets for requests of keysets / position transfer certificates
+\subsection{Request}
+
+This packet is used for requesting a specific keyset for a given virtual position in the network. The packet isn't broadcast as every node is expected to have the information requested (and so would result in a flood of responses), however, nor is it directed at any given single node as that node has a small chance of not having the information. The packet will instead take a random walk through the network; a random direction to travel is chosen at each node and the packet is resent. This occurs until it is received by a node that has the correct keyset.
+
+\subsection{Direct}
+
+This packet is used to give a specified node a specific keyset. It can be used as either a response to a request or it can be used by a joiner node to help build a joining node's complete network knowledge. As with the broadcast packet, the proof of work and signature are checked for correctness.
+
+\subsection{Packets for Virtual Position Certificates}
+
+These packets contain certificates of one node giving a virtual position to another. It has the same three packet types as in section \ref{keysetinfo} and these all bahave in an identical manner to the previous descriptions. However, where correctness on proofs of work and signatures occurs, the certificates are instead checked for correctness. The certificate is deemed incorrect if its signature is invalid or the signing node is not permitted to give that virtual position.
+
 
 % -----------------------------------------------------------------------------
 

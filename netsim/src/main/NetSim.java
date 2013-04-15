@@ -47,11 +47,14 @@ public class NetSim {
         ScheduledAction action = new ScheduledAction(20, ScheduledActionType.nodejoin);
         action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
-        action = new ScheduledAction(100, ScheduledActionType.sendDummy);
+        action = new ScheduledAction(120, ScheduledActionType.nodejoin);
+        action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
-        action = new ScheduledAction(120, ScheduledActionType.sendDummy);
+        action = new ScheduledAction(220, ScheduledActionType.nodejoin);
+        action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
-        action = new ScheduledAction(140, ScheduledActionType.sendDummy);
+        action = new ScheduledAction(400, ScheduledActionType.stopSim);
+        action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
         simulation.simulate();
     }

@@ -35,6 +35,14 @@ public class KeySet {
     public PseudoKeyPair getRouteKey(Integer dimension) {
         return routeKeys.get(dimension);
     }
+    
+    public Map<Integer, PseudoPrivateKey> getPrivateRouteKeys() {
+        Map<Integer, PseudoPrivateKey> keys = new HashMap<Integer, PseudoPrivateKey>();
+        for(Integer d : routeKeys.keySet()) {
+            keys.put(d, routeKeys.get(d).getPrivateKey());
+        }
+        return keys;
+    }
 
     public byte[] getProofOfWork() {
         return proofOfWork;

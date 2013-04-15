@@ -1,5 +1,7 @@
 package packets;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,6 +14,7 @@ public class GenericData extends Packet {
     private PseudoPublicKey dataKey;
     private Encryption[] hybridHeaders;
     private Encryption data;
+    private Packet encapsulation;
 
     public GenericData(UUID dest, PseudoPublicKey[] routingKeys, PseudoPublicKey dataKey, String data) {
         super(dest);
@@ -27,6 +30,17 @@ public class GenericData extends Packet {
             // These represent random encryptions
             this.hybridHeaders[i] = new Encryption("blah");
         }
+        this.encapsulation = null;
+    }
+    
+    private GenericData(UUID dest, PseudoPublicKey[] routingKeys, PseudoPublicKey dataKey,
+            Encryption[] hybridHeaders, Encryption data, Packet encapsulation) {
+        super(dest);
+        this.routingKeys = routingKeys;
+        this.dataKey = dataKey;
+        this.hybridHeaders = hybridHeaders;
+        this.data = data;
+        this.encapsulation = encapsulation;
     }
     
     public void scramble() {
@@ -38,6 +52,21 @@ public class GenericData extends Packet {
         }
         this.hybridHeaders[0] = new Encryption(sk.toString());
         this.hybridHeaders[0].EncryptAsymmetric(dataKey);
+        for(int i = 0; i < this.routingKeys.length-1; ++i) {
+            this.routingKeys[i] = this.routingKeys[i+1];
+        }
+    }
+    
+    public Collection<GenericData> reAddress(Collection<UUID> addresses) {
+        Collection<GenericData> packets = new HashSet<GenericData>();
+        for(UUID address : addresses) {
+            packets.add(new GenericData(address, routingKeys, dataKey, hybridHeaders, data, encapsulation));
+        }
+        return packets;
+    }
+
+    public boolean canDecrypt(PseudoPrivateKey k) {
+        return k.canDecrypt(this.dataKey.getPublicKey());
     }
     
     public String decrypt(PseudoPrivateKey k) {
@@ -69,5 +98,13 @@ public class GenericData extends Packet {
     
     public String getData() {
         return data.getData();
+    }
+
+    public Packet getEncapsulation() {
+        return encapsulation;
+    }
+
+    public void setEncapsulation(Packet encapsulation) {
+        this.encapsulation = encapsulation;
     }
 }
