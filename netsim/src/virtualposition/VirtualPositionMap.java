@@ -58,8 +58,8 @@ public class VirtualPositionMap {
             for(p.y = 0; p.y < this.networkWidth; ++p.y) {
                 if(p.x >= this.networkWidth / 2 || p.y >= this.networkWidth / 2) {
                     UUID a = map.get(p).nodeID;
-                    UUID b = map.get(VirtualPositionMap.getParent(p)).nodeID;
-                    if(a != null && b != null && a.equals(b)) return a;
+                    UUID b = map.get(getParent(p)).nodeID;
+                    if(a != null && b != null && a.equals(b)) return b;
                 }
             }
         }
@@ -75,14 +75,11 @@ public class VirtualPositionMap {
                 VirtualPositionKnowledge v = map.get(p);
                 if(v != null) {
                     Point p2 = new Point(p.x + step, p.y);
-                    v = new VirtualPositionKnowledge(v, p2);
-                    map.put(p2, v);
+                    map.put(p2, new VirtualPositionKnowledge(v, p2));
                     p2 = new Point(p.x, p.y + step);
-                    v = new VirtualPositionKnowledge(v, p2);
-                    map.put(p2, v);
+                    map.put(p2, new VirtualPositionKnowledge(v, p2));
                     p2 = new Point(p.x + step, p.y + step);
-                    v = new VirtualPositionKnowledge(v, p2);
-                    map.put(p2, v);
+                    map.put(p2, new VirtualPositionKnowledge(v, p2));
                 }
             }
         }
@@ -159,62 +156,37 @@ public class VirtualPositionMap {
         return v.nodeID;
     }
     
-    public void verifiedOwnershipChange(PseudoPublicKey k, VirtualPositionCertificate v) {
-        System.out.println("\t\tverifiedOwnershipChange");
-        if(!v.isValid(k)) return;
-        System.out.println("\t\t" + v.toString());
+    public void verifiedOwnershipChange(VirtualPositionCertificate v) {
         VirtualPositionKnowledge vpk = new VirtualPositionKnowledge(v.getReceiver(), v.getPosition(), v);
         if(v.getPosition().x == 0 && v.getPosition().y == 0) {
             VirtualPositionKnowledge vRoot = map.get(new Point(0, 0));
             if(vRoot == null || vRoot.nodeID.equals(v.getGiver())) {
                 map.put(v.getPosition(), vpk);
-                checkChildrenIntegrity(v);
             }
         } else {
+            if(v.getPosition().x >= networkWidth || v.getPosition().y >= networkWidth) {
+                expandNetwork();
+            }
             VirtualPositionKnowledge vp = map.get(getParent(v.getPosition()));
             VirtualPositionKnowledge vr = map.get(v.getPosition());
             if(vr == null) {
                 if(vp == null) {
                     map.put(v.getPosition(), vpk);
-                    checkChildrenIntegrity(v);
                 } else {
-                    System.out.println("\t\tvp " + vp.toString());
                     if(vp.nodeID.equals(v.getGiver())) {
                         map.put(v.getPosition(), vpk);
-                        checkChildrenIntegrity(v);
                     }
                 }
             } else {
-                System.out.println("\t\tvr " + vr.toString());
                 if(vp != null) {
-                    System.out.println("\t\tvp " + vp.toString());
                     if(vp.nodeID.equals(v.getGiver()) && vp.nodeID.equals(vr.nodeID)) {
                         map.put(v.getPosition(), vpk);
-                        checkChildrenIntegrity(v);
                     } else if(vp.nodeID.equals(v.getReceiver())) {
                         // This is a revocation, the certificate reverts to that of the parent
                         map.put(v.getPosition(), new VirtualPositionKnowledge(vp, v.getPosition()));
-                        checkChildrenIntegrity(v);
                     }
                 }
             }
-        }
-    }
-    
-    private void checkChildrenIntegrity(VirtualPositionCertificate v) {
-        // check children's integrity if they exist
-        VirtualPositionKnowledge parentKnowledge =  map.get(v.getPosition());
-        VirtualPositionKnowledge childKnowledge = map.get(getChildX(v.getPosition()));
-        if(childKnowledge != null && !childKnowledge.cert.getGiver().equals(parentKnowledge.nodeID)) {
-            map.remove(childKnowledge.position);
-        }
-        childKnowledge = map.get(getChildXY(v.getPosition()));
-        if(childKnowledge != null && !childKnowledge.cert.getGiver().equals(parentKnowledge.nodeID)) {
-            map.remove(childKnowledge.position);
-        }
-        childKnowledge = map.get(getChildY(v.getPosition()));
-        if(childKnowledge != null && !childKnowledge.cert.getGiver().equals(parentKnowledge.nodeID)) {
-            map.remove(childKnowledge.position);
         }
     }
     
@@ -227,12 +199,31 @@ public class VirtualPositionMap {
     
     public boolean hasCompleteNetworkKnowledge() {
         Point p = new Point(0, 0);
+        System.out.println("\t" + map.size() + " positions known");
+        System.out.println("\tlocal root " + localRoot.toString());
+        boolean complete = true;
         for(p.x = 0; p.x < this.networkWidth; ++p.x) {
             for(p.y = 0; p.y < this.networkWidth; ++p.y) {
-                if(map.get(p) == null) return false;
+                if(map.get(p) == null) {
+                    complete = false;
+                    System.out.println("\tUnknown what is at " + p.toString());
+                }
             }
         }
-        return true;
+        return complete;
+    }
+    
+    public Integer getAmountOfKnowledge() {
+        Point p = new Point(0, 0);
+        Integer amount = 0;
+        for(p.x = 0; p.x < this.networkWidth; ++p.x) {
+            for(p.y = 0; p.y < this.networkWidth; ++p.y) {
+                if(map.get(p) != null) {
+                    ++amount;
+                }
+            }
+        }
+        return amount;
     }
     
     public UUID getNextNodeIDOnRoute(UUID finalDestination) {
@@ -269,11 +260,8 @@ public class VirtualPositionMap {
     
     public Set<VirtualPositionCertificate> getAllCertificates() {
         Set<VirtualPositionCertificate> certs = new HashSet<VirtualPositionCertificate>();
-        for(Point p : map.keySet()) {
-            VirtualPositionKnowledge vpk = map.get(p);
-            if(vpk != null) {
-                certs.add(vpk.cert);
-            }
+        for(VirtualPositionKnowledge vpk : map.values()) {
+            certs.add(vpk.cert);
         }
         return certs;
     }
@@ -296,7 +284,7 @@ public class VirtualPositionMap {
                 next = getNorthPosition(p);
             }
             UUID addr = getNodeIDFromPosition(next);
-            if(!addr.equals(this.nodeID)) {
+            if(addr != null && !this.nodeID.equals(addr)) {
                 addresses.add(addr);
             }
         }
@@ -326,14 +314,22 @@ public class VirtualPositionMap {
         List<UUID> addresses = new ArrayList<UUID>();
         List<Integer> directions = new ArrayList<Integer>();
         while(!best.equals(result)) {
+            addresses.add(getNodeIDFromPosition(best));
             Integer d = this.random.nextInt(2);
-            if(d == 0) {
-                ++best.x;
-            } else {
+            if(best.x == result.x) {
                 ++best.y;
+                d = 1;
+            } else if(best.y == result.y) {
+                ++best.x;
+                d = 0;
+            } else {
+                if(d == 0) {
+                    ++best.x;
+                } else {
+                    ++best.y;
+                }
             }
             directions.add(d);
-            addresses.add(getNodeIDFromPosition(best));
         }
         VirtPosPath path = new VirtPosPath();
         path.addresses = addresses;
@@ -358,25 +354,6 @@ public class VirtualPositionMap {
             result.y -= step;
         }
         return result;
-    }
-    
-    public static Point getChildX(Point p) {
-        return new Point(p.x + calculateStepFromPoint(p), p.y);
-    }
-    public static Point getChildXY(Point p) {
-        return new Point(p.x + calculateStepFromPoint(p), p.y + calculateStepFromPoint(p));
-    }
-    public static Point getChildY(Point p) {
-        return new Point(p.x, p.y + calculateStepFromPoint(p));
-    }
-    
-    private static int calculateStepFromPoint(Point p) {
-        int step = 1;
-        while(p.x >= step || p.y >= step) {
-            step *= 2;
-        }
-        step /= 2;
-        return step;
     }
     
     private Point wrapToNetworkWidth(Point pos) {

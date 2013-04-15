@@ -66,6 +66,10 @@ public class KeySet {
         PseudoKeyPair dataKey = new PseudoKeyPair();
         PseudoKeyPair signKey = new PseudoKeyPair();
         Map<Integer, PseudoKeyPair> routeKeys = new HashMap<Integer, PseudoKeyPair>();
+        for(int i = 0; i < 2; i++) {
+            PseudoKeyPair routeKey = new PseudoKeyPair();
+            routeKeys.put(i, routeKey);
+        }
         byte[] pow = "This is a proof of work".getBytes();
         byte[] signature = "This is a signature".getBytes();
         

@@ -46,10 +46,12 @@ public class GenericData extends Packet {
     public void scramble() {
         UUID sk = UUID.randomUUID();
         this.data.EncryptSymmetric(sk);
-        for(int i = this.hybridHeaders.length; i > 0; i--) {
-            this.hybridHeaders[i] = this.hybridHeaders[i-1];
-            this.hybridHeaders[i].EncryptSymmetric(sk);
+        Encryption[] temp = new Encryption[this.hybridHeaders.length + 1];
+        for(int i = 0; i < this.hybridHeaders.length; ++i) {
+            temp[i+1] = this.hybridHeaders[i];
+            temp[i+1].EncryptSymmetric(sk);
         }
+        this.hybridHeaders = temp;
         this.hybridHeaders[0] = new Encryption(sk.toString());
         this.hybridHeaders[0].EncryptAsymmetric(dataKey);
         for(int i = 0; i < this.routingKeys.length-1; ++i) {
@@ -88,6 +90,7 @@ public class GenericData extends Packet {
     }
     
     public Integer getNextDirection(Map<Integer, PseudoPrivateKey> routingKeys) {
+        if(this.routingKeys == null) return null;
         for(Integer d : routingKeys.keySet()) {
             if(routingKeys.get(d).canDecrypt(this.routingKeys[0].getPublicKey())) {
                 return d;

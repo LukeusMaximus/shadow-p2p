@@ -25,6 +25,7 @@ import packets.VirtualPositionInfoDirect;
 import virtualposition.VirtualPositionCertificate;
 import virtualposition.VirtualPositionMap;
 import crypto.KeySet;
+import crypto.PseudoPrivateKey;
 import crypto.PseudoPublicKey;
 import crypto.PublicKeySet;
 
@@ -39,6 +40,7 @@ public class Node {
     private Color nodeColour;
     private Boolean inNetwork;
     private Queue<Packet> inBuffer;
+    private Queue<Packet> unjoinedBuffer;
     
     private VirtualPositionMap virtPosMap;
     private Map<UUID, PublicKeySet> keyRing; 
@@ -47,6 +49,7 @@ public class Node {
     public Node(PacketShepard internet) {
         this.nodeID = UUID.randomUUID();
         this.inBuffer = new LinkedList<Packet>();
+        this.unjoinedBuffer = new LinkedList<Packet>();
         this.virtPosMap = null;
         this.internet = internet;
         this.inNetwork = false;
@@ -104,6 +107,7 @@ public class Node {
         System.out.println("Entering network at " + pos.toString());
         this.inNetwork = true;
         this.virtPosMap = new VirtualPositionMap(this.nodeID, pos, v);
+        inBuffer.addAll(unjoinedBuffer);
     }
     
     public void makeRootNode() {
@@ -115,15 +119,19 @@ public class Node {
         this.keyRing = new HashMap<UUID, PublicKeySet>();
     }
     
-    public PseudoPublicKey[] makeRouteRoutingKeys(List<Integer> dirs, List<UUID> addrs) {
+    private PseudoPublicKey[] makeRouteRoutingKeys(List<Integer> dirs, List<UUID> addrs) {
         Integer[] directions = dirs.toArray(new Integer[0]);
         UUID[] addresses = addrs.toArray(new UUID[0]);
         List<PseudoPublicKey> keys = new ArrayList<PseudoPublicKey>();
         for(int i = 0; i < directions.length; ++i) {
             PublicKeySet keyset = keyRing.get(addresses[i]);
-            if(keyset == null) return null;
+            if(keyset == null) {
+                return null;
+            }
             PseudoPublicKey key = keyset.getRouteKey(directions[i]);
-            if(key == null) return null;
+            if(key == null) {
+                return null;
+            }
             keys.add(key);
         }
         return keys.toArray(new PseudoPublicKey[0]);
@@ -134,6 +142,7 @@ public class Node {
             System.out.println("Generic data received.");
             GenericData genData = (GenericData)packet;
             if(genData.canDecrypt(this.keySet.getDataKey().getPrivateKey())) {
+                System.out.println("\tAttempting decryption");
                 genData.decrypt(this.keySet.getDataKey().getPrivateKey());
                 if(genData.getData() == "<Encapsulated>") {
                     processPacket(genData.getEncapsulation());
@@ -143,10 +152,17 @@ public class Node {
                 
             } else {
                 Integer direction = genData.getNextDirection(this.keySet.getPrivateRouteKeys());
-                Set<UUID> nextIDs = virtPosMap.getNodesInDirection(direction);
-                Collection<GenericData> packets = genData.reAddress(nextIDs);
-                for(Packet p : packets) {
-                    internet.sendPacket(p);
+                if(direction != null) {
+                    System.out.println("\tRouting successfully");
+                    genData.scramble();
+                    Set<UUID> nextIDs = virtPosMap.getNodesInDirection(direction);
+                    Collection<GenericData> packets = genData.reAddress(nextIDs);
+                    for(Packet p : packets) {
+                        System.out.println("\tSending packet");
+                        internet.sendPacket(p);
+                    }
+                } else {
+                    System.out.println("\tNo route to continue");
                 }
             }
         } else if(packet.getClass() == JoinRequest.class) {
@@ -162,25 +178,33 @@ public class Node {
                 // Find appropriate position for the new node to join
                 Point pos = virtPosMap.getAvailableChildOnEdge();
                 
-                boolean sent = false;
+                boolean useJoiner = false;
                 if(pos == null) {
                     UUID joiner = virtPosMap.findJoinerNode();
                     if(joiner != null) {
                         System.out.println("\tUsing a joiner node with ID " + joiner.toString());
-                        sent = true;
+                        useJoiner = true;
                         PublicKeySet joinerKeySet = keyRing.get(joiner);
                         if(joinerKeySet != null) {
                             // Send join request encapsulated to joiner
+                            // Get the route
                             VirtualPositionMap.VirtPosPath path = virtPosMap.makePath(joiner);
                             List<UUID> addresses = path.addresses;
                             List<Integer> directions = path.directions;
-                            PseudoPublicKey[] routeKeys = makeRouteRoutingKeys(directions, addresses);
-                            if(routeKeys != null) {
-                                GenericData gd = new GenericData(addresses.get(0), routeKeys,
-                                        joinerKeySet.getDataKey(), "<Encapsulated>");
-                                internet.sendPacket(gd);
-                                System.out.println("\tSent to joiner");
+                            // Extract first address
+                            addresses.remove(0);
+                            directions.remove(0);
+                            UUID addr1 = addresses.get(0);
+                            // make routing keys if needed
+                            PseudoPublicKey[] routeKeys = null;
+                            if(addresses.size() >= 1) {
+                                routeKeys = makeRouteRoutingKeys(directions, addresses);
                             }
+                            GenericData gd = new GenericData(addr1, routeKeys,
+                                    joinerKeySet.getDataKey(), "<Encapsulated>");
+                            gd.setEncapsulation(req);
+                            internet.sendPacket(gd);
+                            System.out.println("\tSent to joiner");
                         }
                     } else {
                         System.out.println("\tIncreasing network size");
@@ -190,18 +214,16 @@ public class Node {
                 } else {
                     System.out.println("\tGiving owned position");
                 }
-                if(!sent) {
+                if(!useJoiner) {
                  // Get available position and perform ownership changes 
                     pos = virtPosMap.getAvailableChildOnEdge();
                     VirtualPositionCertificate vCert = virtPosMap.makeCertForPositionOwnershipChange(req.getNodeID(),
                             pos, keySet.getSignKey().getPrivateKey());
-                    virtPosMap.verifiedOwnershipChange(keySet.getSignKey().getPublicKey(), vCert);
+                    virtPosMap.verifiedOwnershipChange(vCert);
                     // Send response
-                    System.out.println("\tSending response");
                     JoinResponse resp = new JoinResponse(req.getNodeID(), pos.x, pos.y, vCert);
                     internet.sendPacket(resp);
                     // Broadcast joining node's keyset and virtual position certificate
-                    System.out.println("\tSending joining node all keysets and virtual position certificates");
                     for(UUID dest : this.virtPosMap.getDownstreamNeighbours()) {
                         KeySetInfoBroadcast ksib = new KeySetInfoBroadcast(dest, req.getKeySet());
                         internet.sendPacket(ksib);
@@ -210,13 +232,14 @@ public class Node {
                     }
                     
                     // Send node keysets to joining node
-                    System.out.println("\tBroadcasting joining node's keyset");
+                    //  Send own keyset
+                    KeySetInfoDirect keySetPacket = new KeySetInfoDirect(req.getNodeID(), req.getNodeID(), keySet.getPublic());
+                    internet.sendPacket(keySetPacket);
                     for(UUID id : keyRing.keySet()) {
-                        KeySetInfoDirect keySetPacket = new KeySetInfoDirect(req.getNodeID(), req.getNodeID(), keyRing.get(id));
+                        keySetPacket = new KeySetInfoDirect(req.getNodeID(), req.getNodeID(), keyRing.get(id));
                         internet.sendPacket(keySetPacket);
                     }
                     // Send virtual position certificates 
-                    System.out.println("\tBroadcasting joining node's virtual position certificate");
                     for(VirtualPositionCertificate v : virtPosMap.getAllCertificates()) {
                         VirtualPositionInfoDirect virtPosInfoPacket = new VirtualPositionInfoDirect(req.getNodeID(), req.getNodeID(), v);
                         internet.sendPacket(virtPosInfoPacket);
@@ -231,7 +254,6 @@ public class Node {
                 enterNetwork(joinPos, resp.getOwnPosCert());
             }
         } else if(packet.getClass() == KeySetInfoDirect.class) {
-            System.out.println("Keyset direct received.");
             KeySetInfoDirect ksid = (KeySetInfoDirect)packet;
             if(!this.keyRing.containsKey(ksid.getKeySet().getNodeID())) {
                 this.keyRing.put(ksid.getKeySet().getNodeID(), ksid.getKeySet());
@@ -244,7 +266,6 @@ public class Node {
                 }
             }
         } else if(packet.getClass() == KeySetInfoBroadcast.class) {
-            System.out.println("Keyset broadcast received.");
             KeySetInfoBroadcast ksib = (KeySetInfoBroadcast)packet;
             if(!this.keyRing.containsKey(ksib.getKeySet().getNodeID())) {
                 this.keyRing.put(ksib.getKeySet().getNodeID(), ksib.getKeySet());
@@ -256,31 +277,40 @@ public class Node {
                 }
             }
         } else if(packet.getClass() == VirtualPositionInfoDirect.class) {
-            System.out.println("Virtual position certificate direct received.");
-            VirtualPositionInfoDirect vpid = (VirtualPositionInfoDirect)packet;
-            PublicKeySet giverKeySet = keyRing.get(vpid.getvCert().getGiver());
-            if(giverKeySet != null) {
-                virtPosMap.verifiedOwnershipChange(giverKeySet.getSignKey(), vpid.getvCert());
-            }
-            if(!this.nodeID.equals(vpid.getFinalDestination())) {
-                UUID nextNodeID = virtPosMap.getNextNodeIDOnRoute(vpid.getFinalDestination());
-                if(nextNodeID != null) {
-                    VirtualPositionInfoDirect vpid2 = new VirtualPositionInfoDirect(nextNodeID, vpid.getFinalDestination(), vpid.getvCert());
-                    internet.sendPacket(vpid2);
+            System.out.println("Virtual position certificate received.");
+            if(virtPosMap == null) {
+                this.unjoinedBuffer.add(packet);
+            } else {
+                VirtualPositionInfoDirect vpid = (VirtualPositionInfoDirect)packet;
+                if(this.virtPosMap.getLocalRoot().equals(new Point(0, 1))) {
+                    System.out.println("Received certificate for " + vpid.getvCert().getPosition());
+                }
+                PublicKeySet giverKeySet = keyRing.get(vpid.getvCert().getGiver());
+                if(giverKeySet != null) {
+                    if(!vpid.getvCert().isValid(giverKeySet.getSignKey())) {
+                        System.out.println("\tcertificate not valid");
+                    }
+                }
+                virtPosMap.verifiedOwnershipChange(vpid.getvCert());
+                if(!this.nodeID.equals(vpid.getFinalDestination())) {
+                    UUID nextNodeID = virtPosMap.getNextNodeIDOnRoute(vpid.getFinalDestination());
+                    if(nextNodeID != null) {
+                        VirtualPositionInfoDirect vpid2 = new VirtualPositionInfoDirect(nextNodeID, vpid.getFinalDestination(), vpid.getvCert());
+                        internet.sendPacket(vpid2);
+                    }
                 }
             }
         } else if(packet.getClass() == VirtualPositionInfoBroadcast.class) {
-            System.out.println("Virtual position certificate broadcast received.");
-            VirtualPositionInfoBroadcast vpib = (VirtualPositionInfoBroadcast)packet;
-            PublicKeySet giverKeySet = keyRing.get(vpib.getvCert().getGiver());
-            if(giverKeySet != null) {
-                if(vpib.getvCert().isValid(giverKeySet.getSignKey())) {
-                    if(!virtPosMap.hasCertificate(vpib.getvCert())) {
-                        virtPosMap.verifiedOwnershipChange(giverKeySet.getSignKey(), vpib.getvCert());
-                        for(UUID dest : this.virtPosMap.getDownstreamNeighbours()) {
-                            VirtualPositionInfoBroadcast vpib2 = new VirtualPositionInfoBroadcast(dest, vpib.getvCert());
-                            internet.sendPacket(vpib2);
-                        }
+            if(virtPosMap == null) {
+                this.unjoinedBuffer.add(packet);
+            } else {
+                VirtualPositionInfoBroadcast vpib = (VirtualPositionInfoBroadcast)packet;
+                PublicKeySet giverKeySet = keyRing.get(vpib.getvCert().getGiver());
+                if(!virtPosMap.hasCertificate(vpib.getvCert())) {
+                    virtPosMap.verifiedOwnershipChange(vpib.getvCert());
+                    for(UUID dest : this.virtPosMap.getDownstreamNeighbours()) {
+                        VirtualPositionInfoBroadcast vpib2 = new VirtualPositionInfoBroadcast(dest, vpib.getvCert());
+                        internet.sendPacket(vpib2);
                     }
                 }
             }
