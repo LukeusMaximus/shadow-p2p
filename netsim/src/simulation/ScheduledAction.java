@@ -31,6 +31,7 @@ public class ScheduledAction {
     public enum ScheduledActionType {
         nodejoin,
         nodeleave,
+        attemptContraction,
         sendDummy,
         stopSim
     }

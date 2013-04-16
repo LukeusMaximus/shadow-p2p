@@ -952,7 +952,7 @@ In addition, this packet also contains a signature by the joining node of its sh
 
 Once the selected joiner node receives the joining packet, they give a virtual position to the joining node by creating a certificate of this transfer. The keyset info from the joining node and the virtual position transfer certificate are then broadcast to the network via the associated packets.
 
-The joiner node will then inform the joining node of its new position in the network (which becomes its local root). As the joiner node has been in the virtual position being given, the node knows the shout lists needed to contact the downstream neighbours of that position. These shout lists are also sent to the joining node so that it can send packets downstream.
+The joiner node will then inform the joining node of its new position in the network (which becomes its local root). As the joiner node has been in the virtual position being given, the node knows the shout lists needed to contact the downstream neighbours of that position. These shout lists are also sent to the joining node so that it can send packets downstream. % TODO certificate
 
 The upstream nodes of the joining node's virtual position will hear of the change in ownership from the certificate broadcast and will need the joining node's shout list in order to connect with them. To facilitate this, the joiner node, which knows the joining node's shout list, will send the list and its signature to the upstream nodes via the appropriate packet. The joining node will then need to get all keysets and all virtual position transfer certificates in order to construct its own complete network knowledge. Again, using the appropriate packet, the joiner node can provide all the necessary info.
 
@@ -1059,7 +1059,7 @@ This first strategy was simulated over 1,000 attacks on the same shout group. In
 
 Once all 1000 $S$ results had been collected, the total number of times any given address appeared was tallied. These tallies were then sorted and plotted to obtain Figures \ref{simulated_attack_result100} and \ref{simulated_attack_result100}; in each of these, $|V|$ = 20. The lower part of each figure shows where in the distribution the members of $V$ lie; a point with a y-coordinate of 1 indicates that the bar in the same location on the histogram represents a member of the shout group.
 
-\begin{figure}[h]%htbp
+\begin{figure}[h]
     \centering
     \begin{minipage}[b]{0.4\linewidth}
         \centering
@@ -1082,7 +1082,7 @@ Clearly, the addresses belonging to the members of the shout group have received
 
 A threshold, $t$ is chosen to represent the number of members of $V$ that may be removed from $S$ before a random cut-off is chosen. The random cut-off is selected so that it should occur before $|V| - t$ members of $V$ have been removed from $S$. This is done by measuring the number of shouts received between each member of V being removed before the threshold is reached. Assuming that one address is removed from $S$ between each shout, the average number of shouts received is computed; this is the estimate of how many shouts occur between the removal of addresses from $V$. Using this estimate, a value is generated randomly from the binomial with $\mu=\frac{|V|}{2}$ and $\sigma=\frac{|V|}{6}$ and to this is added a uniformly selected random number between zero and the estimate block size. If the value generated from the binomial is below $t$ or above $|V| - t$ then the process is repeated to ensure the value falls within the threshold boundaries. This reuslting value is the number of shouts that $B$ will respond to before performing the cut-off. The simulations below are run with $|L| = 200$, $|V| = 20$ and $t = 3$ over 1000 iterations. The results are illustrated in Figure \ref{threshold_attack1}.
 
-\begin{figure}[h]%htbp
+\begin{figure}[h]
     \centering
     \begin{minipage}[b]{0.4\linewidth}
         \centering
@@ -1103,7 +1103,7 @@ There is little improvement on anonymity protection with the introduction of thr
 
 In order to find a method to overcome the issue, it is worth looking at the desired case. To illustrate this, we perform the same simulation but allow $B$ to use information about $S$ to pick a cut-off. The cut-offs chosen are generated from a binomial distribution. Figures \ref{threshold_attack_desired1} and \ref{threshold_attack_desired2} show the results obtained. These figures show the desirable situation that $B$ can achieve using information that it would never have in reality. In Figure \ref{threshold_attack_desired1}, the members of $V$ now appear to be distributed uniformly; the number of times an address appears in the variants of $S$ is independent of whether that address is in $V$.
 
-\begin{figure}[h]%htbp
+\begin{figure}[h]
     \centering
     \begin{minipage}[b]{0.4\linewidth}
         \centering
@@ -1136,7 +1136,7 @@ $P$ will have to model this, however, it may not use the information concerning 
 \right.\]
 We use this better estimate in the simulation. The results in Figure \ref{threshold_attack_better2} shows that there is now a negligible proportion of cases which trigger the hard cut-off, as desired. Figure \ref{threshold_attack_better1} shows a similar result to that in Figure \ref{threshold_attack_desired1}, the number of cases where an address appears in $S$ seems to be independent of its membership in $V$.
 
-\begin{figure}[h]%htbp
+\begin{figure}[h]
     \centering
     \begin{minipage}[b]{0.4\linewidth}
         \centering
@@ -1155,7 +1155,7 @@ We use this better estimate in the simulation. The results in Figure \ref{thresh
 
 The method of cut-off selection can be improved yet further, there is still some information that hasn't been utilised by $B$. So far, a cut-off has always been selected just after the threshold number of members of $V$ havbe been removed from $S$. Instead, we can update our estimate of the gap between address removals as more addresses are removed. Towards the end of the attack where nearly $|V| - t$ addresses have been removed, the estimate will be more accurate and so the hard cut-off is less likely to be triggered. Simulations with this method of estimation obtain the results shown in Figures \ref{threshold_attack_dynamic1} and \ref{threshold_attack_dynamic2}.
  
-\begin{figure}[h]%htbp
+\begin{figure}[h]
     \centering
     \begin{minipage}[b]{0.4\linewidth}
         \centering
@@ -1192,7 +1192,7 @@ The expectation that any given member of $V$ will appear in $S$ is $\frac{1}{2}$
 
 The graph shows that as the number of attacks increases, the average and maximum p-values decrease. The attacker need only perform the number of attacks that gives them a desired level of confidence. The traditional confidence levels of $p = 0.05$ and $p = 0.01$ have been highlighted. An attacker that seeks to identify all of the shout group members would be interested in where the maximum p-values drop below a given level of confidence. The attacker can then has that level of confidence in the identity of every single shout group member. For a $p = 0.05$ level of confidence, the attacker needs to perform 8,000 attacks; at $p = 0.01$, 10,000 attacks are required.
 
-If the attacker is interested in identifying just a single member of the shout group, they would be interested in the minimum p-value. Figure \ref{confidence_min} plots these against the number of attacks performed. This gives discouraging results; just 200 attacks are needed to drop the p_value below the $p = 0.05$ level of confidence. For the $p = 0.01$ level of confidence, roughly 750 attacks are needed. Clearly the shout group does not provide a satisfactory level of protection under these conditions. However, it is claimed that different values for $|L|$, $|V|$ and $t$ can be chosen so that the shout group provides protection on any level desired.
+If the attacker is interested in identifying just a single member of the shout group, they would be interested in the minimum p-value. Figure \ref{confidence_min} plots these against the number of attacks performed. This gives discouraging results; just 200 attacks are needed to drop the p-value below the $p = 0.05$ level of confidence. For the $p = 0.01$ level of confidence, roughly 750 attacks are needed. Clearly the shout group does not provide a satisfactory level of protection under these conditions. However, it is claimed that different values for $|L|$, $|V|$ and $t$ can be chosen so that the shout group provides protection on any level desired.
 
 \begin{figure}[h]
     \centering
@@ -1263,9 +1263,120 @@ $B$ uses $A$ as follows, it sets $g_2$ to $g_1$, $g\prime_2$ to $g_1^{y}$ and $h
 
 \section{Network Structure}
 
+\subsection{Simulation}
+
 In this section a proof-of-concept simulation of the network structure is analysed to determine whether network expansion, network balancing, source routing, virtual address allocation and complete network knowledge all function as intended. The simulator simulates the nodes, the packets they send to other nodes and the connections they make between them. The simulator does not simulatate the shout mechanism or shout groups and no cryptographic element is implemented.
 
+\subsection{Network Expansion}
 
+In this simulation, the network starts as a single node (the root node) and then 7 additional nodes join the network. Each node contacts the root node with its join request. From the network setup, the network in the simulation should undergo the following sequence of events.
+
+The root node (node \#1) will receive a join request from the first joining node (node \#2). Node \#1 will see that the network is only big enough for one node so it will perform an expansion, placing itself at all the new positions created. Node \#1 will then create a certificate giving one of these newly created virtual positions to node \#2; this certificate is sent to node \#2 in the join response. Usually, the broadcast of this certificate would occur at the same time, however, as node \#1 is the only node in the network, nothing happens. Node \#2 will then verify the certificate and then it will be part of the network. Node \#1 then sends a direct virtual position certificate for its own position; this is a self-signed certificate allocating Node \#1 the root node.
+
+Nodes \#3 and \#4 will join in the same manner, each receiving a certificate in their join responses from Node \#1. This time around, these certificates will be broadcasted to the network so that the other nodes can update their complete network knowledges. Nodes \#3 and \#4 verify their certificates and become part of the network. Node \#1 will send its network knowledge to each of the joining nodes so that they may begin life in the network with knowledge that is as complete as possible.
+
+As node \#5 joins, node \#1 will see that there is no longer any room in the network for new nodes, it will therefore conduct an expansion. It copies its own knowledge of the network layout so that it will obtains a layout that is four times its original size. Nodes \#1, \#2, \#3 and \#4 will all appear 4 times in this increased layout in positions dictated by the toroidal nature of the network structure. There will then be plenty of room for node \#5. Node \#1 will then create a certificate, broadcast it and send it to node \#5 which will then verify the certificate and become part of the network. It is then sent network knowledge from node \#1. Nodes \#6 and \#7 also join in this manner.
+
+As node \#8 joins, node \#1 will have run out of virtual positions to give for the current level of network expansion. However, expanding the network will unbalance the number of connections per node because nodes \#2, \#3 and \#4 will still own multiple virtual positions in the latest expansion. It would therefore be best if one of those nodes gave node \#8 a virtual position. To do this, node \#1 will encapsulate the joining packet it will have received from node \#8 and sends it to either of nodes \#2, \#3 and \#4. Once the node receives this encapsulation, it will join node \#8 to the network in the same way. The certificate will be created, broadcasted and sent to node \#8 and node \#8 will verify it and become part of the network. The selected joiner node will then send node \#8 its own network knowledge.
+
+A walkthrough of the simulation now follows with screenshots from the simulator as appropriate. Figure \ref{sim_expand1} shows the first state in the simulation, the network consists of one node (node \#1). The lines represent the uni-directional links to the other nodes in the network (of which there are currently none) and the four hexadecimal digits are the first 4 hexidecimal digits of the node's Universally Unique Identifier (UUID). A node \#2 then sends its join request to the root node. Node \#1 notes that the network requires expansion so it does this. Figure \ref{sim_expand2} shows the expanded network, however, it has not placed itself in the position $(1,0)$ as it is currently giving this position to node \#2. Once node \#2 has received the certificate, it joins the network in its assigned position as in Figure \ref{sim_expand3}. Nodes \#3 and \#4 both join in a similar manner, shown in Figures \ref{sim_expand4} and \ref{sim_expand5} respectively.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_1.png}
+        \caption{Initial network state.}
+        \label{sim_expand1}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_2.png}
+        \caption{After first expansion.}
+        \label{sim_expand2}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_3.png}
+        \caption{Node \#2 joins the network.}
+        \label{sim_expand3}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_4.png}
+        \caption{Node \#3 joins the network.}
+        \label{sim_expand4}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_5.png}
+        \caption{Node \#4 joins the network.}
+        \label{sim_expand5}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_6.png}
+        \caption{The second expansion.}
+        \label{sim_expand6}
+    \end{minipage}
+\end{figure}
+
+When node \#5 attempts to join, it causes another expansion as shown in Figure \ref{sim_expand6}. Again, node \#1 has not taken all of its virtual positions as it is giving one of the positions to node \#5. None of the other nodes have taken up their virtual positions yet as they are unaware that the network has been expanded. Node \#5 completes its join in Figure \ref{sim_expand7}. Note how the broadcasts of node \#5's certificate have caused the nodes to take up their virtual positions in the expanded network. This is because the nodes learn that new nodes exist in an expanded version of the network, so they correctly conclude that the network is of a bigger size. Note that when any node expands the network or notes that it has expanded, all the node does is double the variable representing the size of the network in their network knowledge, no transmission needs to occur. As the simulation will only display a node in a virtual position if that node claims to be in that virtual position, the position appears empty until the broadcast filters through the network. Nodes \#6 and \#7 join the network in the same way as before as shown in Figures \ref{sim_expand8} and \ref{sim_expand9}.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_7.png}
+        \caption{Node \#5 joins the network and the certificate broadcast filter through.}
+        \label{sim_expand7}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_8.png}
+        \caption{Node \#6 joins the network.}
+        \label{sim_expand8}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_9.png}
+        \caption{Node \#7 joins the network.}
+        \label{sim_expand9}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_10.png}
+        \caption{Node \#8 joins the network after the join request is encapsulated and sent to a new joiner.}
+        \label{sim_expand10}
+    \end{minipage}
+\end{figure}
+
+For node \#8 to join the network, it is encapsulated within a generic data packet and sent to a node with virtual positions available. Either of nodes \#2, \#3 or \#4 would do, in this case it happens to be node \#4 that is chosen. Node \#4, upon receiving the message, chooses one of the virtual positions that it owns and then creates, broadcasts and send the certificate to node \#8. Node \#8 joins the network at position $(2, 1)$. As the packet encapsulation and transmission was a success, it is clear that the complete network knowledge mechanisms are working to the required extent. In the simulator, there is no "packet loss" i.e. all packets are guranteed to arrive at their destination. In reality, the information request packets would be used frequently to gather complete network knowledge as required.
+
+\section{Network Balance}
+
+In this simulation, the network starts with 4 nodes connected to it. Another node joins the network and then one of the original nodes leaves. The new node attempts to balance the network by assuming the position of the node that left. How the simulation should progress is described as follows.
+
+Nodes \#1, \#2, \#3 and \#4 will already be in the network. Node \#5 will then join and cause an expansion. Node \#3 will then leave the network; to do this it returns its virtual position to the node owning the parent virtual position which happens to be node \#1. It will do this by creating and broadcasting a certificate to the network. Unlike when certificates are recorded in a node's network knowledge from joining the network, this certificate will cause the certificate granting its virtual position to be erased. Control of node \#3's virtual positions will revert to node \#1.
+
+At some point, node \#5 will inspect its network knowledge and notice that it would be better placed where node \#3 used to be. Therefore it will issue a balance request to node \#1, which will own the positions in question at that point. This balance request will be encapsulated in a generic data packet and sent. Upon receiving the balance request, node \#1 will inspect its network knowledge for a virtual position it owns that is in a better than the one node \#5 will have as its local root at that point. Once it finds a position, it creates a certificate that will allow node \#5 to move to that position. This will be encapsulated and sent to node \#5. Node \#5 will then leave its position by creating a certificate like it would as if it were leaving the network. It will then broadcast this certificate and the one it received from node \#1. This will put node \#5 in the position that \#3 used to own. The position that node \#5 used to be in reverts to the control of node \#1. The nodes in the network will then notice that the network is in a state where it can be contracted and so a contraction will be performed by all nodes in the network. The resulting network will then be nearly identical to its initial state except that node \#5 will be in the place of node \#3.
 
 % -----------------------------------------------------------------------------
 

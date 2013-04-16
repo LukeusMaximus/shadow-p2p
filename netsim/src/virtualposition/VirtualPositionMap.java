@@ -268,6 +268,43 @@ public class VirtualPositionMap {
         return new VirtualPositionCertificate(this.nodeID, vpk.nodeID, localRoot, k);
     }
     
+    public void attemptNetworkContraction() {
+        // Network contraction will only occur if it is possible for it to do so
+        int step = this.networkWidth / 2;
+        Point tracer = new Point(0, 0);
+        Point tracerE = new Point(0, 0);
+        Point tracerNE = new Point(0, 0);
+        Point tracerN = new Point(0, 0);
+        boolean canContract = true;
+        for(tracer.x = 0, tracerE.x = 0, tracerNE.x = 0, tracerN.x = 0;
+                tracer.x < step; ++tracer.x, ++tracerE.x, ++tracerNE.x, ++tracerN.x) {
+            for(tracer.y = 0, tracerE.y = 0, tracerNE.y = 0, tracerN.y = 0;
+                    tracer.y < step; ++tracer.y, ++tracerE.y, ++tracerNE.y, ++tracerN.y) {
+                VirtualPositionKnowledge vpk = map.get(tracer);
+                VirtualPositionKnowledge vpkE = map.get(tracerE);
+                VirtualPositionKnowledge vpkNE = map.get(tracerNE);
+                VirtualPositionKnowledge vpkN = map.get(tracerN);
+                if(vpk == null || vpkE == null || vpkNE == null || vpkN == null) {
+                    canContract = false;
+                } else {
+                    if(!vpk.nodeID.equals(vpkE.nodeID)) canContract = false;
+                    if(!vpk.nodeID.equals(vpkNE.nodeID)) canContract = false;
+                    if(!vpk.nodeID.equals(vpkN.nodeID)) canContract = false;
+                }
+            }
+        }
+        if(canContract) {
+            networkWidth /= 2;
+            Set<Point> pointsToBeRemoved = new HashSet<Point>();
+            for(Point p : map.keySet()) {
+                if(p.x >= networkWidth || p.y >= networkWidth) pointsToBeRemoved.add(p);
+            }
+            for(Point p : pointsToBeRemoved) {
+                map.remove(p);
+            }
+        }
+    }
+    
     public boolean hasCompleteNetworkKnowledge() {
         Point p = new Point(0, 0);
         System.out.println("\t" + map.size() + " positions known");
@@ -426,6 +463,9 @@ public class VirtualPositionMap {
                 directions.add(1);
             }
         }
+        VirtualPositionKnowledge vpk = map.get(routePoints[routePoints.length-1]);
+        addresses.add(vpk.nodeID);
+        directions.add(0);
         
         VirtPosPath path = new VirtPosPath();
         path.addresses = addresses;

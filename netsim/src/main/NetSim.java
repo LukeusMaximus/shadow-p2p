@@ -16,8 +16,8 @@ import components.ComponentManager;
 
 public class NetSim {
 
-    private static final int initWidth = 1280;
-    private static final int initHeight = 1024;
+    private static final int initWidth = 640;
+    private static final int initHeight = 480;
     
     private JFrame frame;
     private DrawArea drawArea;
@@ -73,7 +73,10 @@ public class NetSim {
         action.setNodeParam(new Point(1,1));
         simulation.addAction(action);
         
-        action = new ScheduledAction(800, ScheduledActionType.stopSim);
+        action = new ScheduledAction(440, ScheduledActionType.attemptContraction);
+        simulation.addAction(action);
+        
+        action = new ScheduledAction(480, ScheduledActionType.stopSim);
         action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
     }

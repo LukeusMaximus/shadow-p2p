@@ -50,6 +50,15 @@ public class Node {
         
     public Node(PacketShepard internet) {
         this.nodeID = UUID.randomUUID();
+        commonSetup(internet);
+    }    
+    
+    public Node(PacketShepard internet, UUID uuid) {
+        this.nodeID = uuid;
+        commonSetup(internet);
+    }
+    
+    private void commonSetup(PacketShepard internet) {
         this.inBuffer = new LinkedList<Packet>();
         this.unjoinedBuffer = new LinkedList<Packet>();
         this.virtPosMap = null;
@@ -62,7 +71,7 @@ public class Node {
         this.balanceCounter = 0;
         this.balancing = false;
         nodes.add(this);
-    }    
+    }
     
     public Color getNodeColour() {
         return nodeColour;
@@ -132,6 +141,10 @@ public class Node {
         return false;   
     }
 
+    public void attemptContraction() {
+        if(virtPosMap != null) virtPosMap.attemptNetworkContraction();
+    }
+    
     public void enterNetwork(Point pos, VirtualPositionCertificate v) {
         System.out.println("Entering network at " + pos.toString());
         this.inNetwork = true;
@@ -486,5 +499,4 @@ public class Node {
         }
         return inNetwork;
     }
-    
 }

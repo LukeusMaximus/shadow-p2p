@@ -4,8 +4,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import packets.Packet;
 import simulation.ScheduledAction;
@@ -22,9 +25,27 @@ public class ComponentManager {
     
     private DrawArea drawArea;
     private PacketShepard internet;
+    private List<UUID> idList;
     
     public ComponentManager() {
         this.internet = new PacketShepard();
+        this.idList = new ArrayList<UUID>();
+//        this.idList.add(UUID.fromString("e5b64c6e-386e-4808-b114-c911a8a0a8f8"));
+//        this.idList.add(UUID.fromString("d5d83681-0737-4bfb-94b4-9782e71c8d84"));
+//        this.idList.add(UUID.fromString("1cf3cdcc-f326-4fcb-82ef-829399cc058b"));
+//        this.idList.add(UUID.fromString("946be0ac-a04a-4519-99fd-9865b3fe7ab7"));
+//        this.idList.add(UUID.fromString("46ec836e-1b21-4e76-b6df-f4aa48302746"));
+//        this.idList.add(UUID.fromString("85c887f2-3ba2-4417-99f4-e1b138c3fc17"));
+//        this.idList.add(UUID.fromString("fd7b5a12-88c8-416d-9e02-e65dbb85ec93"));
+//        this.idList.add(UUID.fromString("f71bea93-1930-429b-8ade-6b48224699a2"));
+        this.idList.add(UUID.fromString("4c6ee5b6-386e-4808-b114-a0a8f8c911a8"));
+        this.idList.add(UUID.fromString("3681d5d8-0737-4bfb-94b4-1c8d849782e7"));
+        this.idList.add(UUID.fromString("cdcc1cf3-f326-4fcb-82ef-cc058b829399"));
+        this.idList.add(UUID.fromString("e0ac946b-a04a-4519-99fd-fe7ab79865b3"));
+        this.idList.add(UUID.fromString("836e46ec-1b21-4e76-b6df-302746f4aa48"));
+        this.idList.add(UUID.fromString("87f285c8-3ba2-4417-99f4-c3fc17e1b138"));
+        this.idList.add(UUID.fromString("5a12fd7b-88c8-416d-9e02-85ec93e65dbb"));
+        this.idList.add(UUID.fromString("ea93f71b-1930-429b-8ade-4699a26b4822"));
     }
     
     public void setDrawArea(DrawArea drawArea) {
@@ -120,6 +141,7 @@ public class ComponentManager {
                 g.fillOval(drawPos.x - nodeRadius, drawPos.y - nodeRadius, nodeRadius * 2, nodeRadius * 2);
                 g.setColor(nodeOutlineColour);
                 g.drawOval(drawPos.x - nodeRadius, drawPos.y - nodeRadius, nodeRadius * 2, nodeRadius * 2);
+                g.drawString(node.getNodeID().toString().substring(0,4), drawPos.x + nodeRadius, drawPos.y - nodeRadius);
             }
         }
     }
@@ -132,14 +154,16 @@ public class ComponentManager {
     }
     
     public void initializeNetwork() {
-        Node root = new Node(internet);
+        UUID id = this.idList.remove(0);
+        Node root = new Node(internet, id);
         root.makeRootNode();
     }
     
     public void performAction(ScheduledAction action) {
         switch(action.getAction()) {
         case nodejoin:
-            Node newNode = new Node(internet);
+            UUID id = this.idList.remove(0);
+            Node newNode = new Node(internet, id);
             System.out.println("New node " + newNode.getNodeID().toString());
             newNode.attemptJoin(action.getNodeParam());
             break;
@@ -148,6 +172,11 @@ public class ComponentManager {
             System.out.println("Leaving node " + leavingNode.getNodeID().toString());
             leavingNode.leaveNetwork();
             break;
+        case attemptContraction:
+            for(Node n : Node.getNodesInNetwork()) {
+                n.attemptContraction();
+            }
+            break;           
         case sendDummy:
             for(Node node : Node.getNodesInNetwork()) {
                 node.sendDummyPacket();
