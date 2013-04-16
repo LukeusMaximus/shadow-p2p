@@ -69,11 +69,11 @@ public class NetSim {
         action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
         
-        action = new ScheduledAction(180, ScheduledActionType.nodeleave);
-        action.setNodeParam(new Point(0,0));
+        action = new ScheduledAction(220, ScheduledActionType.nodeleave);
+        action.setNodeParam(new Point(1,1));
         simulation.addAction(action);
         
-        action = new ScheduledAction(340, ScheduledActionType.stopSim);
+        action = new ScheduledAction(800, ScheduledActionType.stopSim);
         action.setNodeParam(new Point(0,0));
         simulation.addAction(action);
     }
