@@ -898,6 +898,12 @@ The sender may choose to compute a signature on the data using the private part 
 
 A node can send these packets to another node {\em and receive replies} anonymously as follows. The data that the sender sends is left unsigned, the node's identifier is left out. As long as the data otherwise contains no identification of the node, the packet is anonymous. No information about the sender is required to deliver this packet type to the receiver. If the sender requires a reply, they need not provide information on their location, instead they perform source routing from the receiver back to them. This is possible as they have complete network knowledge. The sender will then have a sequence of direction keys that would guide a packet from the receiver back to the sender if the receiver used this sequence as the routing keys field. This sequence is provided as part of the data field in the packet. The receiver cannot determine the sender's location in the network from the routing keys, in order to send a packet back to the sender, they simply use the provided sequence as the packet's routing keys field.
 
+\subsubsection{Traffic Analysis Considerations}
+
+If an intermediate node in the generic data packet's transmission were to send every packet onwards (after they have been processed) in the order they had been received then the node would provide no anonymity. Even though the packet is unrecognisable, it is known which of the packets that entered the node it corresponds to. Obviously then, the order the packets leave the nodes in should be randomised. A method for doing this is making the node have a "mix" element. The method shadow P2P uses is known as "Stop and Go", this is described in \cite{kesdogan1998stop}. It works as follows, the node takes in a number of messages, processes them and assigns each one a random delay. Once the delay expires, the packet is sent onwards. The effectiveness of this mixing strategy is discussed in the next chapter.
+
+Even with this mix, there may not be very much traffic on the network at a given point in time. This can result in the mix not providing any anonymity as a single packet being received, processed, delayed and sent onwards by a node will allow an observer to determine that the only output packet corresponds to the only input packet. To combat this, the creation of dummy packets is allowed. These are made to be indistinguishable from generic data packets but contain no data. Furthermore, they should only be sent to the immediate neighbours of the node creating them to prevent dummy packets clogging the network with useless traffic.
+
 \subsection{Packets for making shout groups}
 \label{sec:create_shout_group}
 
@@ -1267,6 +1273,8 @@ $B$ uses $A$ as follows, it sets $g_2$ to $g_1$, $g\prime_2$ to $g_1^{y}$ and $h
 
 In this section a proof-of-concept simulation of the network structure is analysed to determine whether network expansion, network balancing, source routing, virtual address allocation and complete network knowledge all function as intended. The simulator simulates the nodes, the packets they send to other nodes and the connections they make between them. The simulator does not simulatate the shout mechanism or shout groups and no cryptographic element is implemented.
 
+The simulator is designed to simulate the network components following the description of the network laid out in the previous chapter. To analyse it as a proof of concept, a scenario is conceived and then analysed to ascertain what the network {\em should} do in that situation. The simulator is then presented with the same scenario and then it is seen if it produces the predicted behaviour.  If it does then it proves that the simulator is an accurate implementation of the network design and that the network design is a feasible network.
+
 \subsection{Network Expansion}
 
 In this simulation, the network starts as a single node (the root node) and then 7 additional nodes join the network. Each node contacts the root node with its join request. From the network setup, the network in the simulation should undergo the following sequence of events.
@@ -1372,11 +1380,102 @@ For node \#8 to join the network, it is encapsulated within a generic data packe
 
 \section{Network Balance}
 
-In this simulation, the network starts with 4 nodes connected to it. Another node joins the network and then one of the original nodes leaves. The new node attempts to balance the network by assuming the position of the node that left. How the simulation should progress is described as follows.
+In this simulation, the network starts with 4 nodes connected to it. Another node joins the network and then one of the original nodes leaves. The new node attempts to balance the network by assuming the position of the node that left. The simulation should progress as per the following description.
 
 Nodes \#1, \#2, \#3 and \#4 will already be in the network. Node \#5 will then join and cause an expansion. Node \#3 will then leave the network; to do this it returns its virtual position to the node owning the parent virtual position which happens to be node \#1. It will do this by creating and broadcasting a certificate to the network. Unlike when certificates are recorded in a node's network knowledge from joining the network, this certificate will cause the certificate granting its virtual position to be erased. Control of node \#3's virtual positions will revert to node \#1.
 
 At some point, node \#5 will inspect its network knowledge and notice that it would be better placed where node \#3 used to be. Therefore it will issue a balance request to node \#1, which will own the positions in question at that point. This balance request will be encapsulated in a generic data packet and sent. Upon receiving the balance request, node \#1 will inspect its network knowledge for a virtual position it owns that is in a better than the one node \#5 will have as its local root at that point. Once it finds a position, it creates a certificate that will allow node \#5 to move to that position. This will be encapsulated and sent to node \#5. Node \#5 will then leave its position by creating a certificate like it would as if it were leaving the network. It will then broadcast this certificate and the one it received from node \#1. This will put node \#5 in the position that \#3 used to own. The position that node \#5 used to be in reverts to the control of node \#1. The nodes in the network will then notice that the network is in a state where it can be contracted and so a contraction will be performed by all nodes in the network. The resulting network will then be nearly identical to its initial state except that node \#5 will be in the place of node \#3.
+
+The following screenshots show how the simulator behaves in this scenario. The simulation starts as in Figure \ref{sim_balance1} and then a new node (node \#5) joins the network, causing an exapnsion. Once all the certifcate broadcasts have finished, the simulated network is in the expanded state shown in Figure \ref{sim_balance2}.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/balance_1.png}
+        \caption{Initial network state.}
+        \label{sim_balance1}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_4.png}
+        \caption{Node \#5 joins the network, causing an expansion.}
+        \label{sim_balance2}
+    \end{minipage}
+\end{figure}
+
+Node \#3 proceeds to leave the network by broadcasting the certificate it creates. Once node \#1 obtains this certificate, it places itself at the positions that node \#3 vacated. This is shown in Figure \ref{sim_balance3}. After some time passes in the simulator, node \#5 comes to realise it is better place where node \#3 was and so sends an encapsulated balance request to node \#1. When node \#1 receives this request, it creates a certificate for the position node \#3 used to own and removes itself from those positions leaving the network in the state shown in Figure \ref{sim_balance4}. The certificate is then sent encapsulated back to node \#5.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/balance_6.png}
+        \caption{Node \#3 leaves the network and node \#1 obtains its virtual positions.}
+        \label{sim_balance3}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/expand_7.png}
+        \caption{Node \#1 makes a certificate to give node \#5}
+        \label{sim_balance4}
+    \end{minipage}
+\end{figure}
+
+Once node \#5 receives the encapsulated certificate, it creates a certificate for leaving the local root that it currently owns and then broadcasts both certificates. This causes it to enter the positions that node \#3 used to own whilst leaving the point that it used to own. This is shown in Figure \ref{sim_balance5}. Once node \#1 receives the certificate from node \#5 that returns its virtual position to node \#1, node \#1 enters the position as shown in Figure \ref{sim_balance6}. Finally, as the nodes receive node \#5's certificate returning its virtual position, they note that the network is in a state where it can be contracted, therefore they do so. This causes the network to enter its final contracted state as shown in Figure \ref{sim_balance7}. This is practically identical to the network's initial state except that node \#5 replaces node \#3. Clearly, the simulation has behaved as expected.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/balance_8.png}
+        \caption{Node \#5 broadcasts two certificates to move to a better virtual position.}
+        \label{sim_balance5}
+    \end{minipage}
+    \hspace{0.5cm}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/balance_9.png}
+        \caption{Node \#1 gets node \#5's old virtual position.}
+        \label{sim_balance6}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{sim_pics/balance_10.png}
+        \caption{The nodes in the network perform a contraction.}
+        \label{sim_balance7}
+    \end{minipage}
+\end{figure}
+
+\section{Anonymity Provided by the Network Structure}
+
+To analyse the anonymity properties of the toridal structure, the network is first analysed as a mix network and then as a heat map.
+
+\section{As a mix network}
+
+A mix network is a network consisting of senders, receivers and intermediate 'mix' nodes. Senders send messages through the mix network to receivers. The mix network consists of a number of mixes through which messages pass. Each mix disguises the messages it receives to make them unrecognisable and reorders the messages randomly before sending them onwards. The sender gains anonymity from the mix network because for each mix the message passes through, the set of possible senders of a message becomes the union of the current set of possible senders and the set of possible senders sending messages to that mix.
+
+Shadow P2P is arranged as a mix network. Each node in the toroid plays the role of a mix and is a possible sender and receiver. Its properties of anonymity are now analysed using the metric described in \cite{serjantov2003towards}. The example in Figure \ref{entropy_send_recv} shows the possible senders and receivers of a message that was observed as being received by node $A$. The blue lines show possible links that the message may have traversed getting to $A$ and the green lines show links the the packet may traverse if it leaves $A$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/mix_analysis2.eps}
+    \caption{The possible senders and receivers of a message received by A.}
+    \label{entropy_send_recv}
+\end{figure}
+
+In the case of the sender, the possibilities are limited by the maximum length of the generic data's routing keys field; a maximum of 2 keys may be used for a network of this size. This limitation stops the links spreading very far. In addition to this, both $A$ nodes are excluded from the possible senders as it is assumed that a node would not send messages to itself. This leaves the possible senders as $B$, $C$ and $D$.
+
+According to the metric, the anonymity probability distribution of the links from $D$ to both $B$ and $C$ are $\left\{(D, 1)\right\}$. This is because a message that has traversed both a link from $D$ and a link to $A$ must originate at $D$ so the associated probability is $1$. For $B$, it is known that it might receive the packet from $D$ or it might send it itself. From the equation in section 3.1 of \cite{serjantov2003towards} we can deduce that the link $B \rightarrow A$ has the anonymity probability distribution of $\left\{(B, \frac{1}{2}), (D, \frac{1}{2})\right\}$. Similarly, $C$ has $\left\{(B, \frac{1}{2}), (D, \frac{1}{2})\right\}$. A packet arriving at $A$ then has the distribution $\left\{(B, \frac{1}{4}), (C, \frac{1}{4}), (D, \frac{1}{2})\right\}$ for the possible senders of the packet. To this we add probabilities of 0 for every node in the network that does not appear in the distribution; this yeilds $\left\{(A, 0), (B, \frac{1}{4}), (C, \frac{1}{4}), (D, \frac{1}{2})\right\}$. From this we can obtain a value for the "effective size" of the distribution using the entropy equation; this comes to 1.5 which is 75\% of the possible maximum entropy. For the receivers of the packet, it is equally likely that either of $A$, $B$ or $C$ are the final destination but it cannot possibly be $D$. Therefore the entropy for this comes to 1.58, 79.2\% of the maximum.
+
+This shows that the fact that a node has received a message reveals some information about its sender and receiver. Next, the entropies are calculated for a bigger network to ascertain whether larger networks provide a higher level of anonymity.
+
 
 % -----------------------------------------------------------------------------
 
