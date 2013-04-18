@@ -879,7 +879,7 @@ The node will apply the public key hiding technique to the data encryption publi
 
 The node generates a symmetric key for data encryption. The last encryption in the hybrid headers field is removed and the remaining encryptions have a symmetric encryption applied to them using the generated symmetric key. An encryption of the symmetric key under the data encryption public key is added to the front of the field. The field's length is maintained and all of the field's elements are unrecognisable from their previous values.
 
-The data field then is then encrypted under the generated symmetric key. This will make the field unrecognisable as its previous value.
+The data field then is then encrypted under the generated symmetric key. This will make the field unrecognisable as its previous value. %TODO keep data field the same length
 
 \subsubsection{Packet Decryption}
 
@@ -1472,10 +1472,64 @@ Shadow P2P is arranged as a mix network. Each node in the toroid plays the role 
 
 In the case of the sender, the possibilities are limited by the maximum length of the generic data's routing keys field; a maximum of 2 keys may be used for a network of this size. This limitation stops the links spreading very far. In addition to this, both $A$ nodes are excluded from the possible senders as it is assumed that a node would not send messages to itself. This leaves the possible senders as $B$, $C$ and $D$.
 
-According to the metric, the anonymity probability distribution of the links from $D$ to both $B$ and $C$ are $\left\{(D, 1)\right\}$. This is because a message that has traversed both a link from $D$ and a link to $A$ must originate at $D$ so the associated probability is $1$. For $B$, it is known that it might receive the packet from $D$ or it might send it itself. From the equation in section 3.1 of \cite{serjantov2003towards} we can deduce that the link $B \rightarrow A$ has the anonymity probability distribution of $\left\{(B, \frac{1}{2}), (D, \frac{1}{2})\right\}$. Similarly, $C$ has $\left\{(B, \frac{1}{2}), (D, \frac{1}{2})\right\}$. A packet arriving at $A$ then has the distribution $\left\{(B, \frac{1}{4}), (C, \frac{1}{4}), (D, \frac{1}{2})\right\}$ for the possible senders of the packet. To this we add probabilities of 0 for every node in the network that does not appear in the distribution; this yeilds $\left\{(A, 0), (B, \frac{1}{4}), (C, \frac{1}{4}), (D, \frac{1}{2})\right\}$. From this we can obtain a value for the "effective size" of the distribution using the entropy equation; this comes to 1.5 which is 75\% of the possible maximum entropy. For the receivers of the packet, it is equally likely that either of $A$, $B$ or $C$ are the final destination but it cannot possibly be $D$. Therefore the entropy for this comes to 1.58, 79.2\% of the maximum.
+According to the metric, the anonymity probability distribution of the links from $D$ to both $B$ and $C$ are $\left\{(D, 1)\right\}$. This is because a message that has traversed both a link from $D$ and a link to $A$ must originate at $D$ so the associated probability is $1$. For $B$, it is known that it might have received the packet from $D$ or it might have sent the packet itself. From the equation in section 3.1 of \cite{serjantov2003towards} we can deduce that the link $B \rightarrow A$ has the anonymity probability distribution of $\left\{(B, \frac{1}{2}), (D, \frac{1}{2})\right\}$. Similarly, $C$ has $\left\{(B, \frac{1}{2}), (D, \frac{1}{2})\right\}$. A packet arriving at $A$ then has the distribution $\left\{(B, \frac{1}{4}), (C, \frac{1}{4}), (D, \frac{1}{2})\right\}$ for the possible senders of the packet. To this we add probabilities of 0 for every node in the network that does not appear in the distribution; this yeilds $\left\{(A, 0), (B, \frac{1}{4}), (C, \frac{1}{4}), (D, \frac{1}{2})\right\}$. From this we can obtain a value for the "effective size" of the distribution using the entropy equation; this comes to 1.5 which is 75\% of the possible maximum entropy.
 
-This shows that the fact that a node has received a message reveals some information about its sender and receiver. Next, the entropies are calculated for a bigger network to ascertain whether larger networks provide a higher level of anonymity.
+For the receivers of the packet, it is equally likely that either of $A$, $B$ or $C$ are the final destination but it cannot possibly be $D$. Therefore the entropy for this comes to 1.58, 79.2\% of the maximum. Note that $A$ is included in the calculation as it is possible for $A$ to be the intended recipient of a message that was received by $A$. It was excluded from the group of senders in the previous calculation because it is assumed that a node would not send a packet to itself.
 
+This shows that the fact that a node has received a message reveals some information about its sender and receiver (as the entropy of the scenario is not equal to the maximum). Next, the entropies are calculated for larger networks to ascertain whether they provide a higher level of anonymity. The results are shown in Table \ref{entropy_table}. As the network width doubles in each dimension, the level of entropy provided by that size of network quickly plateaus. This is an unexpected result, it would seem more logical that a larger network should gives messages a higher level of anonymity because there are more nodes that the message may have come from or might go to.
+
+%2 (1.5, 94.63946303571862)
+%4 (3.6419067762704285, 93.21752649956618)
+%8 (4.320718954086982, 72.28570536072601)
+%16 (4.366375172956502, 54.61824032979122)
+%32 (4.366555907711517, 43.671714912146456)
+%64 (4.366555910485991, 36.38903413134424)
+
+%2 (1.3899750004807707, 87.69765845238193)
+%4 (3.309058152578739, 84.69799887148712)
+%8 (3.862020694946861, 64.61167528332024)
+%16 (3.899213891933002, 48.77459975631344)
+%32 (3.8993611443542027, 38.999108641892256)
+%64 (3.8993611466148104, 32.495630140416864)
+
+\begin{table}[t]
+\centering
+\begin{tabular}{|c|cc|cc|}
+\hline
+ & \multicolumn{2}{|c|}{Sender} & \multicolumn{2}{|c|}{Receiver} \\
+\hline
+Size & Entropy & \% of maximum & Entropy & \% of maximum \\
+\hline
+$2$ & $1.5$ & $94.6$ & $1.390$ & $87.7$\\
+$4$ & $3.642$ & $93.2$ & $3.309$ & $84.7$\\
+$8$ & $4.321$ & $72.3$ & $3.862$ & $64.6$\\
+$16$ & $4.366$ & $54.6$ & $3.899$ & $48.8$\\
+$32$ & $4.366$ & $43.6$ & $3.899$ & $39.0$\\
+$64$ & $4.366$ & $36.4$ & $3.899$ & $32.5$\\
+\hline
+\end{tabular}
+\caption{Entropies for different network sizes.}
+\label{entropy_table}
+\end{table}
+
+To explain why this result occurs, consider a case where one node in the network sends a single message to every other node. Whilst every node has the same probability of being the receiver any given message, the nodes closest to the node performing the sending process a much larger proportion of the traffic. Now consider the case where every node sends one packet to every other node and consider a single one of these senders again. The closest downstream nodes to the sender will receive a much larger proportion of traffic from the one sender considered when compared with the traffic from every other sender. So although the traffic on the network may be evenly distributed, the sender and receiver of any given packet are more likely to be closer to where that packet was observered than they are to be futher away.
+
+The entropy plateaus because the expansion of the network only changes the proportions of packets that nodes distant to the sender / receiver. As the more distant nodes contribute a very small proportion of traffic to the calculation, the change in the value of entropy calculated is negligible. This does mean that larger networks provide very little improvement to the anonymityof a packet's sender and receiver.
+
+\subsection{As a heat map}
+
+In order to analyse what consequences different levels of traffic between nodes have on anonymity, heat maps are created to show the relative amount of traffic passing through each node in the network. In this analysis, a heat map will essentially be a 3D plot of the network, the first 2 axes are the dimensions of the network 2D network and the third represents the level of traffic received by each node. We analyse traffic received rather than traffic sent as the shout mechanism used by the network will mean that any traffic observed will be completely void of information on the sender.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/heat_map_random.eps}
+    \caption{The number of messages received by nodes where one node sends a high volume of traffic to another node.}
+    \label{heatmap_random}
+\end{figure}
+
+In this first scenario, one node sends a large amout of traffic to another node, routed randomly in the space between them. The other nodes in the network engage in random communication between one another. The number of packets received by each node is recorded and these values produce the heatmap in Figure \ref{heatmap_random}. The ridge in the heatmap draws a line directly from sender to receiver; this is perhaps the worst possible case, traffic analysis has revealed both sender and receiver with practical certainty.
+
+Recall that generic data packets in Shadow P2P are source routed. An advantage to this is that the sender can choose how the packets are distributed amongst the possible routes to the destination. In the following scenario, a node sends a large volume of traffic to another node but it intelligently routes packets such that nodes at the same distance from the sender process the same amount of traffic.
 
 % -----------------------------------------------------------------------------
 
