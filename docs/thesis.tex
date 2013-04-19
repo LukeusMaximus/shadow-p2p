@@ -87,7 +87,7 @@ a standard cover and declaration of authorship produced online via
 % -----------------------------------------------------------------------------
 
 \chapter*{Executive Summary}
-
+\begin{comment}
 {\bf A compulsory section, of at most $1$ page} 
 \vspace{1cm} 
 
@@ -120,12 +120,27 @@ follows:
       compared the results with several alternatives.
 \end{itemize}
 \end{quote}
+\end{comment}
 
-% Context
-% Aims
-% Objective
+% Context, aims, objectives
+Anonymity is a widely sought after commodity on the Internet. Many reasons exist for seeking it; from protection from persecution to secret governemtal work. To this end, many anonymous networks have been created to provide this. This project aims to explore the limits of anonymity and to design a network that provides more anonymity for its users than any existing solution.
+
 % Contributions
+The project introduces the following concepts:
+\begin{itemize}
+\item The 'Shout': A method for sending packet based messages between peers without those peers knowing the true identity of the other peer.
+\item The 'Shout Group': A method for protecting the anonymity provided by the shout method.
+\item Public Key Hiding: A cryptographic method for scramblinga public key such that it becomes unrecognisable but retains its usefulness as a public key.
+\item A Uni-directional Toroidal Network Structure: An arrangement method for positioning nodes within the network giving the network a regular structure.
+\end{itemize}
+
 % Achievements
+From these concepts, Shadow P2P is created and finds the following:
+\begin{itemize}
+\item The shout group method provides a high level of protection for the anonymity provided by the shout method which is used for all netowrk communication.
+\item The public key hiding method is cryptographically secure; the original public key cannot be distinguished from the scrambled version.
+\item The uni-direction toroidal provides the sender and receiver of packets with additional anonymity if the provided source routing is used intelligently.
+\end{itemize}
 
 % -----------------------------------------------------------------------------
 
@@ -1518,24 +1533,35 @@ The entropy plateaus because the expansion of the network only changes the propo
 
 \subsection{As a heat map}
 
-In order to analyse what consequences different levels of traffic between nodes have on anonymity, heat maps are created to show the relative amount of traffic passing through each node in the network. In this analysis, a heat map will essentially be a 3D plot of the network, the first 2 axes are the dimensions of the network 2D network and the third represents the level of traffic received by each node. We analyse traffic received rather than traffic sent as the shout mechanism used by the network will mean that any traffic observed will be completely void of information on the sender.
+In order to analyse what consequences different levels of traffic between nodes have on anonymity, heat maps are created to show the relative amount of traffic passing through each node in the network. Such heat maps may be used by an adversary to determine if two nodes are communicating with one another. In this analysis, a heat map will essentially be a 3D plot of the network, the first 2 axes are the dimensions of the network 2D network and the third represents the level of traffic received by each node. We analyse traffic received rather than traffic sent as the shout mechanism used by the network will mean that any traffic observed will be completely void of information on the sender. 
 
 \begin{figure}[h]
     \centering
     \includegraphics{diagrams/heat_map_random.eps}
-    \caption{The number of messages received by nodes where one node sends a high volume of traffic to another node.}
+    \caption{The number of messages received by nodes when a random routing algorithm is used.}
     \label{heatmap_random}
 \end{figure}
 
 In this first scenario, one node sends a large amout of traffic to another node, routed randomly in the space between them. The other nodes in the network engage in random communication between one another. The number of packets received by each node is recorded and these values produce the heatmap in Figure \ref{heatmap_random}. The ridge in the heatmap draws a line directly from sender to receiver; this is perhaps the worst possible case, traffic analysis has revealed both sender and receiver with practical certainty.
 
-Recall that generic data packets in Shadow P2P are source routed. An advantage to this is that the sender can choose how the packets are distributed amongst the possible routes to the destination. In the following scenario, a node sends a large volume of traffic to another node but it intelligently routes packets such that nodes at the same distance from the sender process the same amount of traffic.
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/heat_map_clever.eps}
+    \caption{The number of messages received by nodes when an intelligent algorithm attempts to disguise the traffic pattern.}
+    \label{heatmap_clever}
+\end{figure}
+
+Recall that generic data packets in Shadow P2P are source routed. An advantage to this is that the sender can choose how the packets are distributed amongst the possible routes to the destination. In the following scenario, a node sends a large volume of traffic to another node but it intelligently routes packets such that nodes at the same distance from the sender process the same amount of traffic going between the two nodes. The result of using such an algorithm is shown in Figure \ref{heatmap_clever}. This is clearly a much more sensible approach for ensuring anonymity, whilst the size of the traffic still shows up clearly against the background traffic, there is no longer any ridge connecting sender and receiver.
+
+The final part of this analysis entails determining what proportion of the total traffic a node would need to send in a high volume transfer in order for a pattern to appear in the heat map that connects the sender and receiver with a high level of confidence. In order to do this, a binomial distribution is used to model the number of packets that are received by any given node. From this, p-values are calculated that represent how unlikely it is to see a node receiving that number of packets. A p-value is calculated for each point. Then, if a path can be constructed from sender to receiver that only goes through nodes with a p-value lower than a given level of significance, we consider the anonymity of the transmission to be broken at that significance level. This test is performed on both methods of packet routing.
+
+For the randomised routing method it is found that to break the $p = 0.05$ significance level, a transfer has to consume roughly 2\% of the total network traffic. For the $p = 0.01$ significance level, it takes 3\%. When the intelligent method of routing is used, a transmission needs to use 5\% and 9\% of total traffic for an adversary to be able to detect a significant path at the $p = 0.05$ and $p = 0.01$ significance levels respectively. From this we can conclude that nodes can use source routing to their advantage in maintaining anonymity in their communications.
 
 % -----------------------------------------------------------------------------
 
 \chapter{Conclusion}
 \label{chap:conclusion}
-
+\begin{comment}
 {\bf A compulsory chapter, of roughly $2$ pages} 
 \vspace{1cm} 
 
@@ -1560,6 +1586,23 @@ attention.  Ideally, the chapter will consist of three parts:
       could be because Y and would form an interesting area for further 
       study'').
 \end{enumerate}
+\end{comment}
+
+In this project I have created a design for a network that aims to provide more in the way of anonymity than any other network trying to achieve the same goal. In doing so I invented a method for communicating between peers where not even the peers themselves know the true identity of their neighbours; the 'shout'. This method is very inefficient in the transfer of data and is reliant on the state of the Internet where the peer is setup, however, as stated these are not primary concerns of the project.
+
+It was seen that the shout method suffers a major drawback in that an adversary could search the shout list for the peer's true identity. I conceived the 'shout group' for the sole purpose of preventing such a search. These groups are effective in deterring any adversary from performing a search as an adversary would have to spend a very long time collecting a large amount of data from the interactions with the shout group in order to deduce any shout group member's identity. The time this takes is further lengthened by the use of a proof-of-work scheme that vastly increases the time between an adversary's attacks, further securing a node's anonymity.
+
+The network was constructed with the shout and shout group mechanisms at its core. The nodes were then arranged into a uni-directional toroidal structure in order to eliminate direct bi-directional communication to increase the difficulty of traffic analysis. I crated of a method for expanding and contracting this regular network structure to maintain its regularity and allow new peers to join the network. A tree of cryptographically signed certificates ensures that nodes can be sure of the location of nodes within the network and so can resist mis-information from an adversary. 
+
+For the transmission of data, packets had to be changed so that they were completely unrecognisable from their previous form in order to prevent the tracing of packets. Public key hiding was invented to allow packets to contain all the information they needed to be routed and re-encrypted and so that this information could be scrambled itself without compromising its usefulness. Breaking this hiding method was proved to be at least as hard as a known cryptographically hard problem so the anonymity of the packet's receiver is assured. Furthermore, the use of intelligent source routing was shown to be effective in disguising a large data transfer amongst the normal level of network traffic, preventing traffic analysis from determining which two nodes are taking part in a given transfer.
+
+As it stands, the project provides the theoretical grounding for an implementation. Shouts, shout groups, public key hiding and the network structure have all been proven to work. In the case of the shout group, there are unsolved secure multiparty computing problems for which clear definitions of the problems have been provided. If these problems are solved in the future, it will allow shout groups to be created from untrusted peers instead of just from known trusted parties. The network simulator goes some of the way in showing that the network design is feasible however no complete implementation of the network has been created.
+
+With respect to the initial aim of creating a network that is more anonymous than any other, I claim that I have although it is hard to show this. The difficulty in doing so is because the methods I have devised are not easily compared to existing methods. However, many of the techniques involve removing information in the performance of something done in other anonymous networks. For instance, the shout removes information about the peers when commumication between peers occurs and the network structure attempts to remove location based information from the network of peers. So the features of Shadow P2P can be seen as doing necessary peer-to-peer tasks with added anonymity.
+
+Any future development should start with implementing the network in full and then testing it either on a LAN or with a network of virtual machines. This will allow the techniques used to be refined and will allow any issues arising to be investigated and solved. Theoretically, the shout group technique is in need of more research. It is by far the hardest problem I have encountered in this project and still doesn't meet up to my expectations. Research in the area of SMC may solve the issue with trusted peers but the cut-off point selection still lacks in its ability to hinder search. To the best of my knowledge, this project is the first in using IP spoofing as a main communication component of the network; perhaps a completely different method that achieves the same effect could be achieved and thus remove the need for a shout group in doing so.
+
+As a final point, whilst it approaches the limits on anonymity, Shadow P2P is far too impractical and inefficient to gain standing as a popular anonymity tool on the Internet. The existing networks are sufficient in providing anonymity where it is needed. Hopefully, the techniques developed here may go on to improving the anonymity provided by the current plethora of solutions as the challenges facing them change.
 
 % =============================================================================
 
@@ -1586,6 +1629,8 @@ attention.  Ideally, the chapter will consist of three parts:
 % same as chapters in a sense, but once signaled as being appendicies via
 % the associated macro, LaTeX manages them appropriatly.
 
+\begin{comment}
+
 \appendix
 
 \chapter{An Example Appendix}
@@ -1606,6 +1651,7 @@ limited to
 \noindent
 Note that in line with most research conferences, the marking panel 
 is not obliged to read such appendices.
+\end{comment}
 
 % =============================================================================
 
