@@ -321,6 +321,25 @@ Bitcoin\cite{Bitcoin} is a P2P virtual currency where the units of currency (Bit
 
 In this project, the proof-of-work concept is used to make attacks on the network much harder to execute.
 
+\subsection{IP Spoofing}
+
+IP spoofing\cite{tanase2003ip} is a well known technique that allows the sender of a particular IP packet to conceal their identity. This is easily achieved by the sender because the sender is responsible for putting their correct IP address on each and every packet they send. Whilst it is trivial for a packet with a spoofed IP address to be created, having this packet traverse the Internet between sender and receiver is much harder.
+
+Network Address Translation (NAT) is the first hurdle, this is a feature of the sender's router that provides a large number of Local Area Network (LAN) IP addresses so that all machines on the LAN can access the internet via a single IP address provided by the user's ISP. The NAT will replace the source IP address of any packet exiting the LAN with the IP address provided by the ISP. Therefore, a router with NAT enabled will undo the effort of the IP spoofing and will add information about the user's identity to each and every packet. To make things harder, most commercially available routers do not allow the NAT feature to be disabled because there are very few reasons that a user possessing a single IP address would want to do this. However, it is just a matter of acquiring the correct hardware.
+
+Secondly, ISPs perform source address filtering on packets that enter their networks (ingress filtering). The aim of such filtering is to block malicious IP addresses from performing attacks within, or across the ISP's network. These filters are also in place to block spoofed IP addresses. Research into how effective these filters are showed that 31\% of the clients performing the testing were able to perform some form of IP address spoofing\cite{beverly2009understanding}. Furthermore, some of the same tests were used in a similar research effort 4 years prior\cite{bb-spoofer-sruti} where it was estimated that 20\% - 30\% of the clients could perform IP spoofing leading to the conclusion that uptake of such filtering is very slow. Therefore, whilst this does indicate that 69\% of all senders would not be able to perform IP spoofing, the proportion that can will be able to so for some time.
+
+IP spoofing is used in this project to prevent the receiver of an IP packet from learning the identity of the sender.
+
+\subsection{Metrics of Anonymity}
+
+In order to be able to reason about how anonymous something is, a method of measuring anonymity is required. In this project, I use two such metrics.
+
+In \cite{pfitzmann2001anonymity}, the concept of an ``Anonymity Set'' is introduced. It is stated that ``Anonymity is the stronger, the larger the respective anonymity set is and the more evenly
+distributed the sending or receiving, respectively, of the subjects within that set is''. This is a rather intuitive definition of anonymity. By analogy, the larger the crowd a person is in, the more anonymous they are. Also, the more a person acts like one of the crowd, the more anonymous they become.
+
+A more complex metric is introduced in \cite{serjantov2003towards}. This represents the anonymity of a subject in terms of entropy. The more entropic a subject's anonymity measure is, the more anonymous they are deemed to be. The entropy values that the metric gives not only indicate how a subject can be anonymous to another subject, but also how anonymous they are compared to the absolute maximum.
+
 % Why is selected approach important / interesting
 % Central challenges and why they are significant
 
@@ -372,21 +391,9 @@ additional goal as giving the reader confidence that you are able to absorb
 and understand research-level material.
 \end{comment}
 
-\section{Proof of Work}
-
-A proof-of-work is intended to prove that a party has performed a certain amount of computational effort. What the computation is calculating is unimportant, what matters is that the result should require the party to expend a non-trivial amount of computational resources. The result obtained proves that the party has expended these resources and this result is easy to verify. Additionally, a proof-of-work computation takes an input and the resulting proof-of-work proves that the computation was performed on that input. This means that a party can be prevented from pre-computing a proof-of-work by providing new data that the party must perform the proof-of-work computation on.
-
-The Bitcoin network uses a modified version of the Hashcash \cite{back2002hashcash} proof-of-work scheme. In order for a party to produce a proof-of-work, they must perform enough cryptographic hash computations such that the resulting numeric value is lower than a predetermined difficulty value. The lower the difficulty value is, the harder a proof-of-work is to produce. By modifying the level of difficulty, the rate at which these proofs-of-work are produced can be regulated.
-
-In this project, neither the Hashcash, nor the Bitcoin variant is used. This is because dedicated hardware\cite{avalonasic} exists specifically to perform these proofs-of-work. An attacker with access to this hardware will be able to produce proofs-of-work much faster than an average user. This will render the requirement of a proof-of-work, at a fixed difficulty level, useless. Even if the difficulty level is dynamically modified, because the computational power drastically outweighs that of legitimate users, the attacker can prevent new users from joining the network by causing the difficulty level to be too hard for an average user to surpass. It is therefore wise to choose a different computational problem for this project such as a memory bound function\cite{abadi2005moderately}.
-
-In this project, a proof-of-work system is used to make attacks on the network hard to execute. When a peer wants to join the network, it must first produce a proof-of-work linked to its identity. If a peer acts in a hostile manner, that peer is banned from the network, a note is made by every peer to never accept that proof-of-work again. In order to rejoin the network after being banned, a hostile peer must first create an entirely new identity and produce a proof-of-work for that identity. This will severely hinder an attacker's progress in determining the identity of peers in the network.
-
-By dynamically adjusting the difficulty of creating a proof-of-work, the network can be future-proofed against increases in computing power. The rate of joining the network can be set to be a fixed value (e.g. 3 new peers every minute) and adjust the threshold as needed to maintain the low rate. In contrast to Bitcoin where proofs-of-work are constantly being sought after, there may not be peers trying to join the network all the time and so proofs-of-work may be far and few between. Therefore, the difficulty of creating a proof-of-work is set to never decrease beyond a certain threshold. Otherwise an attacker could simply wait for the difficulty to fall to a low enough point before attacking the network. They could then join repeatedly with ease as producing proofs-of-work has become trivial.
-
 \section{Shouts}
 
-A 'shout' is the method this project uses for anonymous peer to peer communication. By analogy, it is as if the sender were shouting to a street full of people from behind a wall. The sender cannot be seen by those on the street and those on the street all appear to ignore what was shouted. As the receiver acts identically to the rest of the people on the street, the true receiver cannot be determined. To achieve this, the sender is anonymised through the use of IP spoofing (removing the sender's address from packets they send) and the receiver is anonymised through a broadcast to a list of multiple addresses (a 'shout list').
+A 'shout' is the method this project uses for anonymous peer to peer communication. By analogy, it is as if the sender were shouting to a street full of people from behind a wall. The sender cannot be seen by those on the street and those on the street all appear to ignore what was shouted. As the receiver acts identically to the rest of the people on the street, the true receiver cannot be determined. To achieve this, the sender is anonymised through the use of IP spoofing (removing the sender's address from packets they send) and the receiver is anonymised through a broadcast to a list of multiple addresses (a 'shout list'). This method can be used regardless of the choice of IP version (i.e. IPv4 or IPv6).
 
 \begin{figure}[h]
     \centering
@@ -451,6 +458,20 @@ Whilst we cannot produce perfectly indistinguishable sets, it has been shown tha
 
 One further thing is necessary for this method to work. An adversary could send the same $S$ to $B$ multiple times. If it reaches the point where it removes the $t$-th valid IP address from $S$ and repeatedly sends this to $B$, $B$ will eventually perform a cut-off and the valid IP address will be revealed as $S$ has not changed since the last valid IP was removed. This does require more time to perform but does guarantee the $A$ will return a valid $x$. To prevent this, the rate at which $S$ changes must be monitored by $B$ through the information it has about $S \cap V$ and the number of interactions that $A$ has performed. The rate at which $A$ removes addresses from $S$ can then be estimated and the cut-off can be adjusted so that it occurs between the removal of $t$ and $|V| - t$ valid addresses in a random fashion.
 
+\subsubsection{Proof of Work}
+
+When a cut-off is performed, what actually happens is that the shout group will no longer respond to messages that it receives from a party with a given identity. If this party is an adversary, they could resume the attack simply by choosing a different identity to make requests to the shout group with. This is where the proof-of-work scheme comes in.
+
+A proof-of-work is intended to prove that a party has performed a certain amount of computational effort. What the computation is calculating is unimportant, what matters is that the result should require the party to expend a non-trivial amount of computational resources. The result obtained proves that the party has expended these resources and this result is easy to verify. Additionally, a proof-of-work computation takes an input and the resulting proof-of-work proves that the computation was performed on that input. This means that a party can be prevented from pre-computing a proof-of-work by providing new data that the party must perform the proof-of-work computation on.
+
+The Bitcoin network uses a modified version of the Hashcash \cite{back2002hashcash} proof-of-work scheme. In order for a party to produce a proof-of-work, they must perform enough cryptographic hash computations such that the resulting numeric value is lower than a predetermined difficulty value. The lower the difficulty value is, the harder a proof-of-work is to produce. By modifying the level of difficulty, the rate at which these proofs-of-work are produced can be regulated.
+
+It is recommended that neither the Hashcash, nor the Bitcoin variant is used. This is because dedicated hardware\cite{avalonasic} exists specifically to perform these proofs-of-work. An attacker with access to this hardware will be able to produce proofs-of-work much faster than an average user. This will render the requirement of a proof-of-work, at a fixed difficulty level, useless. Even if the difficulty level is dynamically modified, because the computational power drastically outweighs that of legitimate users, the attacker can prevent new users from joining the network by causing the difficulty level to be too hard for an average user to surpass. It is therefore wise to choose a different computational problem for this project such as a memory bound function\cite{abadi2005moderately}.
+
+With regards to preventing search of a shout group's shout list, a proof-of-work system is used to make searching the list much harder. When a node  wants to join the network, it must first produce a proof-of-work linked to its identity. If the node turns out to be an adversary (and is cut-off as seen previously) then that identity is banned from the network; a note is made by every peer to never accept that proof-of-work again. In order to rejoin the network after being banned, an adversary must first create an entirely new identity and produce a proof-of-work for that identity. This will severely hinder an attacker's progress in determining the identity of peers in the network.
+
+By dynamically adjusting the difficulty of creating a proof-of-work, the protection the proof-of-work scheme offers can be future-proofed against increases in computing power. The rate of joining the network can be set to be a fixed value (e.g. 3 new peers every minute) and the threshold is then adjusted as needed to maintain the low rate. In contrast to Bitcoin where proofs-of-work are constantly being sought after, there may not be peers trying to join the network all the time and so proofs-of-work may be far and few between. Therefore, the difficulty of creating a proof-of-work is set to never decrease beyond a certain threshold. Otherwise an adversary could simply wait for the difficulty to fall to a low enough point before performing a search on a shout list. The adversary could then repeatedly join the network with ease as producing proofs-of-work has become trivial.
+
 \subsection{Message Receipt Verification}
 
 The shout group has previously been assumed to be a group of nodes who all explicitly trust each other and none of whom are adversarial to the purpose of the shout group. However, unless users of the network create a shout group amongst a group of themselves who they all mutually trust, there need to be mechanisms in place to prevent an adversary breaking the anonymity granted by the shout group. If an adversary exists amongst the shout group then they can see which nodes have received which messages. With this information it is trivial to simply send a packet to each IP address in the list and see if a member of the shout group states that they have received the message; if the message has been received by a member then the IP address that that message was sent to is the true IP address of a shout group member.
@@ -481,7 +502,7 @@ Yao's Garbled Circuit can be used to some effect. Consider the case of verifying
     \label{yao}
 \end{figure}
 
-Each node in the computation chain computes the XOR and passes it on to the next. The last node before the verifier computes an XOR and the OR cascade before sending the result to the verifier. This result indicates if the message has been receipted. There are many flaws with this method. Firstly, if two partcipants don't have the correct message identifier but collude to give the same input to the circuit, the XOR of their inputs will be 0 and thus the circuit can be fooled into receipting when some nodes have different inputs. Secondly, it assumes that there are no nodes collaborating with the verifier; a node that does can determine the intermediate products if given the keys for the garbled circuit by the verifier and would allow it to determine if fewer than all of the nodes have received the message. Thirdly, this method only allows thresholds equalling the number of participants which is undesirable; this method could be extended to perform the same computation with every group of {$t \choose n$} amongst the n participants but this obviously has efficiency drawbacks.
+Each node in the computation chain computes the XOR and passes it on to the next. The last node before the verifier computes an XOR and the OR cascade before sending the result to the verifier. This result indicates if the message has been receipted. There are many flaws with this method. Firstly, if two participants don't have the correct message identifier but collude to give the same input to the circuit, the XOR of their inputs will be 0 and thus the circuit can be fooled into receipting when some nodes have different inputs. Secondly, it assumes that there are no nodes collaborating with the verifier; a node that does can determine the intermediate products if given the keys for the garbled circuit by the verifier and would allow it to determine if fewer than all of the nodes have received the message. Thirdly, this method only allows thresholds equalling the number of participants which is undesirable; this method could be extended to perform the same computation with every group of {$t \choose n$} amongst the n participants but this obviously has efficiency drawbacks.
 \end{comment}
 
 % TODO possibly talk about Asmuth-Bloom
@@ -495,7 +516,7 @@ If a solution for message receipt verification is found, shout groups can be con
 
 The solution to this is quite simple. The node that is constructing a shout list for itself is assumed to not be in the network. The constructing node chooses some of the nodes in the network at random and determines a circular arrangement of them which includes the constructing node. The constructing node then encrypts each IP address in their shout list individually under an asymmetric encryption algorithm using a public key belonging to that node. This list of encryptions is then sent to the first node in the circle of nodes. Each node in the circle will receive a partial list from the node before it and add encryptions to the list created from its own shout list. This larger list is then shuffled randomly and sent to the next node in the chain. When the constructing node gets the list back from the last node in the circle, it can decrypt each IP address in turn to obtain the finished shout list for the shout group.
 
-This shout list can then be distributed back to the participants (using the shout list itself to perform the shout). Each participant should inspect the list to check if each IP address it placed in the list is present and if so, it should compute a signature on the list and send it to each member of the shout group, again using the shout list. If every member of the shout group receives valid signatures from all other members then the shout group has been created successfully, otherwise the shout group creation is abondoned and the process is restarted.
+This shout list can then be distributed back to the participants (using the shout list itself to perform the shout). Each participant should inspect the list to check if each IP address it placed in the list is present and if so, it should compute a signature on the list and send it to each member of the shout group, again using the shout list. If every member of the shout group receives valid signatures from all other members then the shout group has been created successfully, otherwise the shout group creation is abandoned and the process is restarted.
 
 \section{Hiding Public Keys}
 
@@ -561,7 +582,7 @@ Specifically, this method of hiding can also be applied to the Elliptic Curve In
 \section{Uni-directional Toroidal Network}
 \label{sec:network_structure}
 
-The connections between peers in the network are structured together in a regular fashion; specifically, they are arranged in an k-dimensional grid. Links are then created between the peers following the dimensional axes, however, links only allow transmission in one direction (and thus uni-directional). This would prevent responses reaching peers that sent the original requests; to correct for this, the network is connected such that when a packet reaches the edge of the network in a given dimension, the packet is sent back to the first peer in that dimension (therefore the network is toroidal). This structure is shown for a 2D network in Figure \ref{toroid}.
+The connections between peers in the network are structured together in a regular fashion; specifically, they are arranged in an $k$-dimensional grid with the width in each dimension equalling $w$. Links are then created between the peers following the dimensional axes, however, links only allow transmission in one direction (and thus uni-directional). This would prevent responses reaching peers that sent the original requests; to correct for this, the network is connected such that when a packet reaches the edge of the network in a given dimension, the packet is sent back to the first peer in that dimension (therefore the network is toroidal). This structure is shown for a 2D network with width 4 in Figure \ref{toroid}.
 
 \begin{figure}[h]
 \centering
@@ -574,13 +595,15 @@ This project chooses this network layout over other designs as it arguably provi
 
 Randomly reorganising the peers from a list of all known peers is a much more anonymous strategy as it attempts to disregard all information pertaining to the physical world. However, this may still leak information when a peer is reorganising its connections when it doesn't have a complete list. The peer might not have a complete list because information about peers further afield will necessarily take longer to propagate through the network.
 
-Physical connections are not the only concern, routing methods are also of interest. The two main schools of routing are destination based and source routing based. With destination based routing, the packet's destination address is included in the packet so that intermediate peers can route it correctly. However, that same address can be used to collect and analyse all the traffic going to a specific destination peer. With source routing, the source specifies a complete (or partial) route through the network to the destination. This method doesn't explicitly specify the destination so unless the intermediate peer recognises the path, the destination becomes anonymised. In Shadow P2P complete source routing is used in a way such that it is computationally infeasible to determine the destination. The network also takes advantage of the regular structure to allow senders to utilise a wide range of routes to the destination as will be discussed.
+In reality, networks are rarely assembled as toroids. However, the toroidal network structure here is designed to be a virtual overlay onto any network structure. This is achieved simply by assigning nodes in the underlying network to positions in the toroid. As long as a path exists between every pair of nodes in the underlying network (much like on the Internet), all of the links in the toroidal structure can be formed and so the toroidal structure can be used.
+
+Physical connections are not the only concern, routing methods are also of interest. The two main schools of routing are destination based and source routing based. With destination based routing, the packet's destination address is included in the packet so that intermediate peers can route it correctly. However, that same address can be used to collect and analyse all the traffic going to a specific destination peer. With source routing, the source specifies a complete (or partial) route through the network to the destination. This method doesn't explicitly specify the destination so unless the intermediate peer recognises the path, the destination becomes anonymised. In Shadow P2P, complete source routing is used in a way such that it is computationally infeasible to determine the destination. The network also takes advantage of the regular structure to allow senders to utilise a wide range of routes to the destination as will be discussed.
 
 \subsection{Source Routing}
 
 We assume here that each peer has complete knowledge of the network, they know where each peer is positioned and all required cryptographic material. A route can be specified through the network by providing a direcion in which the packet should be sent at each peer in the path. In the example given in Figure \ref{path} a packet will be sent down the blue path if it uses the routing information "up, right, right, right, up". The red path specifies an alternative route, perhaps for a second packet. As shown, the packets only have a single intermediate peer in common and therefore only this peer can attempt to analyse the packets as a pair. It should be clear that there are many different routes between sender and destination and that the sender can choose any one of them to send traffic down. It can be shown that, in 2D networks, there are ${dx + dy \choose dx}$ unique routes through the network between two peers separated by $dx$ peers and $dy$ peers on the x and y axes respectively.
 
-This distribution of traffic amongst many different routes will make traffic analysis exceedingly difficult. In particular, it can disguise a large data transfer as individual packets are dispersed among a large number of intermediate peers. This would not disguise the fact that a particular peer is engaging in such a transfer but it will disguise who the other participant is, assuming such transfers are common on the network. This is because, if an advesary monitored the amount of traffic going into and exiting each peer, they would see significant rises in the traffic of the two peers performing the transfer but only small rises in the peers between them. If the small rises are within the normal operational bounds of those intermediate peers, the adversary will not be able to determine both the sender and receiver.
+This distribution of traffic amongst many different routes will make traffic analysis exceedingly difficult. In particular, it can disguise a large data transfer as individual packets are dispersed among a large number of intermediate peers. This would not disguise the fact that a particular peer is engaging in such a transfer but it will disguise who the other participant is, assuming such transfers are common on the network. This is because, if an adversary monitored the amount of traffic going into and exiting each peer, they would see significant rises in the traffic of the two peers performing the transfer but only small rises in the peers between them. If the small rises are within the normal operational bounds of those intermediate peers, the adversary will not be able to determine both the sender and receiver. One way to achieve such an even distribution of traffic would be to use Valiant's algorithm\cite{valiant1982scheme}.
 
 \begin{figure}[h]
 \centering
@@ -657,7 +680,7 @@ Peer have to process traffic coming from (and going to) two virtual positions fo
     \label{balance2}
 \end{figure}
 
-Another consideration is how willing peers are to perform a balancing trade. For example, $B$ asks $E$ if it will take the virtual position it has at $(3,0)$, $B$ is willing to do this trade as it will lower $B$'s throughput. If $E$ is willing, it informs $A$ that it is leaving the position (2,0) so $A$ can take control of the position again; it then places itself at (3,0). If $E$ is not willing, $B$ can ask another peer to trade positions with. $A$ is the party most likely to be unwilling to perform the trade as it increases its load, however, as the other peers know of the virtual postitions $A$ owns, $A$ can be forcibly removed from the network for 'not pulling its weight'.
+Another consideration is how willing peers are to perform a balancing trade. For example, $B$ asks $E$ if it will take the virtual position it has at $(3,0)$, $B$ is willing to do this trade as it will lower $B$'s throughput. If $E$ is willing, it informs $A$ that it is leaving the position (2,0) so $A$ can take control of the position again; it then places itself at (3,0). If $E$ is not willing, $B$ can ask another peer to trade positions with. $A$ is the party most likely to be unwilling to perform the trade as it increases its load, however, as the other peers know of the virtual positions $A$ owns, $A$ can be forcibly removed from the network for 'not pulling its weight'.
 
 \subsubsection{Contraction}
 
@@ -671,6 +694,18 @@ Contracting the network is basically a reverse of the expansion process in that 
 \end{figure}
 
 This clearly requires the peers within the network to perform a feat of organisation. This is accomplished by controlling how peers leave the network. As peers leave the network, they return their virtual positions to other peers. Consider a single virtual position belonging to the leaving peer. If one or more of the corresponding inherited virtual positions have been given to other peers then one of those peers is asked to take possession of the current virtual position. If it has not given the inherited virtual positions to other peers then it gives the virtual position to the peer in possession of the virtual position's successor in the tree structure. This ensures that all of the peers end up owning positions closer to the root which eventually achieves the configuration required to shrink the network.
+
+\begin{comment}
+\subsection{Information Leakage}
+
+Despite the properties of this structure, it does still leak information about the peers. For instance, peers with virtual positions closer to the root will usually have joined the network at an earlier time than those with positions further away from the root. Therefore, in the case that a peer connects and disconnects from the network on a daily basis, the time zone the node physically resides in may inadvertently be revealed. However, this information is not accurate enough to identify a peer alone. Whilst it is likely to be impossible to prevent all information leakage, this network structure does prevent forms of information leakage common
+\end{comment}
+
+\section{Summary}
+
+In this chapter, I have introduced three techniques that contribute to my objective of making communication methods between network peers that are more anonymous than current techniques. The shout removes all information about the sender and most information about the receiver from the messages that are sent which allows neighbouring peers to communicate without revealing their IP addresses; this is a feature not offered by any network previously discussed. The public key hiding technique allows peers to encrypt under a public key without being able to determine which peer the key belongs to. Finally, the uni-directional toroidal structure removes information that might allow an adversary to identify a peer from a peer's position in the network. It also allows network traffic to take a multitude of different paths to its destination which makes collecting a complete communication between two peers exceedingly difficult and so traffic analysis aimed at identifying peers can be greatly hindered. 
+
+In addition to the anonymity techniques, I introduced shout groups whose express purpose is to protect the level of anonymity granted by the shout technique and contributes to my objective for inventing defensive measures against adversaries. The technique allows peers to detect and then severely hinder an adversary's attack without revealing their identities whilst still allowing communication between peers to occur.
 
 % -----------------------------------------------------------------------------
 
@@ -772,32 +807,34 @@ This is an example paragraph; note the trailing full-stop in the title,
 which is common style intended to ensure it does not run into the text.
 \end{comment}
 
-The overarching goal of this project is to design a network in full that meets the requirements for anonymity previously stated. In this chapter, the complete network design is explained and the use of each component detailed in the previous chapter is shown.
+%Design a feasible anonymous network design based on the novel techniques.
 
-\section{User Requirements}
+The overarching goal of this project is to design a network, in full, that meets the requirements for anonymity previously stated. To achieve this, I have designed a new anonymous network named ``Shadow P2P''. This chapter describes the network's aspects and the reasoning behind them.
+
+This chapter takes the techniques introduced in the previous chapter and incorporates them into the design as follows. The shout technique is used by the peers in the network for communication with their neighbours. This is coupled with the shout group technique which each peer will use to detect and prevent foul play by adversaries. Each peer therefore requires a shout group before it can join the network. The peers are arranged according to the uni-directional toroid structure that I described; peers can then communicate with every other peer. Shouts will be used by the peers to send messages via their downstream neighbours and the responses will be returned by their upstream peers. The majority of packets that are sent within the network are encrypted and through the use of the public key hiding technique, the packets can be made untraceable.
+
+What remains to be done is defining what each node requires in order to become a peer and how the peers interact in order to maintain this anonymous network. On top of this, methods for discouraging and / or preventing attacks on the network must be designed. These methods are described in the following sections.
+
+\section{Node Requirements}
 \subsection{IP Spoofing}
 
-This project makes some assumptions about the abilities of the network's users, namely, that they can perform IP spoofing. It is further assumed that the users have a single IP address assigned to them by their ISP (which doubles as the user's identity in the design) and that the connection between the computer running Shadow P2P software and their ISP is mediated by a router in possession of the user. Two things make IP spoofing a non-trivial task, Network Address Translation (NAT) and ISP source address filtering.
-
-NAT is a feature of the user's router that provides a large number of Local Area Network (LAN) IP addresses so that all machines on the LAN can access the internet via the single IP provided by the ISP. The NAT will replace the source IP address of any packet exiting the LAN with the IP address provided by the ISP. Therefore, if the user's machine is spoofing the IP address on packets it emits to the Shadow P2P network, a router with NAT enabled will undo the effort of the IP spoofing and will add information about the user's identity to each and every packet. To make things harder, most commercially available routers do not allow the NAT feature to be disabled because there are very few reasons that a user with a single IP address would want to do this. However, it is just a matter of acquiring the correct hardware.
-
-ISPs perform source address filtering on packets that enter their networks (ingress filtering). The aim of such filtering is to block malicious IP addresses from performing attacks within, or across the ISP's network. These filters are also in place to block spoofed IP addresses. Research into how effective these filters are showed that 31\% of the clients performing the testing were able to perform some form of IP address spoofing\cite{beverly2009understanding}. Furthermore, some of the same tests were used in a similar research effort 4 years prior\cite{bb-spoofer-sruti} where it was estimated that 20\% - 30\% of the clients could perform IP spoofing leading to the conclusion that uptake of filtering is very slow. Therefore, whilst this does indicate that 69\% of all users would not be able to use Shadow P2P, the proportion that can will be able to so for some time. Users of Shadow P2P will have to determine for themselves whether they can perform IP spoofing of some form, ideally using some physically distant machine to determine if spoofed packets have been received.
+This project makes some assumptions about the abilities of the network's peers, namely, that it can perform IP spoofing. It is further assumed that the peers have a single IP address assigned to them by their ISP (which doubles as the peer's identity in the design) and that the connection between the computer running Shadow P2P software and their ISP is mediated by a router in possession of the user. As discussed previously, NAT and ISP source address filtering make IP spoofing a non-trivial task. It is suggested that the user have their node send packets with a spoofed source IP address to a physically distant machine that is also under the user's control. If the packets arrive at the distant machine, then the node can perform IP spoofing.
 
 %TODO mention spoofing other IP addresses in dynamically assigned IP blocks.
 
-Once IP spoofing has been achieved, the user will need to acquire software for interaction with the Shadow P2P network. How this is achieved anonymously is beyond the scope of this project but simple methods do exist. For example, the software may be passed between users on some removable media; as this takes place without use of the Internet, there is no chance of the user revealing their IP address. On top of this, the user will have to acquire a shout list for a peer in the network. P2P software is often distributed with IP addresses of known peers so, in Shadow P2P there would be shout lists of known peers included. Whilst it is true that a peer is more vulnerable the longer it maintains the same shout list (in the case of ongoing attacks), the peer can stop responding to requests using a given shout list at any time which renders it useless to attackers. The software distributors would then later remove the unresponsive shout list and replace it with another. 
+Once IP spoofing has been achieved, the user will need to acquire software for interaction with the Shadow P2P network. How this is achieved anonymously is beyond the scope of this project but simple methods do exist. For example, the software may be passed between users on some removable media; as this takes place without use of the Internet, there is no chance of the user revealing their IP address. On top of this, the user will have to acquire a shout list for a peer in the network. P2P software is often distributed with IP addresses of known peers so, in Shadow P2P, there may also be shout lists of known peers included. Whilst it is true that a peer is more vulnerable the longer it maintains the same shout list (in the case of ongoing attacks), the peer can stop responding to requests using a given shout list at any time which renders it useless to attackers. The software distributors would then later remove the unresponsive shout list and replace it with another. 
 
 \subsection{Creating a Shout Group}
 
-Before a user is ready to join the network as a peer, they will need to generate their own shout list and join a shout group. Shout list generation can easily be performed as described previously. Creation of a shout group, however, is harder as it requires users to create a shared shout list from their own shout lists without revealing to one another what their shout lists are. Shout groups can be formed in one of two ways.
+Before a node is ready to join the network as a peer, it will need to generate their own shout list and join a shout group. Shout list generation can easily be performed as described previously. Creation of a shout group, however, is harder as it requires nodes to create a shared shout list from their own shout lists without revealing to one another what their shout lists are. Shout groups can be formed in one of two ways.
 
-Firstly, if the user can find a small group of potential users offline, then this group of users can form a shout group. In this case, the users will each make their own peer in the network, each of which has the same shout list being used to contact it. This does involve meeting those users in the shout group face to face so it would be preferable to form this group from people that the user knows and trusts personally.
+If the user can find a small group of potential users offline, then this group of users can have their nodes form a shout group. In this case, the users will each make their own peer in the network, each of which has the same shout list being used to contact it. This does involve meeting those users in the shout group face to face so it would be preferable to form this group from people that the user knows and trusts personally.
 
-Secondly, the user can create a shout group from existing peers in the network. To do this, the user gets their software to engage in the shout group creation protocol. This is explained further in Section \ref{sec:create_shout_group}.
+The user can also create a shout group from existing peers in the network. To do this, the user gets their software to engage in the shout group creation protocol. This is explained further in Section \ref{sec:create_shout_group}.
 
 \section{Network Structure}
 
-Here, it is detailed how the peers in the network are organised. Peer arrangement, necessary information and peer joining / leaving are explained. The network takes on the form of a uni-directional toroid as explained in Section \ref{sec:network_structure}. This structure is necessary in order to perform the proposed method of routing and network resizing. For notation: $k$ is the number of dimensions that the toroidal network takes, $w$ is the network width in any dimension (recall that the width is the same in all dimensions). Communication between peers is achieved using the shout and shout group methods.
+Here, it is detailed how the peers in the network are organised. Peer arrangement, necessary information and peer joining / leaving are explained. The network takes on the form of a uni-directional toroid as explained in Section \ref{sec:network_structure}. This structure is necessary in order to perform the proposed method of routing and network resizing. Communication between peers is achieved using the shout and shout group methods.
 
 \subsection{Authenticated Virtual Position Transfer}
 
@@ -855,7 +892,14 @@ This packet should make up the bulk of the network's traffic. It is used for tra
 
 To prevent messages being traced, these packets use 'ephemeral onion routing' to scramble the packet's data in its entirety. Onion routing is performed as follows: a packet leaves the sender with a single layer of symmetric encryption. Whenever the packet passes through an intermediate peer, another layer of encryption is added on top of the first (and so layers of encryption are built up like layers of an onion). When the packet reaches the destination peer, each layer of encryption is removed in turn to recover the data. This is 'ephemeral' as each encryption key is chosen at random when the packet passes through the peer; in other words, none of the symmetric encryption keys are pre-agreed. The following sections explain how this process works in more detail.
 
-The packet is divided up into 4 sections. The first section is for routing keys, the second is for the data encryption public key of the receiver, the third is for so-called 'hybrid headers' and the fourth is the data payload field.
+The packet is divided up into 4 sections. The first section is for routing keys, the second is for the data encryption public key of the receiver, the third is for so-called 'hybrid headers' and the fourth is the data payload field (see Figure \ref{packet_generic_data}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/packet_generic_data.eps}
+    \caption{The structure of a generic data packet}
+    \label{packet_generic_data}
+\end{figure}
 
 \subsubsection{Packet Construction}
 
@@ -867,11 +911,17 @@ The hybrid headers field contains encryptions of symmetric encryption keys under
 
 The data field is set to be the plaintext data and is then encrypted symmetrically under the same symmetric key generated for the hybrid headers field. This data field must be the same size for every generic data packet that passes through the network or the packet's length will allow it to be recognised. The length must be pre-agreed by the network peers. The data field can easily be made of the required length by padding the plaintext before encrypting it in addition to splitting the data into multiple packets if required.
 
-The finished packet is sent to the first peer in the random route that was generated.
+The finished packet (see Figure \ref{packet_generic_construction}) is sent to the first peer in the random route that was generated.
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/packet_generic_construction.eps}
+    \caption{The construction of a generic data packet.}
+    \label{packet_generic_construction}
+\end{figure}
 
 \subsubsection{Packet Processing En-route}
 
-Every peer in the path that a packet takes performs operations on the packet as it passes through. The aim is to transform the packet so that none of its elements can be recognised as being related to their previous values. This will prevent packets being tracked along their paths.
+Every peer in the path that a packet takes performs operations on the packet as it passes through. The aim is to transform the packet so that none of its elements can be recognised as being related to their previous values. This will prevent packets being tracked along their paths. Figure \ref{packet_generic_proc} shows the changes to each field.
 
 The peer checks the first routing key within the routing keys field and determines which direction to send the packet in once processing is complete. The routing key is a pair of ($g\prime$, $h\prime$) as described for public key hiding. The peer uses the private part of each of their routing keys to see if $g\prime^{x} = h\prime$. If it does then the packet is to be routed in the direction corresponding to that key. The peer removes this pair from the front of the field and adds a random pair of group members to the back to maintain the field's size. Each pair in the field then has the public key hiding technique applied, this should result in the field being unrecognisable from it's previous value. If the key doesn't correspond to one of its routing keys then the data encryption public key (the second field) is checked to see if the data can be decrypted. If it can, decryption of the packet is attempted, otherwise, the packet is dropped.
 
@@ -881,6 +931,13 @@ The peer generates a symmetric key for data encryption. The last encryption in t
 
 The data field then is then encrypted under the generated symmetric key. This will make the field unrecognisable as its previous value.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/packet_generic_proc.eps}
+    \caption{The processing of a generic data packet at an intermediate node.}
+    \label{packet_generic_proc}
+\end{figure}
+
 \subsubsection{Packet Decryption}
 
 If a peer receives a packet and the first element in the routing key field doesn't correspond to one of their routing public keys then the data encryption public key is inspected. Using the private part of their data encryption key, $x$, if $g\prime^{x} = h\prime$ then this peer is the packet's destination. The packet's data field may be decrypted as follows. To begin, the first element of the hybrid header's field is decrypted with the private part of the peer's data encryption key; this obtains a symmetric key (and possibly an IV). The remainder of the hybrid headers field and the entire data field is decrypted using this key (and IV). The process may then be repeated on the first element of the remainder of the hybrid headers field; a new symmetric key (and IV) will be obtained with each iteration (see Figure \ref{hybrid_decrypt}). The decryption ends when the data field becomes plaintext.
@@ -888,7 +945,7 @@ If a peer receives a packet and the first element in the routing key field doesn
 \begin{figure}[h]
     \centering
     \includegraphics{diagrams/hybrid_header_decryption2.eps}
-    \caption{The process of decrypting the hybrid headers to obtain the sequence of keys used to encrypt the data field}
+    \caption{The process of decrypting the hybrid headers to obtain the sequence of keys used to encrypt the data field.}
     \label{hybrid_decrypt}
 \end{figure}
 
@@ -911,21 +968,42 @@ Here, the procedure and packets used for creating a shout group from existing pe
 
 \subsubsection{Shout Group Request}
 
-The joining node asks a peer in the network (via the shout obtained previously) to broadcast this packet which requests the creation of a shout group. For convenience, we call this peer the "joiner peer". It contains the peer's identifier, the joining nodes's keyset and a timestamp. In order for the joiner peer to be able to contact the joining node, the joining node must provide its shout list.
+The joining node asks a peer in the network (via the shout obtained previously) to broadcast this packet which requests the creation of a shout group (see Figure \ref{create_shout_group}). For convenience, we call this peer the "joiner peer". It contains the peer's identifier, the joining nodes's keyset and a timestamp. In order for the joiner peer to be able to contact the joining node, the joining node must provide its shout list.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/create_shout_group.eps}
+    \caption{The joining node (light green) sends a shout group request packet to the joiner peer (dark green) which then broadcasts it.}
+    \label{create_shout_group}
+\end{figure}
 
 \subsubsection{Shout Group Volunteer}
 
-Peers then offer to take part in the shout group by sending this packet back to the joining node by sending it via the joiner peer which then sends the packet on to the joining node using its shout list. In this packet the peer sends their keyset. 
+Peers then offer to take part in the shout group by sending this packet back to the joining node by sending it via the joiner peer which then sends the packet on to the joining node using its shout list (see Figure \ref{create_shout_group_volunteer}). In this packet the peer sends their keyset. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/create_shout_group_volunteer.eps}
+    \caption{The volunteering peers send a shout group volunteer packet to the joiner peer which then passes them on to the joining node.}
+    \label{create_shout_group_volunteer}
+\end{figure}
 
 \subsubsection{Shout Group Setup}
 
 The joining node will then choose a random subset of the peers that it received volunteer packets from to be members of the shout group. The user will choose a random permutation of these peers and append the joiner peer to the list.
 
-The packet is then created with a list of peer identifiers. This list is created by taking each element from the permutation created previously and appending its identifier to this list. The list should end with the joiner peer's identifier. This packet is then send to the joiner peer which will then remove the first peer's identifier from the front of the list and send it to that peer.
+The packet is then created with a list of peer identifiers. This list is created by taking each element from the permutation created previously and appending its identifier to this list. The list should end with the joiner peer's identifier. This packet is then sent to the joiner peer which will then remove the first peer's identifier from the front of the list and send it to that peer (see Figure \ref{create_shout_group_setup}).
 
 When each peer receives the packet, they make encryptions of each of the IP addresses in their shout list under the joining node's public key. These are added to the packet's list of encrypted IP addresses and then the entire list is randomly shuffled. The next peer's identifier is then removed from the front of the list and then the packet is sent to that peer.
 
 When the peer reaches the joiner peer again, it is sent to the joining node. The joining node decrypts each IP address in turn in order to obtain the final shout list.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/create_shout_group_setup.eps}
+    \caption{The joining node sends a shout group setup packet round in a path that ends back at itself.}
+    \label{create_shout_group_setup}
+\end{figure}
 
 \begin{comment}
 The joining node will first generate a random bitstring. Taking the last node in the permutation, the joining node makes an encryption of the random bit string under this node's public key. Then for each node in the sequence, an ephemeral key is generated to symmetrically encrypt the previous encryption created and the virtual position of the next node in the permutation; then the ephemeral key is encrypted under the node's public key and added to the encryption. Once this process has gone through all the nodes in the permutation, the resulting data should be as shown in Figure \ref{setup_enc}. This "onion" of encrypted data is then put into the packet.
@@ -948,13 +1026,20 @@ Upon receiving the response from the last node in the sequence, the joining node
 
 The last step in this process is to distribute the list and confirm that no unauthorised changes to the list have occurred. The joining node produces a signature on the list and then constructs a packet with this signature and the decrypted shout list. This packet is then duplicated for each other peer in the shout group. The data field of each of these packets is then encrypted under a different ephemeral key and this ephemeral key is encrypted with the recipient's public key. Each packet is now only readable by the intended recipient. The packets are then shouted using the shout list that has just been constructed.
 
-Upon receiving this packet, the peer tries to decrypt it. If it can, it verifies the signature. Then it checks to see if the list contains all of the IP addresses in its own shout list. If it does, it signs the list with the appropriate private key and sends the signature to every member in the shout group using the shout list it has just received. If all the peers in the shout group receive signatures from every other peer then the shout group has been created successfully. If the signatures are not all received after a period of time, the shout group creation fails and is re-attempted by the joining node, if desired.
+Upon receiving this packet, the peer tries to decrypt it. If it can, it verifies the signature. Then it checks to see if the list contains all of the IP addresses in its own shout list. If it does, it signs the list with the appropriate private key and sends the signature to every member in the shout group using the shout list it has just received (see Figure \ref{create_shout_group_verify}). If all the peers in the shout group receive signatures from every other peer then the shout group has been created successfully. If the signatures are not all received after a period of time, the shout group creation fails and is re-attempted by the joining node, if desired.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{diagrams/create_shout_group_verify.eps}
+    \caption{The shout group nodes send signatures to each other.}
+    \label{create_shout_group_verify}
+\end{figure}
 
 \subsection{Issues with shout group creation}
 
-A risk of using this method to create a shout group is that the shout list the joining node provides to the joiner peer does make it more vulnerable to a search attack on their shout list by the joiner peer. However, the risk is minimal. For the shout group creation, the only response that the joining node gives to the joiner peer is the shout group setup packet. To prevent any search occuring here, the joining node should only wait for a short period of time for the volunteer packets after which it should abandon the creation process and choose a new joiner node. Additionally, it should wait for a substantial period of time between receiving the volunteer packets and sending the setup packet. This severly limits the information that the joiner peer can gain about the joining node's identity. To prevent any search once the joining node becomes a peer, it is sufficient to make sure that the joiner peer is not a member of the shout group that is created.
+A risk of using this method to create a shout group is that the shout list the joining node provides to the joiner peer does make it more vulnerable to a search attack on their shout list by the joiner peer. However, the risk is minimal. For the shout group creation, the only response that the joining node gives to the joiner peer is the shout group setup packet. To prevent any search occurring here, the joining node should only wait for a short period of time for the volunteer packets after which it should abandon the creation process and choose a new joiner node. Additionally, it should wait for a substantial period of time between receiving the volunteer packets and sending the setup packet. This severely limits the information that the joiner peer can gain about the joining node's identity. To prevent any search once the joining node becomes a peer, it is sufficient to make sure that the joiner peer is not a member of the shout group that is created.
 
-There is also a risk to the volunteers. As the network requires that a peer use the same set of IP addresses for their individual shout list, the shout groups that the volunteer is part of will have shout lists which have non-negligibly sized intersections. If an adversary managed to obtain the shout lists for two shout group's with a common volunteer, then the intersection would give the adversary the individual shout list of the volunteer. This list is useless on its own as a node will not respond to a message that is not receipted by their shout group, however, it does give an adversary additional information when attacking the shout group.
+There is also a risk to the volunteers. As the network requires that a peer use the same set of IP addresses for their individual shout list, the shout groups that the volunteer is part of will have shout lists which have non-negligibly sized intersections. If an adversary managed to obtain the shout lists for two shout group's with a common volunteer, then the intersection would give the adversary the individual shout list of the volunteer. This list is useless on its own as a node will not respond to a message that is not receipted by their shout group, however, it does give an adversary additional information when attacking the shout group. If the attacker always uses this intersection in the subset they send messages to, then the attacker can attach the shout group as if it had parameters of $t = t - 1$, $|V| = |V| - 1$ and $|L| = |L| - |I|$ (where $I$ is the intersection of the lists). With more intersections, the more the adversary can manipulate the shout group into revealing the identity of a peer.
 
 \subsection{Packets for joining}
 
@@ -1031,16 +1116,18 @@ such, both positive {\em and} negative outcomes are valid {\em if} presented
 in a suitable manner.
 \end{comment}
 
-Having described the network in full, its components will be evaluated individually. A complete implementation of the network has not been created. Such an implementation is unnecessary as the components are designed to be combined with one another without interference. Additionally, performing IP spoofing on the Internet is against the terms of service agreement of most ISPs and, on the scale that the IP spoofing would have been performed, it would also be of questionable legality. A simulator was initially sought after for the purpose of creating and testing an implementation, however, despite the abundance of network simulators, none were appropriate. Therefore, the individual components will be analysed in their idividual capacities, using appropriate theoretical and / or practical methods.
+Having described the network in full, its components will be evaluated individually. A complete implementation of the network has not been created. Such an implementation is unnecessary since the components are designed to be combined with one another without interference. Additionally, performing IP spoofing on the Internet is against the terms of service agreement of most ISPs and, on the scale that the IP spoofing would have been performed, it would also be of questionable legality. A simulator was initially sought after for the purpose of creating and testing an implementation, however, despite the abundance of network simulators, none were appropriate. NS3\cite{ns3} and LANSim\cite{lansim} were briefly trialled as they were the closest simulators to what was desired but neither provided the desired level of functionality. Therefore, the individual components will be analysed in their individual capacities, using appropriate theoretical and / or practical methods.
 
-\section{Shout Groups}
+Here the metrics of anonymity come into play. For the majority of this analysis, the intuitive metric described in \cite{pfitzmann2001anonymity} will suffice. In this metric, peers are more anonymous when amongst greater numbers of peers and when they behave more like every other peer. As with the age old saying, "When in Rome, do as the Romans do". Later, the entropic metric described in \cite{serjantov2003towards} is used to evaluate anonymity in the case of mix networks, which is what the metric was designed to apply to.
 
-At first glance, it may appear that a measure of anonymity is appropriate to analyse the effectiveness of shout groups. However, this is not the case because the goal of a shout group is not to provide anonymity but to {\em protect} it. The anonymity is provided by the shout mechanism. The goal of the shout group is to prevent this anonymity being broken by an adversary so here we analyse the difficulty of breaking this protection.
+\section{Attacks on Shout Groups}
+
+At first glance, it may appear that a measure of anonymity is appropriate to analyse the effectiveness of shout groups. However, this is not the case because the goal of a shout group is not to provide anonymity but to {\em protect} it. The anonymity is provided by the shout mechanism. The goal of the shout group is to prevent this anonymity being broken by an adversary, so here we analyse the difficulty of breaking this protection.
 
 Recall that a shout group protects anonymity through the prevention of searching the associated shout list. Therefore it is judged how well these methods prevent this search by examining the cost to an adversary performing an attack on a shout group.
 
 \begin{comment}
-A formal description of the problem is as follows. We have an adversary, $A$, the set of IP addresses in the shout list, $L$, and the set of IP addresses belonging to receivers in the shout group, $V, V \sebset L$. The goal of $A$ is to find $x \in V$ with only knowledge of $L$; to do this, $A$ interacts with an oracle, $B$. $A$ gives input to $B$ via an intermediary $C$ which when given a list of IP addresses, $S$, by $A$ will pass $S \cap V$ on to $B$. $B$ returns $\left\{0, 1, \top\right\}$ for each input passed to it; $0$ represents no response from the shout group, $1$ represents a response and $\top$ represents that $B$ has performed a cut-off. We aim to construct, $B$, so that $A$ will output $x \in V$ with probability equal to if $A$ had randomly picked a member of $L$. $A$ and $B$ know $L$, $A$ knows $S$ but not $V$ and $B$ knows $V$ but not $S$. $A$ may re-instate $B$ after its cutoff and perform another set of interactions with it. $B$'s goal is to make the number of re-instatings needed for $A$ to give a correct value of $x$ as large as possible. In other words, the goal of $B$ is to make:
+A formal description of the problem is as follows. We have an adversary, $A$, the set of IP addresses in the shout list, $L$, and the set of IP addresses belonging to receivers in the shout group, $V, V \sebset L$. The goal of $A$ is to find $x \in V$ with only knowledge of $L$; to do this, $A$ interacts with an oracle, $B$. $A$ gives input to $B$ via an intermediary $C$ which when given a list of IP addresses, $S$, by $A$ will pass $S \cap V$ on to $B$. $B$ returns $\left\{0, 1, \top\right\}$ for each input passed to it; $0$ represents no response from the shout group, $1$ represents a response and $\top$ represents that $B$ has performed a cut-off. We aim to construct, $B$, so that $A$ will output $x \in V$ with probability equal to if $A$ had randomly picked a member of $L$. $A$ and $B$ know $L$, $A$ knows $S$ but not $V$ and $B$ knows $V$ but not $S$. $A$ may re-instate $B$ after its cut-off and perform another set of interactions with it. $B$'s goal is to make the number of re-instatings needed for $A$ to give a correct value of $x$ as large as possible. In other words, the goal of $B$ is to make:
 
 \[Pr[x \in V] - Pr[l \in V | l \in L] \approx 0\]
 
@@ -1051,7 +1138,7 @@ Whilst we cannot produce perfect indistinguishability, it has been shown that we
 One further thing is necessary for this method to work. An adversary could send the same $S$ to $B$ multiple times. If it reaches the point where it removes the $t$-th valid IP address from $S$ and repeatedly sends this to $B$, $B$ will eventually perform a cut-off and the valid IP address will be revealed as $S$ has not changed since the last valid IP was removed. This does require more time to perform but does guarantee the $A$ will return a valid $x$. To prevent this, the rate at which $S$ changes must be monitored by $B$ through the information it has about $S \cap V$ and the number of interactions that $A$ has performed. The rate at which $A$ removes addresses from $S$ can then be estimated and the cut-off can be adjusted so that it occurs between the removal of $t$ and $|V| - t$ valid addresses in a random fashion.
 \end{comment}
 
-\section{Search cut-off}
+\subsection{Search cut-off}
 
 The adversary, $A$, sends a message to a set of addresses, $S$, testing whether or not they get a response from the shout group $B$. They aim to give an $x \in L$ such that $x \in V$ where $L$ is the complete shout list for the shout group and $V$ is the set of true IP addresses belonging to members of the shout group. $A$ gets cut-off by $B$ at some point in its search, at this point it records $S$; $A$ must collect many such subsets of $L$ and determine from them a probable member of $V$.
 
@@ -1067,9 +1154,9 @@ First, it is claimed that if $A$ were to split a random ordering of $L$ in half,
     \label{random_split_result}
 \end{figure}
 
-In order for $B$ to protect its members identities, it should perform the cut-off event such that $A$ gains as little information as possible. Ideally, the distribution of the $S$ results should be indistinguishable from the distribution of random splits of random permutations of $L$. Here we simulate the attacks $A$ performs on $B$ and analyse the resulting distribution. $B$ has two strategies it can use: cut-off at some random point after exactly half of $V$ have been removed from $S$ and cut-off at some random point between the removal of $t$ and $|V| - t$ members of $V$.
+In order for $B$ to protect its members identities, it should perform the cut-off event such that $A$ gains as little information as possible. Ideally, the distribution of the $S$ results should be indistinguishable from the distribution of random splits of random permutations of $L$. Here we simulate the attacks $A$ performs on $B$ and analyse the resulting distribution. $B$ has two strategies it can use: cut-off at some random point after exactly half of $V$ have been removed from $S$ and cut-off at some random point between the removal of $t$ and $|V| - t$ members of $V$. 
 
-\subsection{No Threshold}
+\subsubsection{No Threshold}
 
 This first strategy was simulated over 1,000 attacks on the same shout group. In each attack, $S$ was set to a random permutation of $L$ and $B$ was asked for a response, if it responded, $S$ had one of its members removed. The attack was repeated with this continually shrinking $S$ unti $B$ did not respond, i.e. $B$ had performed a cut-off. The final set $S$ was then recorded. $B$ was set up to collect information on the rate at which addresses that were members of $V$ were being removed from $S$. Once half of the members of $V$ had been removed from $S$, $B$ has $\frac{|V|}{2} - 1$ data points representing the number of shouts received between each address being removed. A mean, $m$, of these results was then calculated and $B$ chose a random number, $r$, in the range $\left\{0 ... m\right\}$. Once $r$ more shouts had been heard, $B$ stopped responding to shouts. 
 
@@ -1077,14 +1164,14 @@ Once all 1000 $S$ results had been collected, the total number of times any give
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/split100.eps}
         \caption{$|L|$ = 100}
         \label{simulated_attack_result100}
     \end{minipage}
     \hspace{0.5cm}
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/split1000.eps}
         \caption{$|L|$ = 1000}
@@ -1092,22 +1179,22 @@ Once all 1000 $S$ results had been collected, the total number of times any give
     \end{minipage}
 \end{figure}
 
-Clearly, the addresses belonging to the members of the shout group have received the lower tallies and some of the shout group members can be identified simply by choosing the addresses with the lowest tallies. As identification can occur, the shout group should not use this method of selecting a cut-off point.
+Clearly, the addresses belonging to the members of the shout group have received the lower tallies and some of the shout group members can be identified simply by choosing the addresses with the lowest tallies. \textbf{As identification can easily be achieved by an adversary, the shout group should not use this method of selecting a cut-off point.}
 
-\subsection{Threshold Methods}
+\subsubsection{Threshold Methods}
 
 A threshold, $t$ is chosen to represent the number of members of $V$ that may be removed from $S$ before a random cut-off is chosen. The random cut-off is selected so that it should occur before $|V| - t$ members of $V$ have been removed from $S$. This is done by measuring the number of shouts received between the removal of each member of $V$. Assuming that one address is removed from $S$ between each shout, the average number of shouts received is computed; this is the estimate of how many shouts occur between the removal of addresses from $V$. Using this estimate, a value is generated randomly from the binomial with $\mu=\frac{|V|}{2}$ and $\sigma=\frac{|V|}{6}$ and to this is added a uniformly selected random number between zero and the estimate block size. The value of $\sigma$ is chosen such that nearly all points on the curve fall in the range $[0, |V|]$. If the value generated from the binomial is below $t$ or above $|V| - t$ then the process is repeated to ensure the value falls within the threshold boundaries. This reuslting value is the number of shouts that $B$ will respond to before performing the cut-off. The simulations below are run with $|L| = 200$, $|V| = 20$ and $t = 3$ over 1000 iterations. The results are illustrated in Figure \ref{threshold_attack1}.
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/binomial1.eps}
         \caption{Members of $V$ occur in $S$ less frequently than other addresses}
         \label{threshold_attack1}
     \end{minipage}
     \hspace{0.5cm}
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/binomial2.eps}
         \caption{50\% of cases trigger the hard cut-off}
@@ -1121,14 +1208,14 @@ In order to find a method to overcome the issue, it is worth looking at the desi
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/desired1.eps}
         \caption{Addresses occurrence in $S$ is independent of its membership in $V$}
         \label{threshold_attack_desired1}
     \end{minipage}
     \hspace{0.5cm}
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/desired2.eps}
         \caption{The cut-offs that were chosen randomly from the binomial distribution}
@@ -1154,14 +1241,14 @@ We use this better estimate in the simulation. The results in Figure \ref{thresh
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/better1.eps}
         \caption{Under the better estimate, the variables appear independent}
         \label{threshold_attack_better1}
     \end{minipage}
     \hspace{0.5cm}
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/better2.eps}
         \caption{Very few cut-offs occur at the hard cut-off.}
@@ -1173,14 +1260,14 @@ The method of cut-off selection can be improved yet further, there is still some
  
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/dyn1.eps}
         \caption{The members of $V$ generally have fewer occurrence in $S$}
         \label{threshold_attack_dynamic1}
     \end{minipage}
     \hspace{0.5cm}
-    \begin{minipage}[b]{0.4\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/dyn2.eps}
         \caption{A negligible number of cases trigger the hard cut-off}
@@ -1188,7 +1275,7 @@ The method of cut-off selection can be improved yet further, there is still some
     \end{minipage}
 \end{figure}
 
-Suprisingly, this gives a worse result than before. The members of $V$ are again skewed towards one end of the diagram. The members of $V$ are being removed from $S$ more than the other addresses. Therefore it is concluded that the previous method is currently the best known method to use for selecting cut-offs. A better method may exist, however, it should be noted that it already takes 1000 attacks on the same shout group to produce this result so this method should suffice.
+Suprisingly, this gives a worse result than before. The members of $V$ are again skewed towards one end of the diagram. The members of $V$ are being removed from $S$ more than the other addresses. Therefore the previous method is currently the best known method to use for selecting cut-offs. In conclusion, although a better threshold method may exist, \textbf{the best threshold method used here suffices to prevent attacks} as it already takes 1000 attacks on the shout group to break the anonymity.
 
 \subsection{Number of Attacks Required}
 
@@ -1198,7 +1285,7 @@ The expectation that any given member of $V$ will appear in $S$ is $\frac{1}{2}$
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.8\linewidth}
+    \begin{minipage}[b]{0.9\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/confidence.eps}
         \caption{The change in mean and maximum p-value as more attacks are performed}
@@ -1208,11 +1295,11 @@ The expectation that any given member of $V$ will appear in $S$ is $\frac{1}{2}$
 
 The graph shows that as the number of attacks increases, the average and maximum p-values decrease. The attacker need only perform the number of attacks that gives them a desired level of confidence. The traditional confidence levels of $p = 0.05$ and $p = 0.01$ have been highlighted. An attacker that seeks to identify all of the shout group members would be interested in where the maximum p-values drop below a given level of confidence. The attacker can then has that level of confidence in the identity of every single shout group member. For a $p = 0.05$ level of confidence, the attacker needs to perform 8,000 attacks; at $p = 0.01$, 10,000 attacks are required.
 
-If the attacker is interested in identifying just a single member of the shout group, they would be interested in the minimum p-value. Figure \ref{confidence_min} plots these against the number of attacks performed. This gives discouraging results; just 200 attacks are needed to drop the p-value below the $p = 0.05$ level of confidence. For the $p = 0.01$ level of confidence, roughly 750 attacks are needed. Clearly the shout group does not provide a satisfactory level of protection under these conditions. However, the values for $|L|$, $|V|$ and $t$ can be chosen so that the shout group provides protection on any level desired.
+If the attacker is interested in identifying just a single member of the shout group, they would be interested in the minimum p-value. Figure \ref{confidence_min} plots these against the number of attacks performed. This gives discouraging results; just 200 attacks are needed to drop the p-value below the $p = 0.05$ level of confidence. For the $p = 0.01$ level of confidence, roughly 750 attacks are needed. Clearly the shout group does not provide a satisfactory level of protection under these conditions. However, \textbf{the values for $|L|$, $|V|$ and $t$ can be chosen so that the shout group provides protection on any level desired.}
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.8\linewidth}
+    \begin{minipage}[b]{0.9\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/confidence_min.eps}
         \caption{The change in minimum p-value as more attacks are performed}
@@ -1224,41 +1311,39 @@ If the attacker is interested in identifying just a single member of the shout g
 
 In the previous section it was shown that only a small number of attacks was necessary to identify a single shout group member. However, these were under a fixed set of shout group parameters. In this section, how the level of protection changes with these parameters is investigated. The simulations that follow obtain sets of p-values for each member of $V$. The mean of these p-values is then calculated from all the simulations performed and this is the p-value plotted. All of the following simulations perform 100 attacks on the shout group.
 
-First, $|L|$ is modified with a fixed $|V|$ and fixed $t$. $|V| = 20$ and $t = 3$ in these simulations. The result in Figure \ref{variable_l} shows that increasing the number of addresses in the shout list increases the p-value but only up until $|L|$ is ten times the size of $V$. This plateau means that simply increasing the number of addresses in the shout list will not increase the level of protection afforded. It is not known why this occurs.
+First, $|L|$ is modified with a fixed $|V|$ and fixed $t$. $|V| = 20$ and $t = 3$ in these simulations. The result in Figure \ref{variable_l} shows that increasing the number of addresses in the shout list increases the p-value but only up until $|L|$ is ten times the size of $V$. This plateau means that increasing the number of addresses in the shout list further will not increase the level of protection afforded. It is not known why this occurs.
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.8\linewidth}
+    \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/variable_l.eps}
         \caption{The change in p-value as the shout list varies in size}
+        \label{variable_l}
     \end{minipage}
-    \label{variable_l}
+    \begin{minipage}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{diagrams/variable_v.eps}
+        \caption{The change in p-value as the number of members of $V$ variess}
+        \label{variable_v}
+    \end{minipage}
 \end{figure}
 
 Secondly, $|V|$ is modified with fixed $|L|$ and fixed $t$. The constants set here are $|L| = 200$ and $t = 3$. Figure \ref{variable_v} shows a steep decline in p-value as more addresses become members of $V$. Where $|V|$ is greater than one half of $|L|$, there will a 50/50 chance of the next address removed from $S$ being a member of $V$. The cut-off selection process demands that if the next member of $V$ is removed and a cut-off has not been performed then a cut-off immediately occurs. The random selection should either choose to wait one shout or cut-off immediately as the limit of the random selection will tend towards a gap of one address between members of $V$. When there is no gap between members of $V$ being removed, the random cut-off selection has no effect; a member of $V$ will always be the last address removed from $S$. Therefore, members of $V$ are less likely to appear in the remainder of $S$ after the cut-off.
 
-\begin{figure}[h]
-    \centering
-    \begin{minipage}[b]{0.8\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{diagrams/variable_v.eps}
-        \caption{The change in p-value as the number of members of $V$ variess}
-    \end{minipage}
-    \label{variable_v}
-\end{figure}
-
-Next, $t$ is modified with fixed $|L|$ and $|V|$. Here $|L| = 200$ and $|V| = 40$. The results are shown in Figure \ref{varibale_t}. Again, it appears there is a plateau that occurs once $t$ is one quarter the size of $V$. From the simulations performed with no threshold that leave $S$ with exactly half of the members of $V$, it is known that the members of $V$ can easily be identified. A threshold of $\frac{|V|}{2}$ will produce the same result as it requires exactly half of the members of $V$ to be removed before the cut-off occurs. We may therefore deduce that a threshold of $\frac{|V|}{2}$ has a low p-value. Taking this into account, the best setting for the threshold is where the plateau begins, i.e. $t = \frac{|V|}{4}$.
+Next, $t$ is modified with fixed $|L|$ and $|V|$. Here $|L| = 200$ and $|V| = 40$. The results are shown in Figure \ref{variable_t}. Again, it appears there is a plateau that occurs once $t$ is one quarter the size of $V$. From the simulations performed with no threshold that leave $S$ with exactly half of the members of $V$, it is known that the members of $V$ can easily be identified. A threshold of $\frac{|V|}{2}$ will produce the same result as it requires exactly half of the members of $V$ to be removed before the cut-off occurs. We may therefore deduce that a threshold of $\frac{|V|}{2}$ has a low p-value. Taking this into account, the best setting for the threshold is where the plateau begins, i.e. $t = \frac{|V|}{4}$.
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}[b]{0.8\linewidth}
+    \begin{minipage}[b]{0.4\linewidth}
         \centering
         \includegraphics[width=\linewidth]{diagrams/variable_t2.eps}
         \caption{The change in p-value as the threshold varies in size}
+        \label{variable_t}
     \end{minipage}
-    \label{variable_t}
 \end{figure}
+
+In summary, \textbf{$|L|$ should be at least ten times that of $|V|$ and $t$ should be set to $\frac{|V|}{4}$}. This will yield the best level of protection for the given the parameters. However, this analysis was performed with two of the three variables fixed. \textbf{Further analysis should be performed} in order to determine the effects of altering two, or even all three variables at once.
 
 \section{Public Key Hiding}
 
@@ -1270,18 +1355,21 @@ Consider the following adversary, $A$. $A$ can break the anonymity of the public
 
 \begin{figure}[h]
     \centering
-    \includegraphics{diagrams/crypto_proof.eps}
-    \caption{B uses A to solve DDH}
-    \label{crypto_diag}
+    \begin{minipage}[b]{0.6\linewidth}
+        \centering
+        \includegraphics{diagrams/crypto_proof.eps}
+      \caption{B uses A to solve DDH}
+      \label{crypto_diag}
+    \end{minipage}
 \end{figure}
 
-$B$ uses $A$ as follows, it sets $g_2$ to $g_1$, $g\prime_2$ to $g_1^{y}$ and $h\prime_2$ to $g_1^{xy}$. $A$ returns $h_2$, if $h_2 = g_1^{x}$ then $B$ returns "Yes", otherwise "No". Therefore, if the anonymity of the public key hiding can be broken, so too can DDH. Therefore this public key hiding scheme is as at least as hard to solve as DDH.
+$B$ uses $A$ as follows, it sets $g_2$ to $g_1$, $g\prime_2$ to $g_1^{y}$ and $h\prime_2$ to $g_1^{xy}$. $A$ returns $h_2$, if $h_2 = g_1^{x}$ then $B$ returns "Yes", otherwise "No". Therefore, if the anonymity of the public key hiding can be broken, so too can DDH. \textbf{Therefore this public key hiding scheme is as at least as hard to solve as DDH.}
 
 \section{Network Structure}
 
 \subsection{Simulation}
 
-In this section a proof-of-concept simulation of the network structure is analysed to determine whether network expansion, network balancing, source routing, virtual address allocation and complete network knowledge all function as intended. The simulator simulates the nodes, the packets they send to other nodes and the connections they make between them. The simulator does not simulatate the shout mechanism or shout groups and no cryptographic element is implemented.
+I built a proof-of-concept simulation of the network structure. In this section, it is analysed to determine whether network expansion, network balancing, source routing, virtual address allocation and complete network knowledge all function as intended. The simulator simulates the nodes, the packets they send to other nodes and the connections they make between them. The simulator does not simulatate the shout mechanism or shout groups and no cryptographic element is implemented.
 
 The simulator is designed to simulate the network components following the description of the network laid out in the previous chapter. To analyse it as a proof of concept, a scenario is conceived and then analysed to ascertain what the network {\em should} do in that situation. The simulator is then presented with the same scenario and then it is seen if it produces the predicted behaviour.  If it does then it proves that the simulator is an accurate implementation of the network design and that the network design is a feasible network.
 
@@ -1296,8 +1384,6 @@ Nodes \#3 and \#4 will join in the same manner, each receiving a certificate in 
 As node \#5 joins, node \#1 will see that there is no longer any room in the network for new peers, it will therefore conduct an expansion. It copies its own knowledge of the network layout so that it will obtains a layout that is four times its original size. Nodes \#1, \#2, \#3 and \#4 will all appear 4 times in this increased layout in positions dictated by the toroidal nature of the network structure. There will then be plenty of room for node \#5. Node \#1 will then create a certificate, broadcast it and send it to node \#5 which will then verify the certificate and become part of the network. It is then sent network knowledge from node \#1. Nodes \#6 and \#7 also join in this manner.
 
 As node \#8 joins, node \#1 will have run out of virtual positions to give for the current level of network expansion. However, expanding the network will unbalance the number of connections per node because nodes \#2, \#3 and \#4 will still own multiple virtual positions in the latest expansion. It would therefore be best if one of those peers gave node \#8 a virtual position. To do this, node \#1 will encapsulate the joining packet it will have received from node \#8 and sends it to either of nodes \#2, \#3 and \#4. Once the peer receives this encapsulation, it will join node \#8 to the network in the same way. The certificate will be created, broadcasted and sent to node \#8 and node \#8 will verify it and become part of the network. The selected joiner peer will then send node \#8 its own network knowledge.
-
-A walkthrough of the simulation now follows with screenshots from the simulator as appropriate. Figure \ref{sim_expand1} shows the first state in the simulation, the network consists of one peer (node \#1). The lines represent the uni-directional links to the other peers in the network (of which there are currently none) and the four hexadecimal digits are the first 4 hexidecimal digits of the node's Universally Unique Identifier (UUID). A node \#2 then sends its join request to the root peer. Node \#1 notes that the network requires expansion so it does this. Figure \ref{sim_expand2} shows the expanded network, however, it has not placed itself in the position $(1,0)$ as it is currently giving this position to node \#2. Once node \#2 has received the certificate, it joins the network in its assigned position as in Figure \ref{sim_expand3}. Nodes \#3 and \#4 both join in a similar manner, shown in Figures \ref{sim_expand4} and \ref{sim_expand5} respectively.
 
 \begin{figure}[h]
     \centering
@@ -1314,6 +1400,9 @@ A walkthrough of the simulation now follows with screenshots from the simulator 
         \caption{After first expansion.}
         \label{sim_expand2}
     \end{minipage}
+\end{figure}
+\begin{figure}[h]
+    \centering
     \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{sim_pics/expand_3.png}
@@ -1327,6 +1416,9 @@ A walkthrough of the simulation now follows with screenshots from the simulator 
         \caption{Node \#3 joins the network.}
         \label{sim_expand4}
     \end{minipage}
+\end{figure}
+\begin{figure}[h]
+    \centering
     \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{sim_pics/expand_5.png}
@@ -1342,7 +1434,7 @@ A walkthrough of the simulation now follows with screenshots from the simulator 
     \end{minipage}
 \end{figure}
 
-When node \#5 attempts to join, it causes another expansion as shown in Figure \ref{sim_expand6}. Again, node \#1 has not taken all of its virtual positions as it is giving one of the positions to node \#5. None of the other peers have taken up their virtual positions yet as they are unaware that the network has been expanded. Node \#5 completes its join in Figure \ref{sim_expand7}. Note how the broadcasts of node \#5's certificate have caused the peers to take up their virtual positions in the expanded network. This is because the peers learn that new peers have been joined beyond the current known boundary of the network, so they correctly conclude that the network is of a bigger size. Note that when any peer expands the network or notes that it has expanded, all the peer does is double the variable representing the size of the network in their network knowledge, no transmission needs to occur. As the simulation will only display a peer in a virtual position if that peer claims to be in that virtual position, the position appears empty until the broadcast filters through the network. Nodes \#6 and \#7 join the network in the same way as before as shown in Figures \ref{sim_expand8} and \ref{sim_expand9}.
+A walkthrough of the simulation now follows with screenshots from the simulator as appropriate. Figure \ref{sim_expand1} shows the first state in the simulation, the network consists of one peer (node \#1). The lines represent the uni-directional links to the other peers in the network (of which there are currently none) and the four hexadecimal digits are the first 4 hexidecimal digits of the node's Universally Unique Identifier (UUID). A node \#2 then sends its join request to the root peer. Node \#1 notes that the network requires expansion so it does this. Figure \ref{sim_expand2} shows the expanded network, however, it has not placed itself in the position $(1,0)$ as it is currently giving this position to node \#2. Once node \#2 has received the certificate, it joins the network in its assigned position as in Figure \ref{sim_expand3}. Nodes \#3 and \#4 both join in a similar manner, shown in Figures \ref{sim_expand4} and \ref{sim_expand5} respectively.
 
 \begin{figure}[h]
     \centering
@@ -1359,6 +1451,9 @@ When node \#5 attempts to join, it causes another expansion as shown in Figure \
         \caption{Node \#6 joins the network.}
         \label{sim_expand8}
     \end{minipage}
+\end{figure}
+\begin{figure}[h]
+    \centering
     \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{sim_pics/expand_9.png}
@@ -1374,6 +1469,8 @@ When node \#5 attempts to join, it causes another expansion as shown in Figure \
     \end{minipage}
 \end{figure}
 
+When node \#5 attempts to join, it causes another expansion as shown in Figure \ref{sim_expand6}. Again, node \#1 has not taken all of its virtual positions as it is giving one of the positions to node \#5. None of the other peers have taken up their virtual positions yet as they are unaware that the network has been expanded. Node \#5 completes its join in Figure \ref{sim_expand7}. Note how the broadcasts of node \#5's certificate have caused the peers to take up their virtual positions in the expanded network. This is because the peers learn that new peers have been joined beyond the current known boundary of the network, so they correctly conclude that the network is of a bigger size. Note that when any peer expands the network or notes that it has expanded, all the peer does is double the variable representing the size of the network in their network knowledge, no transmission needs to occur. As the simulation will only display a peer in a virtual position if that peer claims to be in that virtual position, the position appears empty until the broadcast filters through the network. Nodes \#6 and \#7 join the network in the same way as before as shown in Figures \ref{sim_expand8} and \ref{sim_expand9}.
+
 For node \#8 to join the network, it is encapsulated within a generic data packet and sent to a peer with virtual positions available. Either of nodes \#2, \#3 or \#4 would do, in this case it happens to be node \#4 that is chosen. Node \#4, upon receiving the message, chooses one of the virtual positions that it owns and then creates, broadcasts and sends the certificate to node \#8. Node \#8 joins the network at position $(2, 1)$. As the packet encapsulation and transmission was a success, it is clear that the complete network knowledge mechanisms are working to the required extent. Note that, in the simulator, there is no "packet loss" i.e. all packets are guranteed to arrive at their destination. In reality, the information request packets would be used frequently to gather complete network knowledge as required.
 
 \section{Network Balance}
@@ -1383,8 +1480,6 @@ In this simulation, the network starts with 4 peers connected to it. Another nod
 Nodes \#1, \#2, \#3 and \#4 will already be in the network. Node \#5 will then join and cause an expansion. Node \#3 will then leave the network; to do this it returns its virtual position to the peer owning the parent virtual position which happens to be node \#1. It will do this by creating and broadcasting a certificate to the network. Unlike when certificates are recorded in a peer's network knowledge from joining the network, this certificate will cause the certificate granting its virtual position to be erased. Control of node \#3's virtual positions will revert to node \#1.
 
 At some point, node \#5 will inspect its network knowledge and notice that it would be better placed where node \#3 used to be. Therefore it will issue a balance request to node \#1, which will own the positions in question at that point. This balance request will be encapsulated in a generic data packet and sent. Upon receiving the balance request, node \#1 will inspect its network knowledge for a virtual position it owns that is in a better than the one node \#5 will have as its local root at that point. Once it finds a position, it creates a certificate that will allow node \#5 to move to that position. This will be encapsulated and sent to node \#5. Node \#5 will then leave its position by creating a certificate like it would as if it were leaving the network. It will then broadcast this certificate and the one it received from node \#1. This will put node \#5 in the position that \#3 used to own. The position that node \#5 used to be in reverts to the control of node \#1. The peers in the network will then notice that the network is in a state where it can be contracted and so a contraction will be performed by all peers in the network. The resulting network will then be nearly identical to its initial state except that node \#5 will be in the place of node \#3.
-
-The following screenshots show how the simulator behaves in this scenario. The simulation starts as in Figure \ref{sim_balance1} and then a new node (node \#5) joins the network, causing an exapnsion. Once all the certifcate broadcasts have finished, the simulated network is in the expanded state shown in Figure \ref{sim_balance2}.
 
 \begin{figure}[h]
     \centering
@@ -1401,6 +1496,12 @@ The following screenshots show how the simulator behaves in this scenario. The s
         \caption{Node \#5 joins the network, causing an expansion.}
         \label{sim_balance2}
     \end{minipage}
+\end{figure}
+
+The following screenshots show how the simulator behaves in this scenario. The simulation starts as in Figure \ref{sim_balance1} and then a new node (node \#5) joins the network, causing an exapnsion. Once all the certifcate broadcasts have finished, the simulated network is in the expanded state shown in Figure \ref{sim_balance2}.
+
+\begin{figure}[h]
+    \centering
     \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{sim_pics/balance_6.png}
@@ -1416,12 +1517,7 @@ The following screenshots show how the simulator behaves in this scenario. The s
     \end{minipage}
 \end{figure}
 
-
 Node \#3 proceeds to leave the network by broadcasting the certificate it creates. Once node \#1 obtains this certificate, it places itself at the positions that node \#3 vacated. This is shown in Figure \ref{sim_balance3}. After some time passes in the simulator, node \#5 comes to realise it is better place where node \#3 was and so sends an encapsulated balance request to node \#1. When node \#1 receives this request, it creates a certificate for the position node \#3 used to own and removes itself from those positions leaving the network in the state shown in Figure \ref{sim_balance4}. The certificate is then sent encapsulated back to node \#5.
-
-
-
-Once node \#5 receives the encapsulated certificate, it creates a certificate for leaving the local root that it currently owns and then broadcasts both certificates. This causes it to enter the positions that node \#3 used to own whilst leaving the point that it used to own. This is shown in Figure \ref{sim_balance5}. Once node \#1 receives the certificate from node \#5 that returns its virtual position to node \#1, node \#1 enters the position as shown in Figure \ref{sim_balance6}. Finally, as the peers receive node \#5's certificate returning its virtual position, they note that the network is in a state where it can be contracted, therefore they do so. This causes the network to enter its final contracted state as shown in Figure \ref{sim_balance7}. This is practically identical to the network's initial state except that node \#5 replaces node \#3. Clearly, the simulation has behaved as expected.
 
 \begin{figure}[h]
     \centering
@@ -1438,6 +1534,9 @@ Once node \#5 receives the encapsulated certificate, it creates a certificate fo
         \caption{Node \#1 gets node \#5's old virtual position.}
         \label{sim_balance6}
     \end{minipage}
+\end{figure}
+\begin{figure}[h]
+    \centering
     \begin{minipage}[b]{0.45\linewidth}
         \centering
         \includegraphics[width=\linewidth]{sim_pics/balance_10.png}
@@ -1445,6 +1544,8 @@ Once node \#5 receives the encapsulated certificate, it creates a certificate fo
         \label{sim_balance7}
     \end{minipage}
 \end{figure}
+
+Once node \#5 receives the encapsulated certificate, it creates a certificate for leaving the local root that it currently owns and then broadcasts both certificates. This causes it to enter the positions that node \#3 used to own whilst leaving the point that it used to own. This is shown in Figure \ref{sim_balance5}. Once node \#1 receives the certificate from node \#5 that returns its virtual position to node \#1, node \#1 enters the position as shown in Figure \ref{sim_balance6}. Finally, as the peers receive node \#5's certificate returning its virtual position, they note that the network is in a state where it can be contracted, therefore they do so. This causes the network to enter its final contracted state as shown in Figure \ref{sim_balance7}. This is practically identical to the network's initial state except that node \#5 replaces node \#3. Clearly, the simulation has behaved as expected showing that the technique works.
 
 \section{Anonymity Provided by the Network Structure}
 
@@ -1517,10 +1618,10 @@ In order to analyse what consequences different levels of traffic between peers 
     \centering
     \begin{minipage}[b]{0.8\linewidth}
         \centering
-        \includegraphics{diagrams/heat_map_random.eps}
-    \caption{The number of messages received by peers when a random routing algorithm is used.}
+        \includegraphics[width=\linewidth]{diagrams/heat_map_random.eps}
+        \caption{The number of messages received by peers when a random routing algorithm is used.}
+        \label{heatmap_random}
     \end{minipage}
-    \label{heatmap_random}
 \end{figure}
 
 In this first scenario, one peer sends a large amout of traffic to another peer, routed randomly in the space between them. The other peers in the network engage in random communication between one another. The number of packets received by each peer is recorded and these values produce the heatmap in Figure \ref{heatmap_random}. The ridge in the heatmap draws a line directly from sender to receiver; this is perhaps the worst possible case, traffic analysis has revealed both sender and receiver with practical certainty.
@@ -1529,10 +1630,10 @@ In this first scenario, one peer sends a large amout of traffic to another peer,
     \centering
     \begin{minipage}[b]{0.8\linewidth}
         \centering
-        \includegraphics{diagrams/heat_map_clever.eps}
-    \caption{The number of messages received by peers when an intelligent algorithm attempts to disguise the traffic pattern.}
+        \includegraphics[width=\linewidth]{diagrams/heat_map_clever.eps}
+        \caption{The number of messages received by peers when an intelligent algorithm attempts to disguise the traffic pattern.}
+        \label{heatmap_clever}
     \end{minipage}
-    \label{heatmap_clever}
 \end{figure}
 
 Recall that generic data packets in Shadow P2P are source routed. An advantage to this is that the sender can choose how the packets are distributed amongst the possible routes to the destination. In the following scenario, a peer sends a large volume of traffic to another peer but it intelligently routes packets such that peers at the same distance from the sender process the same amount of traffic going between the two peers. The result of using such an algorithm is shown in Figure \ref{heatmap_clever}. This is clearly a much more sensible approach for ensuring anonymity, whilst the size of the traffic still shows up clearly against the background traffic, there is no longer any ridge connecting sender and receiver.
@@ -1572,7 +1673,7 @@ attention.  Ideally, the chapter will consist of three parts:
 \end{enumerate}
 \end{comment}
 
-In this project I have created a design for a network that aims to provide more in the way of anonymity than any other network trying to achieve the same goal. In doing so I invented a method for communicating between peers where not even the peers themselves know the true identity of their neighbours; the 'shout'. This method is very inefficient in the transfer of data and is reliant on the state of the Internet where the peer is setup, however, as stated these are not primary concerns of the project.
+In this project I have created a design for a network, Shadow P2P, that aims to provide more in the way of anonymity than any other network trying to achieve the same goal. In doing so I invented a method for communicating between peers where not even the peers themselves know the true identity of their neighbours; the 'shout'. This method is very inefficient in the transfer of data and is reliant on the state of the Internet where the peer is setup, however, as stated these are not primary concerns of the project.
 
 It was seen that the shout method suffers a major drawback in that an adversary could search the shout list for the peer's true identity. I conceived the 'shout group' for the sole purpose of preventing such a search. These groups are effective in deterring any adversary from performing a search as an adversary would have to spend a very long time collecting a large amount of data from the interactions with the shout group in order to deduce any shout group member's identity. The time this takes is further lengthened by the use of a proof-of-work scheme that vastly increases the time between an adversary's attacks, further securing a peer's anonymity.
 
@@ -1580,13 +1681,17 @@ The network was constructed with the shout and shout group mechanisms at its cor
 
 For the transmission of data, packets had to be changed so that they were completely unrecognisable from their previous form in order to prevent the tracing of packets. Public key hiding was invented to allow packets to contain all the information they needed to be routed and re-encrypted and so that this information could be scrambled itself without compromising its usefulness. Breaking this hiding method was proved to be at least as hard as a known computationally hard problem so the anonymity of the packet's receiver is assured. Furthermore, the use of intelligent source routing was shown to be effective in disguising a large data transfer amongst the normal level of network traffic, preventing traffic analysis from determining which two peers are taking part in a given transfer.
 
-As it stands, the project provides the theoretical grounding for an implementation. Shouts, shout groups, public key hiding and the network structure have all been proven to work. In the case of the shout group, there are unsolved secure multiparty computing problems for which clear definitions of the problems have been provided. If these problems are solved in the future, it will allow shout groups to be created from untrusted peers instead of just from known trusted parties. The network simulator goes some of the way in showing that the network design is feasible however no complete implementation of the network has been created.
+As it stands, the project provides the theoretical grounding for an implementation. Shouts, shout groups, public key hiding and the network structure have all been proven to work through simulations and theoretical proofs. In the case of the shout group, there are unsolved Secure Multiparty Computing (SMC) problems for which clear definitions of the problems have been provided. If these problems are solved in the future, it will allow shout groups to be created from untrusted peers instead of just from known trusted parties. I created a network simulator thatgoes some of the way in showing that the network design is feasible, however no complete implementation of the network has been created.
 
-With respect to the initial aim of creating a network that is more anonymous than any other, I claim that I have although it is hard to show this. The difficulty in doing so is because the methods I have devised are not easily compared to existing methods. However, many of the techniques involve removing information from tasks that are performed in other anonymous networks. For instance, the shout removes information about the peers when commumication between peers occurs and the network structure attempts to remove location based information from the network of peers. So the features of Shadow P2P can be seen as doing necessary peer-to-peer tasks with added anonymity.
+With respect to the initial aim of creating a network that is more anonymous than any other, I claim that I have done so although it is hard to show this. One reason for this is that my network achieves a different anonymity goal from many of the other networks. For example, the Tor network\cite{Tor} aims to allow peers to access the Internet in an anonymous fashion whereas my network aims to provide anonymous communication amongst its peers. Also, Tor's peers are anonymised only over the set of Tor peers wheras Shadow P2P's peers are anonymised over the set of nodes on the internet. With different goals and different anonymity properties, using anonymity metrics to compare other networks to Shadow P2P as wholes would not produce a meaningful result.
 
-Any future development should start with implementing the network in full and then testing it either on a LAN or with a network of virtual machines. This will allow the techniques used to be refined and will allow any issues arising to be investigated and solved. Theoretically, the shout group technique is in need of more research. It is by far the hardest problem I have encountered in this project and still doesn't meet up to my expectations. Research in the area of SMC may solve the issue with trusted peers but the cut-off point selection still lacks in its ability to hinder search. To the best of my knowledge, this project is the first in using IP spoofing as a main communication component of the network; perhaps a completely different method that achieves the same effect could be achieved and thus the need for the shout group would be removed in doing so.
+What is somewhat feasible is comparing components of the networks that achieve the same effect. However, because many of the techniques that I have conceived in this project achieve goals that have not been attempted before, there are no components to compare them against in a meaningful way. For instance, the shout technique provides the ability to send messages between two peers without either peer knowing the identity of the other; this has never been attempted before and so no comparison can be made. This means that only the network structure of Shadow P2P is comparable to the network structure of other anonymity networks. Therefore, as the techniques introduced in Shadow P2P are novel, comparing them to existing techniques is mostly impossible as no network components exist that achieve the same goal.
 
-As a final point, whilst it approaches the limits on anonymity, Shadow P2P is far too impractical and inefficient to gain standing as a popular anonymity tool on the Internet. The existing networks are sufficient in providing anonymity where it is needed. Hopefully, the techniques developed here may go on to improving the anonymity provided by the current plethora of solutions as the challenges facing them change.
+Whilst analysis through the use of anonymity metrics is mostly infeasible, logical comparisons can be made. Many of the techniques in ShadowP2P involve removing information about peer identities from tasks that are performed in other anonymous networks. For instance, when communicating between neighbouring peers, a shout reveals less information than a normal Transport Control Protocol (TCP) connection does. Therefore it is reasonable to say that the shout is more anonymous than TCP. If it can be determined that every other aspect of Shadow P2P provides anonymity at least equivalent to some other network then logically Shadow P2P is the more anonymous of the two.
+
+Any future development should start with implementing the network in full and then testing it either on a LAN or with a network of virtual machines. This will allow the techniques used to be refined and will allow any issues arising to be investigated and solved. Theoretically, the shout group technique is in need of more research. In order to improve it, research in the area of SMC is needed to solve the issue with trusted peers and research into the cut-off point selection is needed to improve its ability to hinder search. To the best of my knowledge, this project is the first in using IP spoofing as a main communication component of the network; perhaps a completely different method that achieves the same effect could be achieved and thus the need for the shout group would be removed in doing so.
+
+As a final point, whilst it approaches the limits on anonymity, Shadow P2P is far too impractical and inefficient to gain standing as a popular anonymity tool on the Internet. The existing networks are sufficient in providing anonymity where it is needed; the networks are successfully continuing to adapt to difficult circumstances in order to deliver anonymity to anyone that desires it. The techniques developed contribute to knowledge and may go on to improving the anonymity provided by the current plethora of solutions as the challenges facing them change.
 
 % =============================================================================
 
